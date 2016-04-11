@@ -2,19 +2,19 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Golang on HackerZ - Blog</title>
-    <link>https://hackez.github.io/categories/golang/</link>
+    <link>http://hackez.github.io/categories/golang/</link>
     <description>Recent content in Golang on HackerZ - Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Tue, 29 Mar 2016 14:38:19 +0800</lastBuildDate>
-    <atom:link href="https://hackez.github.io/categories/golang/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://hackez.github.io/categories/golang/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>你好，欢迎来到我的Blog</title>
-      <link>https://hackez.github.io/welcome/</link>
+      <link>http://hackez.github.io/welcome/</link>
       <pubDate>Tue, 29 Mar 2016 14:38:19 +0800</pubDate>
       
-      <guid>https://hackez.github.io/welcome/</guid>
+      <guid>http://hackez.github.io/welcome/</guid>
       <description>&lt;p&gt;这是使用Hugo创建的站点中的第一篇文章&lt;/p&gt;
 </description>
     </item>
