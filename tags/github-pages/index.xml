@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Golang on HackerZ - Blog</title>
-    <link>http://hackez.github.io/categories/golang/</link>
-    <description>Recent content in Golang on HackerZ - Blog</description>
+    <title>Github Pages on HackerZ - Blog</title>
+    <link>http://hackez.github.io/tags/github-pages/</link>
+    <description>Recent content in Github Pages on HackerZ - Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Wed, 13 Apr 2016 16:55:34 +0800</lastBuildDate>
-    <atom:link href="http://hackez.github.io/categories/golang/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://hackez.github.io/tags/github-pages/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>本篇将教会你如何使用Hugo快捷地在Github中创建自己的Blog</title>
@@ -203,18 +203,6 @@ title = &amp;quot;Welcome&amp;quot;
 &lt;h2 id=&#34;配置属于自己的hugo主题:aba878e576894cc4457876fdf276811e&#34;&gt;配置属于自己的Hugo主题&lt;/h2&gt;
 
 &lt;p&gt;你们可以看到，我已经对原来的Hyde主题进行了修改了，那么是怎么做到的呢，我们可以直接对 themes/hyde 下的配置文件进行修改，增加自己想要的样式，相信聪明的你肯定可以很快熟悉 Hugo 的语法，创建属于自己的主题。&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Welcome</title>
-      <link>http://hackez.github.io/welcome/</link>
-      <pubDate>Tue, 29 Mar 2016 14:38:19 +0800</pubDate>
-      
-      <guid>http://hackez.github.io/welcome/</guid>
-      <description>&lt;p&gt;这是使用Hugo创建的站点中的第一篇文章，我是HackerZ。&lt;/p&gt;
-
-&lt;p&gt;如果你想知道如何使用Hugo搭建这样一个Blog的话，可以看看&lt;a href=&#34;http://127.0.0.1:1313/build&#34;&gt;这里&lt;/a&gt;。&lt;/p&gt;
 </description>
     </item>
     
