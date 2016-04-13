@@ -87,8 +87,8 @@ title = &amp;ldquo;My New Hugo Site&amp;rdquo;&lt;/p&gt;
 &lt;p&gt;首先在站点的根目录下创建一个 themes 文件夹。&lt;/p&gt;
 
 &lt;blockquote&gt;
-&lt;p&gt;$ mkdir themes
-$ cd themes
+&lt;p&gt;$ mkdir themes&lt;br /&gt;
+$ cd themes&lt;br /&gt;
 $ git clone &lt;a href=&#34;https://github.com/spf13/hyde.git&#34;&gt;https://github.com/spf13/hyde.git&lt;/a&gt;  #下载对应主题&lt;/p&gt;
 &lt;/blockquote&gt;
 
