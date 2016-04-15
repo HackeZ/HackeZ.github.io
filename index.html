@@ -43,6 +43,8 @@
     <ul class="sidebar-nav">
       <li><a href="/">Home</a> </li>
       
+        <li><a href="/qn-sdkv7-pb/"> Qiniu Go SDK v7 Problem </a></li>
+      
         <li><a href="/welcome/"> Welcome </a></li>
       
         <li><a href="/about/"> Cate </a></li>
@@ -58,6 +60,65 @@
 <div class="posts">
 
       
+  <div class="post">
+    <h1 class="post-title">
+      <a href="http://hackez.github.io/qn-sdkv7-pb/">
+        Qiniu Go SDK v7 Problem
+      </a>
+    </h1>
+
+    <span class="post-date">Fri, Apr 15, 2016</span>
+
+    <p>下载七牛Go SDK v7遇到的问题</p>
+
+<p>今天想要使用七牛的Go SDK时候遇到了肯定会出现的一个情况，那就是</p>
+
+<blockquote>
+<p>$ go get -u qiniupkg.com/api.v7</p>
+</blockquote>
+
+<p>命令出现了</p>
+
+<blockquote>
+<p>golang.org/x/net/context</p>
+</blockquote>
+
+<p>不能下载的问题，首先说一下为什么肯定会报错的问题，那就是Go官方将这个包的下载地址更改了（后来翻墙到Go官网发现的），但是不知道为什么go get命令还是将这个包的下载地址设置为原来的那个。
+好吧，于是我试着使用七牛提供的方法下载了那个压缩包，并将其解压在</p>
+
+<blockquote>
+<p>$GOPATH/src</p>
+</blockquote>
+
+<p>目录下，再次运行go get 命令，这时候出现了</p>
+
+<blockquote>
+<p>golang.org/x/net/content is not using a known version</p>
+</blockquote>
+
+<p>的错误。
+无奈之下，只有翻墙出去Go官方网站查看文档了，然后发现Go官方将这个<a href="https://github.com/golang/net">net包</a>放在了Github中，于是我在Github中下载下来这个包，然后在</p>
+
+<blockquote>
+<p>$GOPATH/src</p>
+</blockquote>
+
+<p>下，也就是Github.com文件夹的平级目录下手动创建了该路径</p>
+
+<blockquote>
+<p>&hellip;/golang.org/x</p>
+</blockquote>
+
+<p>，然后将net包放进去，再次运行</p>
+
+<blockquote>
+<p>$ go get -u qiniupkg.com/api.v7</p>
+</blockquote>
+
+<p>OK，成功了，接下来就可以开始愉快地玩耍了:)</p>
+
+  </div>
+  
   <div class="post">
     <h1 class="post-title">
       <a href="http://hackez.github.io/build/">
@@ -269,7 +330,7 @@ title = &quot;Welcome&quot;
 
     <p>这是使用Hugo创建的站点中的第一篇文章，我是HackerZ。</p>
 
-<p>如果你想知道如何使用Hugo搭建这样一个Blog的话，可以看看<a href="http://127.0.0.1:1313/build">这里</a>。</p>
+<p>如果你想知道如何使用Hugo搭建这样一个Blog的话，可以看看<a href="http://hackez.github.io/build">这里</a>。</p>
 
   </div>
   

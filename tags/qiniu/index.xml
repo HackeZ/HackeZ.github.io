@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Golang on HackerZ - Blog</title>
-    <link>http://hackez.github.io/tags/golang/</link>
-    <description>Recent content in Golang on HackerZ - Blog</description>
+    <title>Qiniu on HackerZ - Blog</title>
+    <link>http://hackez.github.io/tags/qiniu/</link>
+    <description>Recent content in Qiniu on HackerZ - Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Fri, 15 Apr 2016 16:46:54 +0800</lastBuildDate>
-    <atom:link href="http://hackez.github.io/tags/golang/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://hackez.github.io/tags/qiniu/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>Qiniu Go SDK v7 Problem</title>
@@ -62,18 +62,6 @@
 &lt;/blockquote&gt;
 
 &lt;p&gt;OK，成功了，接下来就可以开始愉快地玩耍了:)&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Welcome</title>
-      <link>http://hackez.github.io/welcome/</link>
-      <pubDate>Tue, 29 Mar 2016 14:38:19 +0800</pubDate>
-      
-      <guid>http://hackez.github.io/welcome/</guid>
-      <description>&lt;p&gt;这是使用Hugo创建的站点中的第一篇文章，我是HackerZ。&lt;/p&gt;
-
-&lt;p&gt;如果你想知道如何使用Hugo搭建这样一个Blog的话，可以看看&lt;a href=&#34;http://hackez.github.io/build&#34;&gt;这里&lt;/a&gt;。&lt;/p&gt;
 </description>
     </item>
     
