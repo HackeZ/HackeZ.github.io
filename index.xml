@@ -6,8 +6,78 @@
     <description>Recent content on HackerZ - Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 15 Apr 2016 16:46:54 +0800</lastBuildDate>
+    <lastBuildDate>Sat, 30 Apr 2016 19:14:56 +0800</lastBuildDate>
     <atom:link href="http://hackez.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>About Me</title>
+      <link>http://hackez.github.io/about-me/</link>
+      <pubDate>Sat, 30 Apr 2016 19:14:56 +0800</pubDate>
+      
+      <guid>http://hackez.github.io/about-me/</guid>
+      <description>
+
+&lt;h1 id=&#34;about-me:8723697e33f65823610bf3f676b8d742&#34;&gt;About Me&lt;/h1&gt;
+
+&lt;p&gt;我是朱冠州，以HackerZ的名字混迹于网络中。于1994年8月出生于广东肇庆，迷迷茫茫直至高中开始喜欢上计算机，于是便选择了计算机科学与技术这门学科考上了北京理工大学珠海学院。平常我是一个喜欢拍照/看推理小说/撸代码的一个小小码农。&lt;/p&gt;
+
+&lt;p&gt;我的大学生活是从&lt;strong&gt;C语言&lt;/strong&gt;开始的，一路上在 &lt;strong&gt;PHP/JAVA/Android/Node/Web&lt;/strong&gt; 中迷失了自我，直至我遇上了&lt;strong&gt;Golang&lt;/strong&gt;，我喜欢Go的那种优雅/简练的语法，更喜欢在Golang世界中的那种自由，所以我心甘情愿当一个Gopher。&lt;/p&gt;
+
+&lt;p&gt;我希望能成为一个能够改善我们身边生活/见证未来科技行业革新的一个&lt;strong&gt;创新者&lt;/strong&gt;以及&lt;strong&gt;见证者&lt;/strong&gt;。&lt;/p&gt;
+
+&lt;h1 id=&#34;contact-me:8723697e33f65823610bf3f676b8d742&#34;&gt;Contact Me&lt;/h1&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Email: 767110505@qq.com&lt;/li&gt;
+&lt;li&gt;Weibo: &lt;a href=&#34;http://weibo.com/u/2246744750&#34;&gt;HackerZGZ&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Github: &lt;a href=&#34;https://github.com/HackeZ&#34;&gt;HackeZ&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Blog: &lt;a href=&#34;http://hackez.github.io&#34;&gt;HackerZ&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&#34;technology-stack:8723697e33f65823610bf3f676b8d742&#34;&gt;Technology stack&lt;/h1&gt;
+
+&lt;p&gt;前端&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;HTML/CSS/JavaScript&lt;/li&gt;
+&lt;li&gt;JQuery&lt;/li&gt;
+&lt;li&gt;ReactJS&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;后端&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;PHP (ThinkPHP)&lt;/li&gt;
+&lt;li&gt;NodeJS (Express)&lt;/li&gt;
+&lt;li&gt;Golang (Beego/Hugo)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;数据库&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;MySQL&lt;/li&gt;
+&lt;li&gt;MongoDB&lt;/li&gt;
+&lt;li&gt;Redis&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;移动端&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Andorid&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;工具&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Linux&lt;/li&gt;
+&lt;li&gt;Git&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&#34;future:8723697e33f65823610bf3f676b8d742&#34;&gt;Future&lt;/h1&gt;
+
+&lt;p&gt;对于未来，我希望能够在广东找到一份我喜爱的工作，能保持我对新技术和事物的爱好，并投身于Coding的最前线。&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Qiniu Go SDK v7 Problem</title>
