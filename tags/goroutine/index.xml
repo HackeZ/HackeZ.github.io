@@ -2,19 +2,19 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Goroutine on HackerZ - Blog</title>
-    <link>http://replace-this-with-your-hugo-site.com/tags/goroutine/</link>
+    <link>http://hackez.github.io/tags/goroutine/</link>
     <description>Recent content in Goroutine on HackerZ - Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Wed, 11 May 2016 19:41:18 +0800</lastBuildDate>
-    <atom:link href="http://replace-this-with-your-hugo-site.com/tags/goroutine/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://hackez.github.io/tags/goroutine/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>The Channel in Golang</title>
-      <link>http://replace-this-with-your-hugo-site.com/channel/</link>
+      <link>http://hackez.github.io/channel/</link>
       <pubDate>Wed, 11 May 2016 19:41:18 +0800</pubDate>
       
-      <guid>http://replace-this-with-your-hugo-site.com/channel/</guid>
+      <guid>http://hackez.github.io/channel/</guid>
       <description>
 
 &lt;p&gt;Golang中的Channel分析&lt;/p&gt;

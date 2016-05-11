@@ -2,19 +2,19 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Development on HackerZ - Blog</title>
-    <link>http://replace-this-with-your-hugo-site.com/categories/development/</link>
+    <link>http://hackez.github.io/categories/development/</link>
     <description>Recent content in Development on HackerZ - Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Wed, 11 May 2016 19:41:18 +0800</lastBuildDate>
-    <atom:link href="http://replace-this-with-your-hugo-site.com/categories/development/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://hackez.github.io/categories/development/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>The Channel in Golang</title>
-      <link>http://replace-this-with-your-hugo-site.com/channel/</link>
+      <link>http://hackez.github.io/channel/</link>
       <pubDate>Wed, 11 May 2016 19:41:18 +0800</pubDate>
       
-      <guid>http://replace-this-with-your-hugo-site.com/channel/</guid>
+      <guid>http://hackez.github.io/channel/</guid>
       <description>
 
 &lt;p&gt;Golang中的Channel分析&lt;/p&gt;
@@ -104,10 +104,10 @@ close(intChan)
     
     <item>
       <title>socket</title>
-      <link>http://replace-this-with-your-hugo-site.com/socket/</link>
+      <link>http://hackez.github.io/socket/</link>
       <pubDate>Tue, 03 May 2016 21:35:08 +0800</pubDate>
       
-      <guid>http://replace-this-with-your-hugo-site.com/socket/</guid>
+      <guid>http://hackez.github.io/socket/</guid>
       <description>
 
 &lt;h1 id=&#34;socket-study:bd9a9c5f94f2e9bf495cac48092e4447&#34;&gt;Socket Study&lt;/h1&gt;
@@ -216,10 +216,10 @@ close(intChan)
     
     <item>
       <title>About Me</title>
-      <link>http://replace-this-with-your-hugo-site.com/about-me/</link>
+      <link>http://hackez.github.io/about-me/</link>
       <pubDate>Sat, 30 Apr 2016 19:14:56 +0800</pubDate>
       
-      <guid>http://replace-this-with-your-hugo-site.com/about-me/</guid>
+      <guid>http://hackez.github.io/about-me/</guid>
       <description>
 
 &lt;h1 id=&#34;about-me:8723697e33f65823610bf3f676b8d742&#34;&gt;About Me&lt;/h1&gt;
@@ -286,10 +286,10 @@ close(intChan)
     
     <item>
       <title>Qiniu Go SDK v7 Problem</title>
-      <link>http://replace-this-with-your-hugo-site.com/qn-sdkv7-pb/</link>
+      <link>http://hackez.github.io/qn-sdkv7-pb/</link>
       <pubDate>Fri, 15 Apr 2016 16:46:54 +0800</pubDate>
       
-      <guid>http://replace-this-with-your-hugo-site.com/qn-sdkv7-pb/</guid>
+      <guid>http://hackez.github.io/qn-sdkv7-pb/</guid>
       <description>&lt;p&gt;下载七牛Go SDK v7遇到的问题&lt;/p&gt;
 
 &lt;p&gt;今天想要使用七牛的Go SDK时候遇到了肯定会出现的一个情况，那就是&lt;/p&gt;
@@ -342,10 +342,10 @@ close(intChan)
     
     <item>
       <title>本篇将教会你如何使用Hugo快捷地在Github中创建自己的Blog</title>
-      <link>http://replace-this-with-your-hugo-site.com/build/</link>
+      <link>http://hackez.github.io/build/</link>
       <pubDate>Wed, 13 Apr 2016 16:55:34 +0800</pubDate>
       
-      <guid>http://replace-this-with-your-hugo-site.com/build/</guid>
+      <guid>http://hackez.github.io/build/</guid>
       <description>
 
 &lt;h2 id=&#34;安装hugo:aba878e576894cc4457876fdf276811e&#34;&gt;安装Hugo&lt;/h2&gt;
@@ -539,10 +539,10 @@ title = &amp;quot;Welcome&amp;quot;
     
     <item>
       <title>Welcome</title>
-      <link>http://replace-this-with-your-hugo-site.com/welcome/</link>
+      <link>http://hackez.github.io/welcome/</link>
       <pubDate>Tue, 29 Mar 2016 14:38:19 +0800</pubDate>
       
-      <guid>http://replace-this-with-your-hugo-site.com/welcome/</guid>
+      <guid>http://hackez.github.io/welcome/</guid>
       <description>&lt;p&gt;这是使用Hugo创建的站点中的第一篇文章，我是HackerZ。&lt;/p&gt;
 
 &lt;p&gt;如果你想知道如何使用Hugo搭建这样一个Blog的话，可以看看&lt;a href=&#34;http://hackez.github.io/build&#34;&gt;这里&lt;/a&gt;。&lt;/p&gt;
