@@ -6,8 +6,45 @@
     <description>Recent content in Golang on HackerZ - Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 11 May 2016 19:41:18 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 02 Jun 2016 11:08:54 +0800</lastBuildDate>
     <atom:link href="http://hackez.github.io/categories/golang/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Named Question in Golang</title>
+      <link>http://hackez.github.io/lenproblem/</link>
+      <pubDate>Thu, 02 Jun 2016 11:08:54 +0800</pubDate>
+      
+      <guid>http://hackez.github.io/lenproblem/</guid>
+      <description>&lt;p&gt;Golang中遇到的命名问题&lt;/p&gt;
+
+&lt;p&gt;昨天在写随机生成字符串代码时候遇到了一个Golang的命名问题，代码如下：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;func GetRandomString(len string) string {
+    str := &amp;quot;0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ&amp;quot;
+    bytes := []byte(str)
+    result := []byte{}
+    r := rand.New(rand.NewSource(time.Now().UnixNano()))
+
+    for i := 0; i &amp;lt; len; i++ {
+        result = append(result, bytes[r.Intn(len(str))]) // &amp;lt;- Here is the Problem: `cannot call non-function len (type int)`
+    }
+    return string(result)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这个问题太蛋疼了，之前好像从来没遇到过这个问题，而且Google好像也没有找到相关的问题原因。&lt;/p&gt;
+
+&lt;p&gt;后来一步步排查代码，才发现问题原来是出现在：&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;for i := 0; i &amp;lt; &lt;strong&gt;len&lt;/strong&gt;; i++ {&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;中的 &lt;strong&gt;len&lt;/strong&gt; 变量与函数 &lt;strong&gt;len()&lt;/strong&gt; 重复而出现的命名错误，所以只需要将 &lt;strong&gt;len&lt;/strong&gt; 变量重新命名即可解决该问题。&lt;/p&gt;
+
+&lt;p&gt;总结：在Golang中使用的变量一定不要和某个函数名字相同，否则不会通过，我现在暂时不清楚是Golang编译器出现的问题，还是Golang本来就不允许这样写，我会继续查阅相关文档查清楚！&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>The Channel in Golang</title>
