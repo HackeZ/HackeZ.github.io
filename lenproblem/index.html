@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+	<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-us" lang="en-us">
 <head>
   <link href="http://gmpg.org/xfn/11" rel="profile">
@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
 
-  <title> Qiniu &middot; HackerZ - Blog </title>
+  <title> Named Question in Golang &middot; HackerZ - Blog </title>
 
   
   <link rel="stylesheet" href="http://hackez.github.io/css/poole.css">
@@ -28,7 +28,7 @@
   <link rel="shortcut icon" href="/favicon.png">
 
   
-  <link href="http://hackez.github.io/tags/qiniu/index.xml" rel="alternate" type="application/rss+xml" title="HackerZ - Blog" />
+  <link href="" rel="alternate" type="application/rss+xml" title="HackerZ - Blog" />
 
   
   
@@ -50,9 +50,8 @@
   
 </head>
 
-<body class="theme-base-08">
-
-<div class="sidebar">
+	<body class="theme-base-08">
+		<div class="sidebar">
   <div class="container sidebar-sticky">
   <div class="round-head">
     <img style="margin: auto;" src="http://hackez.github.io/author-head.png" alt="HackerZ">
@@ -82,14 +81,43 @@
 </div>
 
 
-  <div class="content container">
-    <ul class="posts">
-        
-        <li>
-          <span><a href="http://hackez.github.io/qn-sdkv7-pb/">Qiniu Go SDK v7 Problem</a> <time class="pull-right post-list">Fri, Apr 15, 2016</time></span>
-        </li>
-        
-    </ul>
-  </div>
-</body>
+		<div class="content container">
+			<div class="post">
+			 	<h1>Named Question in Golang</h1>
+			  <span class="post-date">Thu, Jun 2, 2016</span>
+			      <p>Golang中遇到的命名问题</p>
+
+<p>昨天在写随机生成字符串代码时候遇到了一个Golang的命名问题，代码如下：</p>
+
+<pre><code class="language-go">func GetRandomString(len string) string {
+    str := &quot;0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ&quot;
+    bytes := []byte(str)
+    result := []byte{}
+    r := rand.New(rand.NewSource(time.Now().UnixNano()))
+
+    for i := 0; i &lt; len; i++ {
+        result = append(result, bytes[r.Intn(len(str))]) // &lt;- Here is the Problem: `cannot call non-function len (type int)`
+    }
+    return string(result)
+}
+</code></pre>
+
+<p>这个问题太蛋疼了，之前好像从来没遇到过这个问题，而且Google好像也没有找到相关的问题原因。</p>
+
+<p>后来一步步排查代码，才发现问题原来是出现在：</p>
+
+<blockquote>
+<p>for i := 0; i &lt; <strong>len</strong>; i++ {</p>
+</blockquote>
+
+<p>中的 <strong>len</strong> 变量与函数 <strong>len()</strong> 重复而出现的命名错误，所以只需要将 <strong>len</strong> 变量重新命名即可解决该问题。</p>
+
+<p>总结：在Golang中使用的变量一定不要和某个函数名字相同，否则不会通过，我现在暂时不清楚是Golang编译器出现的问题，还是Golang本来就不允许这样写，我会继续查阅相关文档查清楚！</p>
+
+			</div>
+
+			
+		</div>
+
+  </body>
 </html>

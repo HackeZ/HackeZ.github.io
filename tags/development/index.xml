@@ -6,8 +6,467 @@
     <description>Recent content in Development on HackerZ - Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 29 Mar 2016 14:38:19 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 13 Jul 2016 19:39:47 +0800</lastBuildDate>
     <atom:link href="http://hackez.github.io/tags/development/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Cold Start</title>
+      <link>http://hackez.github.io/cold-start/</link>
+      <pubDate>Wed, 13 Jul 2016 19:39:47 +0800</pubDate>
+      
+      <guid>http://hackez.github.io/cold-start/</guid>
+      <description>
+
+&lt;h1 id=&#34;about-two-different-cold-start:824da9944d1d4c2c4e626a02a40cf7ae&#34;&gt;About Two Different Cold Start&lt;/h1&gt;
+
+&lt;h2 id=&#34;app-cold-start:824da9944d1d4c2c4e626a02a40cf7ae&#34;&gt;APP Cold Start&lt;/h2&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&#34;what-s-app-cold-start:824da9944d1d4c2c4e626a02a40cf7ae&#34;&gt;&lt;strong&gt;What&amp;rsquo;s App Cold Start&lt;/strong&gt;&lt;/h2&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;对于最近安装的App a，我们不可能得到该对于该App用户的特殊使用信息。尤其是打开该App的概率 P(a)。另一方面，对于给定的 feature（特征）的先验概率（指根据以往经验和分析得到的概率），可以从其他用户的信息中获取。&lt;/p&gt;
+
+&lt;p&gt;因此，对于最近安装的App，怎么估计其打开概率P(a)是至关重要的。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&#34;yahoo-s-experimental-result:824da9944d1d4c2c4e626a02a40cf7ae&#34;&gt;&lt;strong&gt;Yahoo&amp;rsquo;s Experimental Result&lt;/strong&gt;&lt;/h2&gt;
+
+&lt;p&gt;通过记录最近安装的App打开记录（活跃度），图5（Daily）以及图6（Hourly）：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://7xsxev.com1.z0.glb.clouddn.com/Days-after-installation.png&#34; alt=&#34;Days After Installation&#34; /&gt;
+&lt;/p&gt;
+
+&lt;p&gt;图 5  日常App安装后的活跃度&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://7xsxev.com1.z0.glb.clouddn.com/Days-after-installation.png&#34; alt=&#34;Hours After Installation&#34; /&gt;
+&lt;/p&gt;
+
+&lt;p&gt;图 6  每小时App安装后的活跃度&lt;/p&gt;
+
+&lt;p&gt;从图 5 和 6 中可以看到，最近安装的App一个显着的特点是在安装后的数小时内非常活跃。但是经过这段时间之后，最近安装的App 的活跃度显着减少。与此相反，一些一开始活跃度并不高的 App 经常在它们安装后的很长一段时间依然在使用。&lt;/p&gt;
+
+&lt;h2 id=&#34;to-solve-app-cold-start:824da9944d1d4c2c4e626a02a40cf7ae&#34;&gt;&lt;strong&gt;To Solve App Cold Start&lt;/strong&gt;&lt;/h2&gt;
+
+&lt;p&gt;因此，为了更好地获取最近安装App打开频率，我们根据它们的活跃度持续时间长短，定义两种App类型，分别为：&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Short-term （活跃度持续时间短，在刚开始的一段时间活跃度很高）&lt;/li&gt;
+&lt;li&gt;Long-term（活跃度持续时间长，在刚开始的一段时间活跃度不够高）&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;为捕抓每个App在时间上的突出显著性，我们将App使用数据转化为 &lt;strong&gt;Beta(α,β)&lt;/strong&gt; 值，为了区分时间显著性，我们使用尖峰（excess kurtosis）δ来评价每个App的时间使用峰度：
+&lt;img src=&#34;http://7xsxev.com1.z0.glb.clouddn.com/Excess-kurtosis-expression.png&#34; alt=&#34;Excess Kurtosis Expression&#34; /&gt;
+&lt;/p&gt;
+
+&lt;p&gt;通过尖峰值可以判断最近安装App的类型：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;一个高尖峰值的App意味着它越有可能是Short-term类App（Game）&lt;/li&gt;
+&lt;li&gt;一个低尖峰值的App意味着它越有可能是Long-term类App（Communication）&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;Short-term类的App可以通过获取特定的特点的用户来获取平均打开频率。&lt;/strong&gt;&lt;br /&gt;
+&lt;strong&gt;Long-term类的App则可以通过获取所有用户的平均值。&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;随着用户打开App的事件增加，我们可以计算最近安装App的打开概率，因此，我们使用贝叶斯平均其他用户的历史信息来计算接下来的使用信息。计算最近安装App的打开概率公式如下：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://7xsxev.com1.z0.glb.clouddn.com/App-cold-start-expression.png&#34; alt=&#34;App Cold Start Expression&#34; /&gt;
+&lt;/p&gt;
+
+&lt;p&gt;通过计算公式，仅仅通过少量的用户打开App事件得到同一App的其他用户近似的非加权值的启动概率。&lt;strong&gt;用户打开App事件越多，该公式的准确率越高。&lt;/strong&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&#34;user-cold-start:824da9944d1d4c2c4e626a02a40cf7ae&#34;&gt;User Cold Start&lt;/h2&gt;
+
+&lt;h2 id=&#34;what-s-user-cold-start:824da9944d1d4c2c4e626a02a40cf7ae&#34;&gt;&lt;strong&gt;What&amp;rsquo;s User Cold Start&lt;/strong&gt;&lt;/h2&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;在这一小节，我们提出两种方法解决User冷启动问题，什么是User冷启动呢？
+当一个用户安装了一个Launcher软件（Aviate，Buzz，Go 等桌面软件），我们在不知道这个用户的任何信息下如何向该用户推荐App清单呢？这个就是User冷启动问题。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&#34;two-ways-to-solve:824da9944d1d4c2c4e626a02a40cf7ae&#34;&gt;&lt;strong&gt;Two Ways to Solve&lt;/strong&gt;&lt;/h2&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;最相似用户策略：
+当这个new User在安装了Launcher之后，我们可以在已知的用户集中找到跟他最相似的用户，并将这个用户的使用指标赋值给他。&lt;br /&gt;
+那么怎么去计算跟他最相似的用户呢，我们可以使用 &lt;strong&gt;Jaccard系数&lt;/strong&gt; 进行计算，这个系数主要用来比较样本集中的相似性和分散性的一个概率。&lt;br /&gt;
+&lt;strong&gt;计算出用户之间的相似度，就可以将最相似用户的App清单进行推送。&lt;/strong&gt;&lt;br /&gt;
+事实上，最相似的用户的App清单与新用户的清单还是有很大的不一样的，在极端条件下，也就是不涉及到敏感的用户信息条件下，他们之间的App清单相似度甚至不会超过一个 &lt;strong&gt;纯粹随机策略&lt;/strong&gt; （相当于“猴子排序”）。&lt;br /&gt;
+虽然这个策略提高了User冷启动的平均准确度，但是也限制了可生成用户建议数的范围。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;伪用户策略：
+通过生成“伪历史”（假的用户使用记录）可以解决用户冷启动问题，而且该策略可以作为新用户训练PTAN模型的一种方法。&lt;br /&gt;
+这个想法在于找到少量的相似用户，其App清单能够覆盖新用户的App清单。这是一个简单的 &lt;strong&gt;NP-Hard证明问题&lt;/strong&gt; 。&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;P.S 1: NP-Hard问题也就是不能在限定的时间内计算出结果的问题，只能通过候选答案来验证这个答案是不是我们已知问题的一个答案&lt;/p&gt;
+
+&lt;p&gt;P.S 2关于这个问题为什么是一个NP-Hard问题，论文中没有给出解释，如果想了解怎么判断一个问题是不是NP-Hard问题，可以到 &lt;a href=&#34;http://blog.csdn.net/com_stu_zhang/article/details/7248277&#34;&gt;这里&lt;/a&gt; 查看解释，因为解释非常复杂，请允许我不复制粘贴上来&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;通过算法5，我们生成了伪用户数据：
+&lt;img src=&#34;http://7xsxev.com1.z0.glb.clouddn.com/Build-pseudo-user.png&#34; alt=&#34;Build Pseudo User&#34; /&gt;
+&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Learning in Hadoop - Day 1</title>
+      <link>http://hackez.github.io/hadoop-1/</link>
+      <pubDate>Mon, 13 Jun 2016 20:45:25 +0800</pubDate>
+      
+      <guid>http://hackez.github.io/hadoop-1/</guid>
+      <description>&lt;p&gt;第一次玩Hadoop&lt;/p&gt;
+
+&lt;p&gt;最近在折腾机器学习，因为查阅到Yahoo的&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;《Predicting The Next App That You Are Going To Use》&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;这一篇Paper的时候，它提到了Google的 &lt;strong&gt;MapReduce&lt;/strong&gt;以及 &lt;strong&gt;Word2Vec&lt;/strong&gt; 。相信折腾过机器学习的小伙伴都会比较熟悉这两个东西了。于是，为了更深入地进行学习，我便无情地掉进了这个 &lt;strong&gt;坑&lt;/strong&gt; 里。&lt;/p&gt;
+
+&lt;p&gt;首先介绍一下背景，Yahoo的这篇Paper主要就是根据用户日常APP的使用习惯，然后对用户下一启动的APP进行预测。因为Yahoo认为日常手机的使用场景会对哪个APP的开启与否有着很强的关联性，于是他们便使用了 &lt;strong&gt;Word2Vec&lt;/strong&gt; 对用户手机中记录的6个手机事件：&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;em&gt;Last Location Update&lt;/em&gt;&lt;/li&gt;
+&lt;li&gt;&lt;em&gt;Last Charge Cavle&lt;/em&gt;&lt;/li&gt;
+&lt;li&gt;&lt;em&gt;Last Audio Cable&lt;/em&gt;&lt;/li&gt;
+&lt;li&gt;&lt;em&gt;Last Context Trigger&lt;/em&gt;&lt;/li&gt;
+&lt;li&gt;&lt;em&gt;Last Context Pulled&lt;/em&gt;&lt;/li&gt;
+&lt;li&gt;&lt;em&gt;Last App Open&lt;/em&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;进行计算词向量，用于文本预测。而Word2Vec有着3个广为流传的版本：&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;C&lt;/li&gt;
+&lt;li&gt;Python&lt;/li&gt;
+&lt;li&gt;Java&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;但是这3个版本对于Yahoo来说性能都是不足的，经我测试，一个800M的文本在C语言版本中计算时间需要20Min！&lt;/p&gt;
+
+&lt;p&gt;而在预测下一个APP这个场景里，这种计算速度是完全不可以接受的，于是Yahoo他们利用MapReduce重写了一个Word2Vec，将这个版本放在云端进行计算。这就是我进行MapReduce学习的原因。&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Named Question in Golang</title>
+      <link>http://hackez.github.io/lenproblem/</link>
+      <pubDate>Thu, 02 Jun 2016 11:08:54 +0800</pubDate>
+      
+      <guid>http://hackez.github.io/lenproblem/</guid>
+      <description>&lt;p&gt;Golang中遇到的命名问题&lt;/p&gt;
+
+&lt;p&gt;昨天在写随机生成字符串代码时候遇到了一个Golang的命名问题，代码如下：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;func GetRandomString(len string) string {
+    str := &amp;quot;0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ&amp;quot;
+    bytes := []byte(str)
+    result := []byte{}
+    r := rand.New(rand.NewSource(time.Now().UnixNano()))
+
+    for i := 0; i &amp;lt; len; i++ {
+        result = append(result, bytes[r.Intn(len(str))]) // &amp;lt;- Here is the Problem: `cannot call non-function len (type int)`
+    }
+    return string(result)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这个问题太蛋疼了，之前好像从来没遇到过这个问题，而且Google好像也没有找到相关的问题原因。&lt;/p&gt;
+
+&lt;p&gt;后来一步步排查代码，才发现问题原来是出现在：&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;for i := 0; i &amp;lt; &lt;strong&gt;len&lt;/strong&gt;; i++ {&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;中的 &lt;strong&gt;len&lt;/strong&gt; 变量与函数 &lt;strong&gt;len()&lt;/strong&gt; 重复而出现的命名错误，所以只需要将 &lt;strong&gt;len&lt;/strong&gt; 变量重新命名即可解决该问题。&lt;/p&gt;
+
+&lt;p&gt;总结：在Golang中使用的变量一定不要和某个函数名字相同，否则不会通过，我现在暂时不清楚是Golang编译器出现的问题，还是Golang本来就不允许这样写，我会继续查阅相关文档查清楚！&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>The Channel in Golang</title>
+      <link>http://hackez.github.io/channel/</link>
+      <pubDate>Wed, 11 May 2016 19:41:18 +0800</pubDate>
+      
+      <guid>http://hackez.github.io/channel/</guid>
+      <description>
+
+&lt;p&gt;Golang中的Channel分析&lt;/p&gt;
+
+&lt;p&gt;作为Golang语言的核心，并发编程是学习Golang的必经之路。对于不同进程之间的通信手段总会涉及到跨进程通信，那么这个通信手段必须是一个可共享内存的方法，而Golang提倡的理念为：&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;“应该以通信作为手段来共享内存”&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;而这一句话的直接体现在于Golang所提供的一个预定义数据类型 —— &lt;strong&gt;Channel&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Channel提供了一种机制。它既可以 &lt;strong&gt;同步&lt;/strong&gt; 两个被并发执行的函数，又可以让这两个函数通过传递特定类型的值来进行 &lt;strong&gt;通信&lt;/strong&gt;。使用Channel可以让我们编写更清晰且正确的代码。&lt;/p&gt;
+
+&lt;p&gt;关于使用Channel需要记住的知识点：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;在同一时刻，仅有一个Goroutine能向同一个Channel发送元素值，同时也只有一个Goroutine能从它哪里接收元素值。&lt;/li&gt;
+&lt;li&gt;Channel是一个FIFO的消息队列。&lt;/li&gt;
+&lt;li&gt;Channel中的元素值已经确保具有原子性。&lt;/li&gt;
+&lt;li&gt;Channel可以分为缓冲与非缓冲，它们之间的差别非常大。&lt;/li&gt;
+&lt;li&gt;Channel可分为双向与单向，一般通道都会声明为双向，只有在限制函数体中使用通道的方式（只允许发送或接收）才会使用单向Channel。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;talk-is-cheap-show-me-the-code:470efe0e1a81224ed3dc573880ac9e1a&#34;&gt;Talk is Cheap,Show me the Code!&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;初始化通道&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;因为Channel属于引用类型之一，所以必须使用make关键字初始化它。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;// 缓冲通道（容纳int类型元素，有长度，可暂存元素）
+intChan := make(chan int, 5)
+
+// 非缓冲通道（容纳byte类型元素，无长度，不可暂存元素）
+byteChan := make(chan byte)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;发送元素值&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;// 向intChan通道发送一个元素值为5的元素
+intChan &amp;lt;- 5
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;注意：向一个值为nil的Channel进行发送操作会造成当前Goroutine &lt;strong&gt;永久阻塞！&lt;/strong&gt;。&lt;br /&gt;
+而向一个已经塞满元素的Channel进行发送操作则会将当前的Goroutine &lt;strong&gt;阻塞&lt;/strong&gt;，直至Channel中的元素被接收，所以一般会在 &lt;strong&gt;select&lt;/strong&gt; 代码块中进行发送操作。&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;接收元素值&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;// 在intChan通道中接收一个元素值
+elem := &amp;lt;-intChan
+
+// 接收元素值，并判断该通道是否已经关闭
+elem, ok := &amp;lt;-intChan
+if !ok {
+    fmt.Println(&amp;quot;Channel is Closed!&amp;quot;)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;同样需要注意的是，如果向一个值为nil的Channel进行接收操作，同样会造成 &lt;strong&gt;永久阻塞！&lt;/strong&gt;&lt;br /&gt;
+而向一个没有元素值的Channel进行接收操作，也会将当前的Goroutine &lt;strong&gt;阻塞&lt;/strong&gt;，直至Channel中有了新的元素。&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;关闭Channel&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;关闭Channel并不是如其字面意思，完全将Channel关闭。而其正确的作用是告诉系统，不应该再允许任何针对被关闭的通道的发送操作，该通道已经被关闭，但是已经缓存在Channel中的元素不会受到影响，这也是Channel非常优秀的特性之一。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;// 调用内建函数close()关闭Channel
+close(intChan)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;注意，无论任何时候，我们都 &lt;strong&gt;不应该&lt;/strong&gt; 在接收端关闭Channel，因为我们永远都不知道发送端是否已经将元素发送完毕。&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;最后，可以到&lt;a href=&#34;https://www.github.com/HackeZ&#34;&gt;这里&lt;/a&gt;学习更多的Channel相关代码！&lt;/p&gt;
+&lt;/blockquote&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>socket</title>
+      <link>http://hackez.github.io/socket/</link>
+      <pubDate>Tue, 03 May 2016 21:35:08 +0800</pubDate>
+      
+      <guid>http://hackez.github.io/socket/</guid>
+      <description>
+
+&lt;h1 id=&#34;socket-study:bd9a9c5f94f2e9bf495cac48092e4447&#34;&gt;Socket Study&lt;/h1&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&#34;what-is-socket:bd9a9c5f94f2e9bf495cac48092e4447&#34;&gt;What is Socket&lt;/h2&gt;
+
+&lt;p&gt;Socket(插座) 作为 UNIX的进程通信机制，一般被通称为&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;套接字&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;用于描述IP地址和端口，是一个通信链的句柄。&lt;/p&gt;
+
+&lt;p&gt;在Internet上的主机一般会运行多个服务软件，同时提供多个服务，每个服务都打开一个Socket，并绑定在一个端口上，不同端口对应不同的服务。&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;正如其英文意思 —— 插座，Socket在不同端口提供着不同的服务，互相之间互不干扰，你只需要将插头插入正确的插座，就可以得到你想要的服务了。&lt;/p&gt;
+
+&lt;h2 id=&#34;socket通讯过程:bd9a9c5f94f2e9bf495cac48092e4447&#34;&gt;Socket通讯过程&lt;/h2&gt;
+
+&lt;p&gt;Socket类似于电话插座，电话的通话双方相当于互相通信的2个进程，区号是它的网络地址；区内一个单位的交换机相当于一台主机，主机分配给每个用户的局内号码相当于socket号。&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;任何用户在通话之前，首先要&lt;strong&gt;占有一部&lt;/strong&gt;电话机，相当于申请一个socket；&lt;/li&gt;
+&lt;li&gt;同时还要知道对方的号码，相当于对方有一个固定的的socket地址；&lt;/li&gt;
+&lt;li&gt;然后向对方拨打电话，相当于发出连接请求&lt;strong&gt;（假如对方不在同一个区内，还要添加区号，相当于给出网络地址）&lt;/strong&gt;；&lt;/li&gt;
+&lt;li&gt;这时候，如果对方在场并且空闲，相当于通信的另一个主机开机且可以接受连接请求；&lt;/li&gt;
+&lt;li&gt;对方拿起电话，双方就可以正式通话，相当于&lt;strong&gt;连接成功&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;双方通话的过程，是一方向电话机发出信号和对方电话机接收信号的过程，相当于向socket发送数据以及接收数据；&lt;/li&gt;
+&lt;li&gt;通话结束后，一方挂起电话相当于关闭socket，撤销连接；&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;socket-协议:bd9a9c5f94f2e9bf495cac48092e4447&#34;&gt;Socket 协议&lt;/h2&gt;
+
+&lt;p&gt;Socket协议：（协议，本地地址，本地端口）&lt;br /&gt;
+一个完整的socket有一个本地唯一的socket号，由&lt;strong&gt;操作系统进行分配&lt;/strong&gt;
+最重要的是，socket是&lt;strong&gt;面向客户/服务器模型&lt;/strong&gt;而设计的，针对客户和服务器程序提供不同的socket系统调用：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;客户可以随机申请一个socket，相当于一个想打电话的人可以在任何一台入网电话上拨号呼叫，系统会为之分配一个socket号；&lt;/li&gt;
+&lt;li&gt;但是服务器拥有的是全局公认的socket，任何客户都可以向它发出连接请求和信息请求，相当于一个被呼叫的电话拥有一个呼叫方知道的电话号码。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Socket利用&lt;strong&gt;客户/服务器模式&lt;/strong&gt;巧妙地解决了通信之间建立通信连接的问题，服务器socket半相关被全局公认这一概念非常重要。&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;我们不妨考虑一下，两个&lt;strong&gt;完全随机&lt;/strong&gt;的用户进程之间如何建立通信？假如通信双方没有任何一方的固定socket，就好比打电话的双方不知道彼此的电话号码，要通信是&lt;strong&gt;不可能的&lt;/strong&gt;。&lt;/p&gt;
+
+&lt;h2 id=&#34;socket-api:bd9a9c5f94f2e9bf495cac48092e4447&#34;&gt;Socket API&lt;/h2&gt;
+
+&lt;p&gt;在Java中，Socket API：
+&amp;gt; java.net.Socket 继承于 java.lang.Object&lt;/p&gt;
+
+&lt;p&gt;它有&lt;strong&gt;八个构造器&lt;/strong&gt;，方法并不多，下面介绍频繁使用的三个方法：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Accept&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;该方法用于产生“阻塞”，直到接收到一个连接，并且返回一个客户端的socket对象实例。&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;阻塞 —— 它使程序运行暂时“停留”在这个地方，直到会话产生，然后程序继续。通常的“阻塞”都是由循环产生的。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;ul&gt;
+&lt;li&gt;getInputStream&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;该方法获得网络连接输入，同时返回一个InputStream实例，通过该实例可以传输byte字节流。&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;getOutStream&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;该方法连接的是另一端得到输入，同时返回一个OnputSteam，该实例可以得到输入传输的byte字节流。&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;注意：其中 getInputStream 以及 getOutStream 方法均可能产生一个 IOException，它必须被捕获，通常都会被另一个流对象使用。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&#34;socket连接过程:bd9a9c5f94f2e9bf495cac48092e4447&#34;&gt;Socket连接过程&lt;/h2&gt;
+
+&lt;p&gt;根据连接启动方式以及本地socket连接的目标，socket之间的连接过程可以分成三个步骤：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;服务器监听&lt;/li&gt;
+&lt;li&gt;客户端请求&lt;/li&gt;
+&lt;li&gt;连接确认&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;服务器监听&lt;/strong&gt;：是服务器端的socket并不定位具体的客户端socket，而是处于&lt;strong&gt;等待连接&lt;/strong&gt;的状态，实时监控网络状态。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;客户端请求&lt;/strong&gt;：是指客户端的socket提出连接请求，要连接的目标是服务器端的socket，为此，客户端socket必须要描述清楚它要连接的服务器socket，支出该服务器端socket的&lt;strong&gt;地址&lt;/strong&gt;以及&lt;strong&gt;端口&lt;/strong&gt;，然后就想服务器socket提出连接请求。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;连接确认&lt;/strong&gt;：是指当服务器端socket监听到或者说是接收到客户端socekt的连接请求，它就响应客户端socket的请求，建立一个新的进程，把服务器端socket的&lt;strong&gt;描述&lt;/strong&gt;发给客户端，一旦客户端&lt;strong&gt;确认了此描述&lt;/strong&gt;，连接就建立好了。而服务器端socket继续处于监听状态，继续等待其他客户端socket的连接请求。&lt;/p&gt;
+
+&lt;p&gt;Socket UDP &amp;amp;&amp;amp; TCP&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>About Me</title>
+      <link>http://hackez.github.io/about-me/</link>
+      <pubDate>Sat, 30 Apr 2016 19:14:56 +0800</pubDate>
+      
+      <guid>http://hackez.github.io/about-me/</guid>
+      <description>
+
+&lt;h1 id=&#34;about-me:8723697e33f65823610bf3f676b8d742&#34;&gt;About Me&lt;/h1&gt;
+
+&lt;p&gt;我是朱冠州，以HackerZ的名字混迹于网络中。于1994年8月出生于广东肇庆，迷迷茫茫直至高中开始喜欢上计算机，于是便选择了计算机科学与技术这门学科考上了北京理工大学珠海学院。平常我是一个喜欢拍照/看推理小说/撸代码的一个小小码农。&lt;/p&gt;
+
+&lt;p&gt;我的大学生活是从&lt;strong&gt;C语言&lt;/strong&gt;开始的，一路上在 &lt;strong&gt;PHP/JAVA/Android/Node/Web&lt;/strong&gt; 中迷失了自我，直至我遇上了&lt;strong&gt;Golang&lt;/strong&gt;，我喜欢Go的那种优雅/简练的语法，更喜欢在Golang世界中的那种自由，所以我心甘情愿当一个Gopher。&lt;/p&gt;
+
+&lt;p&gt;我希望能成为一个能够改善我们身边生活/见证未来科技行业革新的一个&lt;strong&gt;创新者&lt;/strong&gt;以及&lt;strong&gt;见证者&lt;/strong&gt;。&lt;/p&gt;
+
+&lt;h1 id=&#34;contact-me:8723697e33f65823610bf3f676b8d742&#34;&gt;Contact Me&lt;/h1&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Email: 767110505@qq.com&lt;/li&gt;
+&lt;li&gt;Weibo: &lt;a href=&#34;http://weibo.com/u/2246744750&#34;&gt;HackerZGZ&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Github: &lt;a href=&#34;https://github.com/HackeZ&#34;&gt;HackeZ&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Blog: &lt;a href=&#34;http://hackez.github.io&#34;&gt;HackerZ&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&#34;technology-stack:8723697e33f65823610bf3f676b8d742&#34;&gt;Technology stack&lt;/h1&gt;
+
+&lt;p&gt;前端&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;HTML/CSS/JavaScript&lt;/li&gt;
+&lt;li&gt;JQuery&lt;/li&gt;
+&lt;li&gt;ReactJS&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;后端&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;PHP (ThinkPHP)&lt;/li&gt;
+&lt;li&gt;NodeJS (Express)&lt;/li&gt;
+&lt;li&gt;Golang (Beego/Hugo)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;数据库&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;MySQL&lt;/li&gt;
+&lt;li&gt;MongoDB&lt;/li&gt;
+&lt;li&gt;Redis&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;移动端&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Andorid&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;工具&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Linux&lt;/li&gt;
+&lt;li&gt;Git&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&#34;future:8723697e33f65823610bf3f676b8d742&#34;&gt;Future&lt;/h1&gt;
+
+&lt;p&gt;对于未来，我希望能够在广东找到一份我喜爱的工作，能保持我对新技术和事物的爱好，并投身于Coding的最前线。&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Welcome</title>
