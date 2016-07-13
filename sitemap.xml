@@ -3,16 +3,23 @@
   
   <url>
     <loc>http://hackez.github.io/</loc>
+<<<<<<< HEAD
     <lastmod>2016-07-13T19:39:47+08:00</lastmod>
+=======
+    <lastmod>2016-06-13T20:45:25+08:00</lastmod>
+>>>>>>> c83a4ff54a939d16a0080a4c283de8f146e8f3c9
     <priority>0</priority>
   </url>
   
   <url>
+<<<<<<< HEAD
     <loc>http://hackez.github.io/cold-start/</loc>
     <lastmod>2016-07-13T19:39:47+08:00</lastmod>
   </url>
   
   <url>
+=======
+>>>>>>> c83a4ff54a939d16a0080a4c283de8f146e8f3c9
     <loc>http://hackez.github.io/hadoop-1/</loc>
     <lastmod>2016-06-13T20:45:25+08:00</lastmod>
   </url>
