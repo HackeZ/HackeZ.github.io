@@ -8,12 +8,12 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
 
-  <title> Goroutine &middot; HackerZ - Blog </title>
+  <title> My Book List &middot; HackerZ - Blog </title>
 
   
-  <link rel="stylesheet" href="http://hackez.github.io/css/poole.css">
-  <link rel="stylesheet" href="http://hackez.github.io/css/syntax.css">
-  <link rel="stylesheet" href="http://hackez.github.io/css/hyde.css">
+  <link rel="stylesheet" href="http://localhost:1313/css/poole.css">
+  <link rel="stylesheet" href="http://localhost:1313/css/syntax.css">
+  <link rel="stylesheet" href="http://localhost:1313/css/hyde.css">
   <link rel="stylesheet" href="http://fonts.useso.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
 
   
@@ -28,7 +28,7 @@
   <link rel="shortcut icon" href="/favicon.png">
 
   
-  <link href="http://hackez.github.io/tags/goroutine/index.xml" rel="alternate" type="application/rss+xml" title="HackerZ - Blog" />
+  <link href="http://localhost:1313/index.xml" rel="alternate" type="application/rss+xml" title="HackerZ - Blog" />
 
   
   
@@ -55,12 +55,12 @@
 <div class="sidebar">
   <div class="container sidebar-sticky">
   <div class="round-head">
-    <img style="margin: auto;" src="http://hackez.github.io/author-head.png" alt="HackerZ">
+    <img style="margin: auto;" src="http://localhost:1313/author-head.png" alt="HackerZ">
     <p style="text-align: center;">HackerZ</p>
   </div>
 
     <div class="sidebar-about">
-      <a href="http://hackez.github.io/"><h1>HackerZ - Blog</h1></a>
+      <a href="http://localhost:1313/"><h1>HackerZ - Blog</h1></a>
       <p class="lead">
        Welcome to my personal Blog 
       </p>
@@ -80,16 +80,39 @@
     <p>&copy; 2016. All rights reserved. </p>
   </div>
 </div>
+<style type="text/css">
+  .book-title {
+    font-size: 1.2em
+  }
+  .book-author {
+    font-size: 1.0em;
+    font-family: "Apple LiGothic Medium";
+    border-bottom: 5px;
+  }
+  .book-reason {
+    font-size: 0.8em;
+    font-family:"YouYuan";
+    padding: 12px;
+    border-top: 10px;
+    background-color: #E7E8ED;
+    border-radius:4px;
+  }
+  .reason-quotes {
+    font-size: 2.2em;
+    font-family: "PMingLiU";
+  }
+</style>
 
 
-  <div class="content container">
-    <ul class="posts">
-        
-        <li>
-          <span><a href="http://hackez.github.io/channel/">The Channel in Golang</a> <time class="pull-right post-list">Wed, May 11, 2016</time></span>
-        </li>
-        
-    </ul>
-  </div>
-</body>
+    <div class="content container">
+      <h1>This is My Book List</h1>
+        <p class="lead"> -- The Book I Like. 
+          <ol type="1">
+            <li class="book-title">《JavaScript忍者秘籍》<span class="book-author">John Resig / Bear Bibeault</span>  <br/> <span class="reason-quotes">“</span> <span class="book-reason">各种出神入化的JavaScript编写技巧，让人大呼过瘾！</span><span class="reason-quotes">”</span></li><br/>
+            <li class="book-title">《Go并发编程实战》<span class="book-author">郝林</span>  <br/> <span class="reason-quotes">“</span> <span class="book-reason">我的第一本Golang书，结合实战，很有参考价值！</span><span class="reason-quotes">”</span></li><br/>
+            <li class="book-title">《Redis实战》<span class="book-author"> Josiah L. Carlson</span>  <br/> <span class="reason-quotes">“</span> <span class="book-reason">结合业界上线站点实战，让Redis不再枯燥！</span><span class="reason-quotes">”</span></li><br/>
+          </ol>
+        </p>
+
+  </body>
 </html>
