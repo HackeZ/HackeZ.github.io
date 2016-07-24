@@ -6,8 +6,71 @@
     <description>Recent content on HackerZ - Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 23 Jul 2016 16:34:45 +0800</lastBuildDate>
+    <lastBuildDate>Sun, 24 Jul 2016 20:03:59 +0800</lastBuildDate>
     <atom:link href="http://hackez.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Why HandleFunc Called Twice</title>
+      <link>http://hackez.github.io/why-handlefunc-called-twice/</link>
+      <pubDate>Sun, 24 Jul 2016 20:03:59 +0800</pubDate>
+      
+      <guid>http://hackez.github.io/why-handlefunc-called-twice/</guid>
+      <description>
+
+&lt;h1 id=&#34;why-handlefunc-called-twice:07503605f6c05f9ac672084948703a1e&#34;&gt;Why &lt;strong&gt;HandleFunc()&lt;/strong&gt; called twice?&lt;/h1&gt;
+
+&lt;h3 id=&#34;abstract:07503605f6c05f9ac672084948703a1e&#34;&gt;Abstract&lt;/h3&gt;
+
+&lt;p&gt;今天遇到之前碰见过的一个问题，但是之前忘记研究了，正好今天终于把这个问题弄清楚了，于是记录下来。&lt;/p&gt;
+
+&lt;p&gt;想必很多做后台的小伙伴都写过服务器了，但是有没有遇到服务器在 &lt;strong&gt;通过不同的（Brower、API）方式访问&lt;/strong&gt; 的时候，服务器响应方法的 &lt;strong&gt;次数&lt;/strong&gt; 是不一样的情况呢？&lt;/p&gt;
+
+&lt;h3 id=&#34;problem:07503605f6c05f9ac672084948703a1e&#34;&gt;Problem&lt;/h3&gt;
+
+&lt;p&gt;先来看看Golang中的简易服务器搭建代码：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;func SayHello(rw http.ResponseWriter, req *http.Request) {
+    io.WriteString(rw, &amp;quot;hello~ You are in!&amp;quot;)
+    log.Println(&amp;quot;Oh, Here is a Guy coming in!&amp;quot;)
+}
+
+func main() {
+    mux := http.NewServeMux()
+    mux.HandleFunc(&amp;quot;/&amp;quot;, SayHello)
+    http.ListenAndServe(&amp;quot;:8080&amp;quot;, mux)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这是一个最简单的Golang服务器搭建，当http访问 &lt;code&gt;http://localhost:8080&lt;/code&gt; 的时候，该服务器会对客户端返回 &lt;code&gt;hello~ You are in!&lt;/code&gt; ，同时在服务器控制台中打印 &lt;code&gt;Oh, Here is a Guy coming in!&lt;/code&gt; 。&lt;/p&gt;
+
+&lt;p&gt;有意思的部分来了：&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;通过 &lt;strong&gt;Brower&lt;/strong&gt; 访问的时候，服务器控制台会打印出 &lt;strong&gt;两行&lt;/strong&gt; &lt;code&gt;Oh, Here is a Guy coming in!&lt;/code&gt;。&lt;/p&gt;
+
+&lt;p&gt;通过 &lt;code&gt;curl http://localhost:8080&lt;/code&gt; 命令进行访问的时候，服务器控制台只会打印 &lt;strong&gt;一行&lt;/strong&gt; &lt;code&gt;Oh, Here is a Guy coming in!&lt;/code&gt;。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&#34;why:07503605f6c05f9ac672084948703a1e&#34;&gt;Why&lt;/h2&gt;
+
+&lt;p&gt;为什么会出现那么有趣的问题呢？&lt;a href=&#34;http://stackoverflow.com/questions/33432192/handlefunc-being-called-twice&#34;&gt;StackOver&lt;/a&gt;上也有人问了这个问题，原因出现在 Brower 上，通过打印 &lt;code&gt;requsets&lt;/code&gt;，你会发现 Brower 还会发起二次请求去请求 &lt;code&gt;/favicon.ico&lt;/code&gt;，也就是页面的小图标。&lt;/p&gt;
+
+&lt;p&gt;所以这就是用 &lt;code&gt;CURL&lt;/code&gt; 发起请求的时候，并不会出现二次请求的原因！&lt;/p&gt;
+
+&lt;h2 id=&#34;solve:07503605f6c05f9ac672084948703a1e&#34;&gt;Solve&lt;/h2&gt;
+
+&lt;p&gt;既然知道了这个问题出现在哪，剩下就好办了，既然浏览器要请求图标，那么我们就在写一个路由专门处理这个请求即可：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;func main() {
+    mux := http.NewServeMux()
+    mux.HandleFunc(&amp;quot;/&amp;quot;, SayHello)
+    // Handle /favicon.ico
+    mux.HandleFunc(&amp;quot;/favicon.ico&amp;quot;, func(rw http.ResponseWriter, req *http.Request) {})
+    http.ListenAndServe(&amp;quot;:9000&amp;quot;, mux)
+}
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
     
     <item>
       <title>Golang Dev Log</title>
