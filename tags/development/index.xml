@@ -6,8 +6,235 @@
     <description>Recent content in Development on HackerZ - Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 30 Jul 2016 22:47:07 +0800</lastBuildDate>
+    <lastBuildDate>Sun, 07 Aug 2016 11:11:25 +0800</lastBuildDate>
     <atom:link href="http://hackez.github.io/tags/development/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Golang Package Dependency Management Tool</title>
+      <link>http://hackez.github.io/golang-package-dependency-management-tool/</link>
+      <pubDate>Sun, 07 Aug 2016 11:11:25 +0800</pubDate>
+      
+      <guid>http://hackez.github.io/golang-package-dependency-management-tool/</guid>
+      <description>
+
+&lt;h1 id=&#34;golang-package-dependency-management-tool:9a13315d2960edba4431d33d6ac1c8bc&#34;&gt;Golang Package Dependency Management Tool&lt;/h1&gt;
+
+&lt;h2 id=&#34;intro:9a13315d2960edba4431d33d6ac1c8bc&#34;&gt;Intro&lt;/h2&gt;
+
+&lt;p&gt;Golang一直以来被外界诟病的一个问题就是包的依赖管理问题。那么今天就来讲一个：&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;Golang包依赖管理工具 —— gb&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;gb 在其官网中定义自己为：&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;A project based build tool for the Go programming language.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;一个Golang的项目工程通常由 &lt;code&gt;bin&lt;/code&gt;、&lt;code&gt;pkg&lt;/code&gt;、&lt;code&gt;src&lt;/code&gt;三个子目录构成：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;bin : 存放编译后生成的可执行文件&lt;/li&gt;
+&lt;li&gt;pkg : 编译后生成的文件（如：.a）&lt;/li&gt;
+&lt;li&gt;src : 存放源代码（如：.go .c .h .s等）&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;而 &lt;code&gt;gb&lt;/code&gt; 在这个概念的基础上新增了一个 &lt;code&gt;vendor&lt;/code&gt; 目录来存放项目依赖的第三方包（如 &lt;em&gt;beego&lt;/em&gt; ，&lt;em&gt;gracehttp&lt;/em&gt; 等）&lt;/p&gt;
+
+&lt;h2 id=&#34;gb-action:9a13315d2960edba4431d33d6ac1c8bc&#34;&gt;gb action&lt;/h2&gt;
+
+&lt;h4 id=&#34;install:9a13315d2960edba4431d33d6ac1c8bc&#34;&gt;Install&lt;/h4&gt;
+
+&lt;p&gt;gb ==&amp;gt; &lt;a href=&#34;https://getgb.io/&#34;&gt;首页&lt;/a&gt;  ==&amp;gt;  &lt;a href=&#34;https://github.com/constabulary/gb/&#34;&gt;Github&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;根据说明，使用&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;$ go get github.com/constabulary/gb/...
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;命令即可安装 gb。&lt;/p&gt;
+
+&lt;p&gt;当该命令运行完毕，请检查 &lt;code&gt;env&lt;/code&gt; 下的第一个 &lt;code&gt;$GOPATH&lt;/code&gt; 的 &lt;code&gt;bin&lt;/code&gt; 目录下是否生成了 &lt;code&gt;gb&lt;/code&gt; 以及 &lt;code&gt;gb-vendor&lt;/code&gt; 两个可执行文件。&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;如安装报错，请检查你是否正确配置了 $GOPATH 等环境变量。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h4 id=&#34;use:9a13315d2960edba4431d33d6ac1c8bc&#34;&gt;Use&lt;/h4&gt;
+
+&lt;p&gt;下面试着使用 &lt;code&gt;gb&lt;/code&gt; 来构建一个基于第三方包 &lt;code&gt;gracehttp&lt;/code&gt; 的简易 Golang Web 项目，来体验一下 &lt;code&gt;gb&lt;/code&gt; 的魅力。&lt;/p&gt;
+
+&lt;p&gt;首先初始化 &lt;code&gt;hellogb&lt;/code&gt; 项目目录结构：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;$ cd $GOPATH/src/hellogb
+$ mkdir -p src/hellogb
+$ mkdir -p vendor/src
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;编写 Web 程序：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;// vim src/hellogb/main.go
+package main
+
+import (
+    &amp;quot;fmt&amp;quot;
+    &amp;quot;net/http&amp;quot;
+
+    &amp;quot;github.com/tabalt/gracehttp&amp;quot;
+)
+
+func main() {
+    http.HandleFunc(&amp;quot;/&amp;quot;, func(w http.ResponseWriter, r *http.Request) {
+        fmt.Fprintf(w, &amp;quot;hello gb&amp;quot;)
+    })
+
+    err := gracehttp.ListenAndServe(&amp;quot;:8080&amp;quot;, nil)
+    if err != nil {
+        fmt.Println(err)
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;使用 &lt;code&gt;gb&lt;/code&gt; 添加依赖的 &lt;code&gt;gracehttp&lt;/code&gt; 第三方包：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;$ gb vendor fetch github.com/tabalt/gracehttp
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;最终整个项目目录结构为：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;./
+|-- src
+|   `-- hellogb
+|       `-- main.go
+`-- vendor
+    |-- manifest
+    `-- src
+        `-- github.com
+            `-- tabalt
+                `-- gracehttp
+                    |-- README.md
+                    |-- connection.go
+                    |-- gracehttpdemo
+                    |   `-- main.go
+                    |-- listener.go
+                    `-- server.go
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;编译执行程序：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;$ gb build hellogb
+$ ./bin/hellogb
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;最后访问 &lt;code&gt;http://127.0.0.1:8080/&lt;/code&gt; 即可访问 Web 服务。&lt;/p&gt;
+
+&lt;h4 id=&#34;command:9a13315d2960edba4431d33d6ac1c8bc&#34;&gt;Command&lt;/h4&gt;
+
+&lt;h5 id=&#34;gb-command:9a13315d2960edba4431d33d6ac1c8bc&#34;&gt;gb Command&lt;/h5&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;left&#34;&gt;Command&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;功能&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;build&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;编译包&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;vendor&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;调用 gb-vendor&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;doc&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;显示文档&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;env&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;打印项目的环境变量&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;generate&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;处理源代码生成Go文件&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;info&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;显示项目的信息&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;list&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;显示项目下的所有包&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;test&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;执行测试&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;hr /&gt;
+
+&lt;h5 id=&#34;gb-vendor-parameter:9a13315d2960edba4431d33d6ac1c8bc&#34;&gt;gb vendor Parameter&lt;/h5&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;left&#34;&gt;Parameter&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;功能&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;fetch&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;获取一个远程依赖&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;update&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;更新一个本地依赖&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;list&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;每行一个列出所有依赖&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;delete&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;删除一个本地依赖&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;purge&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;清除所有未引用的依赖&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;restore&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;从manifest清单文件还原依赖&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;本文参考 tabalt 的 &lt;a href=&#34;http://tabalt.net/blog/golang-package-dependency-management-tool-gb/&#34;&gt;Golang包依赖管理工具gb&lt;/a&gt; 一文。&lt;/p&gt;
+&lt;/blockquote&gt;
+</description>
+    </item>
     
     <item>
       <title>C Prefess Program Note</title>
