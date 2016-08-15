@@ -3,7 +3,7 @@
 <head>
   <link href="http://gmpg.org/xfn/11" rel="profile">
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
-  <meta name="generator" content="Hugo 0.14" />
+  <meta name="generator" content="Hugo 0.16" />
 
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
@@ -73,7 +73,7 @@
       
         <li><a href="/welcome/"> Welcome </a></li>
       
-        <li><a href="/booklist/"> Book List </a></li>
+        <li><a href="/booklist"> Book List </a></li>
       
     </ul>
 
@@ -88,6 +88,161 @@
       
   <div class="post">
     <h1 class="post-title">
+      <a href="http://hackez.github.io/how-2-install-scikit-learn/">
+        How To Install Scikit-learn Under OSX 10.11
+      </a>
+    </h1>
+
+    <span class="post-date">Mon, Aug 15, 2016</span>
+
+    
+
+<h1 id="如何在osx下安装正确安装-scikit-learn">如何在osx下安装正确安装 scikit-learn</h1>
+
+<h3 id="使用-anaconda">使用 Anaconda</h3>
+
+<p><code>Anaconda</code> 是一个 Python 的集成科学计算环境，一键安装，方便好用。但是当我安装之后发现其只有自带了：</p>
+
+<ul>
+<li>numpy</li>
+<li>scipy</li>
+</ul>
+
+<p>而并没有 <code>scikit-learn</code>，然后当我使用</p>
+
+<pre><code>conda install scikit-learn
+</code></pre>
+
+<p>进行安装之后发现还是无法使用这个缺省的库，经我多方查找资料，原来是 <code>Mac 10.11</code> 版本中自带的 <code>Python 2.7</code> 环境与 <code>Anaconda</code> 的环境是分离的，所以只能 <code>Anaconda</code> 中使用这些库。</p>
+
+<p>然而这是我不太喜欢的一种方式，所以我放弃了，转而研究在 <code>Mac</code> 自带的 Python 环境中安装。</p>
+
+<h3 id="解除-osx-10-11-的-sip-限制">解除 OSX 10.11 的 ｀SIP｀ 限制</h3>
+
+<p>当我开始用 <code>pip</code> 安装第三方包的时候出现了如下的错误：</p>
+
+<pre><code>Collecting numpy
+
+Using cached numpy-1.10.2-cp27-none-macosx_10_6_intel.macosx_10_9_intel.macosx_10_9_x86_64.macosx_10_10_intel.macosx_10_10_x86_64.whlInstalling
+ collected packages: numpy
+ Found existing installation: numpy 1.8.0rc1
+ DEPRECATION: Uninstalling a distutils installed project (numpy) has been deprecated and will be removed in a future version. This is due to the fact that uninstalling a distutils project will only partially uninstall the project.
+ Uninstalling numpy-1.8.0rc1:Exception:Traceback
+ (most recent call last):
+ File &quot;/Library/Python/2.7/site-packages/pip-7.1.2-py2.7.egg/pip/basecommand.py&quot;, line 211, in main
+ status = self.run(options, args)
+ File &quot;/Library/Python/2.7/site-packages/pip-7.1.2-py2.7.egg/pip/commands/install.py&quot;, line 311, in run
+ root=options.root_path,
+ File &quot;/Library/Python/2.7/site-packages/pip-7.1.2-py2.7.egg/pip/req/req_set.py&quot;, line 640, in install
+ requirement.uninstall(auto_confirm=True)
+ File &quot;/Library/Python/2.7/site-packages/pip-7.1.2-py2.7.egg/pip/req/req_install.py&quot;, line 716, in uninstall
+ paths_to_remove.remove(auto_confirm)
+ File &quot;/Library/Python/2.7/site-packages/pip-7.1.2-py2.7.egg/pip/req/req_uninstall.py&quot;, line 125, in remove
+ renames(path, new_path)
+ File &quot;/Library/Python/2.7/site-packages/pip-7.1.2-py2.7.egg/pip/utils/__init__.py&quot;,
+ line 315, in renames
+shutil.move(old, new)
+ File &quot;/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/shutil.py&quot;, line 302, in move
+ copy2(src, real_dst)
+ File &quot;/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/shutil.py&quot;, line 131, in copy2
+ copystat(src, dst)
+ File &quot;/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/shutil.py&quot;, line 103, in copystat
+ os.chflags(dst, st.st_flags)OSError:
+ [Errno 1] Operation not permitted: '/var/folders/5n/vbm997m56xg3kw67y6bccn2m0000gn/T/pip-4tcBsd-uninstall/System/Library/Frameworks/Python.framework/Versions/2.7/Extras/lib/python/numpy-1.8.0rc1-py2.7.egg-info'
+</code></pre>
+
+<p>仔细一看，发现了 <code>Operation not permitted</code> 的错误。</p>
+
+<p>经过 Google ，发现了原来是 Apple 经历了 <code>XCode编译器注入</code> 事件之后，提升了 <code>Mac OS X El Capitan系统</code> 的安全保护机制，加入了：</p>
+
+<blockquote>
+<p>System Integrity Protection (SIP)
+—— 系统完整性保护，其作用为强制性地保护系统相关的文件夹，开发者不能直接操作相关的文件内容。</p>
+</blockquote>
+
+<p>而 Python 库所在的路径为：</p>
+
+<pre><code>/System/Library/Frameworks/Python.framework/Versions/2.7/...
+</code></pre>
+
+<p>当然是属于其完整性保护的保护伞之下的，所以我需要把 <code>SIP</code> 关掉之后才能对其进行安装。</p>
+
+<p>引用外国大牛的关闭 SIP 的方法如下：</p>
+
+<ol>
+<li>Click the  menu.</li>
+<li>Select <code>Restart</code> …</li>
+<li>Hold down <code>command-R</code> to boot into the Recovery System.</li>
+<li>Click the <code>Utilities menu</code> and select <code>Terminal</code>.</li>
+<li>Type <code>csrutil disable</code> and press <code>return</code> .</li>
+<li>Close the <code>Terminal</code> app.</li>
+<li>Click the  menu and select <code>Restart</code> … .</li>
+</ol>
+
+<p>当然在安装完成之后最好还是将 SIP 重新打开：</p>
+
+<ol>
+<li>Click the  menu.</li>
+<li>Select <code>Restart</code> …</li>
+<li>Hold down <code>command-R</code> to boot into the Recovery System.</li>
+<li>Click the <code>Utilities menu</code> and select <code>Terminal</code>.</li>
+<li>Type <code>csrutil enable</code> and press <code>return</code> .</li>
+<li>Close the <code>Terminal</code> app.</li>
+<li>Click the  menu and select <code>Restart</code> … .</li>
+</ol>
+
+<h3 id="安装-scikit-learn-的正确姿势">安装 scikit-learn 的正确姿势</h3>
+
+<p>好吧，终于解决了上面这些问题了，安装应该没有问题了吧？很可惜，当我运行完：</p>
+
+<pre><code>$ sudo pip install numpy
+$ sudo pip install scipy
+$ sudo pip install scikit-learn
+</code></pre>
+
+<p>然后在 <code>Python</code> 下 <code>import sklearn</code> 时发生了如下错误：</p>
+
+<pre><code>Traceback (most recent call last):
+File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;
+File &quot;/Library/Python/2.7/site-packages/sklearn/__init__.py&quot;, line 57, in &lt;module&gt;
+from .base import clone
+File &quot;/Library/Python/2.7/site-packages/sklearn/base.py&quot;, line 11, in &lt;module&gt;
+from .utils.fixes import signature
+File &quot;/Library/Python/2.7/site-packages/sklearn/utils/__init__.py&quot;, line 10, in &lt;module&gt;
+from .murmurhash import murmurhash3_32
+File &quot;numpy.pxd&quot;, line 155, in init sklearn.utils.murmurhash (sklearn/utils/murmurhash.c:5029)
+ValueError: numpy.dtype has the wrong size, try recompiling
+</code></pre>
+
+<p>好惨，经过多方搜索，绝大部分的解答都是：</p>
+
+<pre><code>$ pip uninstall numpy scipy scikit-learn
+$ pip install numpy scipy scikit-learn
+</code></pre>
+
+<p>然而都并没有什么卵用，最后在这里找到了解决办法 =&gt; <a href="http://scikit-learn-general.narkive.com/kMA6mRCk/valueerror-numpy-dtype-has-the-wrong-size-try-recompiling">here</a></p>
+
+<p>其方法时不要使用 <code>pip install scikit-learn</code></p>
+
+<p>而是到 Github 中找到 <a href="https://github.com/scikit-learn/scikit-learn">scikit-learn</a> 项目进行安装：</p>
+
+<pre><code>$ git clone https://github.com/scikit-learn/scikit-learn.git
+$ sudo python setup.py install
+</code></pre>
+
+<p>等待几分钟，安装完成，大功告成～</p>
+
+<h3 id="参考网站">参考网站：</h3>
+
+<ul>
+<li>在 osx 10.11 下解除 pip 权限安装 =&gt; <a href="http://blog.csdn.net/shi_weihappy/article/details/50938486">参考地址</a></li>
+<li>如何正确安装scikit-learn =&gt; <a href="http://www.tuicool.com/articles/aEJriuY">参考地址</a></li>
+</ul>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
       <a href="http://hackez.github.io/golang-package-dependency-management-tool/">
         Golang Package Dependency Management Tool
       </a>
@@ -97,9 +252,9 @@
 
     
 
-<h1 id="golang-package-dependency-management-tool:9a13315d2960edba4431d33d6ac1c8bc">Golang Package Dependency Management Tool</h1>
+<h1 id="golang-package-dependency-management-tool">Golang Package Dependency Management Tool</h1>
 
-<h2 id="intro:9a13315d2960edba4431d33d6ac1c8bc">Intro</h2>
+<h2 id="intro">Intro</h2>
 
 <p>Golang一直以来被外界诟病的一个问题就是包的依赖管理问题。那么今天就来讲一个：</p>
 
@@ -123,9 +278,9 @@
 
 <p>而 <code>gb</code> 在这个概念的基础上新增了一个 <code>vendor</code> 目录来存放项目依赖的第三方包（如 <em>beego</em> ，<em>gracehttp</em> 等）</p>
 
-<h2 id="gb-action:9a13315d2960edba4431d33d6ac1c8bc">gb action</h2>
+<h2 id="gb-action">gb action</h2>
 
-<h4 id="install:9a13315d2960edba4431d33d6ac1c8bc">Install</h4>
+<h4 id="install">Install</h4>
 
 <p>gb ==&gt; <a href="https://getgb.io/">首页</a>  ==&gt;  <a href="https://github.com/constabulary/gb/">Github</a></p>
 
@@ -142,7 +297,7 @@
 <p>如安装报错，请检查你是否正确配置了 $GOPATH 等环境变量。</p>
 </blockquote>
 
-<h4 id="use:9a13315d2960edba4431d33d6ac1c8bc">Use</h4>
+<h4 id="use">Use</h4>
 
 <p>下面试着使用 <code>gb</code> 来构建一个基于第三方包 <code>gracehttp</code> 的简易 Golang Web 项目，来体验一下 <code>gb</code> 的魅力。</p>
 
@@ -210,9 +365,9 @@ $ ./bin/hellogb
 
 <p>最后访问 <code>http://127.0.0.1:8080/</code> 即可访问 Web 服务。</p>
 
-<h4 id="command:9a13315d2960edba4431d33d6ac1c8bc">Command</h4>
+<h4 id="command">Command</h4>
 
-<h5 id="gb-command:9a13315d2960edba4431d33d6ac1c8bc">gb Command</h5>
+<h5 id="gb-command">gb Command</h5>
 
 <table>
 <thead>
@@ -267,7 +422,7 @@ $ ./bin/hellogb
 
 <hr />
 
-<h5 id="gb-vendor-parameter:9a13315d2960edba4431d33d6ac1c8bc">gb vendor Parameter</h5>
+<h5 id="gb-vendor-parameter">gb vendor Parameter</h5>
 
 <table>
 <thead>
@@ -327,9 +482,9 @@ $ ./bin/hellogb
 
     
 
-<h1 id="c专家编程-笔记本:8fd2d17e4b9c550871f8ea39cdb0938b">《C专家编程》 笔记本</h1>
+<h1 id="c专家编程-笔记本">《C专家编程》 笔记本</h1>
 
-<h3 id="c专家编程-是每一位程序员应该读的第二本c语言书籍:8fd2d17e4b9c550871f8ea39cdb0938b">《C专家编程》是每一位程序员应该读的第二本C语言书籍！</h3>
+<h3 id="c专家编程-是每一位程序员应该读的第二本c语言书籍">《C专家编程》是每一位程序员应该读的第二本C语言书籍！</h3>
 
 <blockquote>
 <p>讲了各种c的缺陷，推荐go用户好好体验，很多都在go里做了修正 —— [ggarlic]()</p>
@@ -378,58 +533,48 @@ NULL 用于表示什么都不指向；</p></li>
 
 <li><p>如果需要使用一些临时变量的时候，请把它放在块的开始处！</p></li>
 
-<li><p>缺省采用 &ldquo;Fall Through&rdquo;，在 <strong>97%</strong> 的情况下都是错误的！</p></li>
-</ol>
+<li><p>缺省采用 &ldquo;Fall Through&rdquo;，在 <strong>97%</strong> 的情况下都是错误的！</p>
 
 <pre><code class="language-c">// Fall Through : End without break;
 switch (number) {
-    case 1: printf(&quot;case 1\n&quot;);
-    case 2: printf(&quot;case 2\n&quot;);
-    case 3: printf(&quot;case 3\n&quot;);
-    ...
+case 1: printf(&quot;case 1\n&quot;);
+case 2: printf(&quot;case 2\n&quot;);
+case 3: printf(&quot;case 3\n&quot;);
+...
 }
-</code></pre>
+</code></pre></li>
 
-<ol>
-<li>一种简单的方法，使一段代码第一次执行时的行为与以后的执行的行为不同；</li>
-</ol>
+<li><p>一种简单的方法，使一段代码第一次执行时的行为与以后的执行的行为不同；</p>
 
 <pre><code class="language-c">generate_initializer(char * string) 
 {
-    static char separator = ' ';
-    printf(&quot;%c %s\n&quot;, separator, string);
-    separator = ',';
+static char separator = ' ';
+printf(&quot;%c %s\n&quot;, separator, string);
+separator = ',';
 }
-</code></pre>
+</code></pre></li>
 
-<ol>
-<li>重载之过：</li>
-</ol>
-
-<pre><code class="language-c">// 这是多少个乘号？
+<li><p>重载之过：
+```c
+// 这是多少个乘号？
 p = N * sizeof * q;
 r = malloc(p);
-// 答案：1个，sizeof操作符将指针q指向的东西作为操作数，它返回q所指对象的类型的字节数
-
-// 这是int的长度乘以p？还是把未知类型的指针强制转换为int？
-apple = sizeof(int) * p;
-</code></pre>
-
-<ol>
-<li>什么是 <strong>结合性</strong> ？</li>
+// 答案：1个，sizeof操作符将指针q指向的东西作为操作数，它返回q所指对象的类型的字节数</p></li>
 </ol>
 
-<blockquote>
-<p>在几个操作符具有相同优先级的时候决定先运行哪一个。</p>
-</blockquote>
+<p>// 这是int的长度乘以p？还是把未知类型的指针强制转换为int？
+apple = sizeof(int) * p;</p>
 
-<ol>
-<li><p>为什么要使用 fgets() 而不是 gets() ？</p></li>
+<pre><code>
+18. 什么是 **结合性** ？
 
-<li><p>注释符缺陷：</p></li>
-</ol>
+&gt; 在几个操作符具有相同优先级的时候决定先运行哪一个。
 
-<pre><code class="language-c">a //*
+19. 为什么要使用 fgets() 而不是 gets() ？
+
+20. 注释符缺陷：
+```c
+a //*
 //*/ b
 </code></pre>
 
@@ -440,15 +585,13 @@ apple = sizeof(int) * p;
 <ol>
 <li><p>早用line，勤用lint。当你做错事的时候，他会告诉你哪里不对，应该始终使用lint程序，按照它的道德标准办事。像使用 <code>go-lint</code> 一样写出优秀的代码。</p></li>
 
-<li><p>将结构的声明与变量的定义分开可以使代码更加容易阅读：</p></li>
-</ol>
+<li><p>将结构的声明与变量的定义分开可以使代码更加容易阅读：</p>
 
 <pre><code class="language-c">struct veg { int weight, price_per_lb; };
 struct veg onion, radish, turnip;
-</code></pre>
+</code></pre></li>
 
-<ol>
-<li><code>union</code> 与 <code>struct</code> 不同的是：</li>
+<li><p><code>union</code> 与 <code>struct</code> 不同的是：</p></li>
 </ol>
 
 <blockquote>
@@ -480,15 +623,13 @@ struct creature {
 </code></pre>
 
 <ol>
-<li><code>enum</code> 也就是 Golang 中的 <code>toao</code>：</li>
-</ol>
+<li><p><code>enum</code> 也就是 Golang 中的 <code>toao</code>：</p>
 
 <pre><code class="language-c">enum sizes { small = 7, medium, large = 10, humungous };
 // medium = 8 ; humungous = 11;
-</code></pre>
+</code></pre></li>
 
-<ol>
-<li>理解C语言声明的优先级规则
+<li><p>理解C语言声明的优先级规则</p>
 
 <ul>
 <li>A 声明从它的名字开始读取，然后按照优先级顺序依次读取。</li>
@@ -550,14 +691,14 @@ if(STRCMP(s, == , &quot;volatile&quot;))
 
     
 
-<h1 id="redigo-panic-error-open-too-many-files:5b2d3f0d3cc3f195aa4297d2d52b0993">Redigo - panic error : open too many files.</h1>
+<h1 id="redigo-panic-error-open-too-many-files">Redigo - panic error : open too many files.</h1>
 
-<h3 id="abstract:5b2d3f0d3cc3f195aa4297d2d52b0993">Abstract</h3>
+<h3 id="abstract">Abstract</h3>
 
 <p>今天对 <a href="https://www.github.com/HackeZ/getAcFunPage">getAcFunPage</a> 项目做 Benchmark 的时候发现了 Redis 会频繁报一个 <code>socket: too many open files</code> 的错误，后来发现并不是代码的问题，而是 Linux 的设置问题。
 下面就来说说我是这么解决这个问题的。</p>
 
-<h3 id="problem:5b2d3f0d3cc3f195aa4297d2d52b0993">Problem</h3>
+<h3 id="problem">Problem</h3>
 
 <p>Benchmark 时报错内容截取如下：</p>
 
@@ -587,7 +728,7 @@ created by net/http.(*Server).Serve
 
 <p>由报错信息第一行中的 <code>dial tcp :6379</code> 很容易看出，这是由 Redis 所引起的错误。</p>
 
-<h3 id="why:5b2d3f0d3cc3f195aa4297d2d52b0993">Why</h3>
+<h3 id="why">Why</h3>
 
 <p>根据 <a href="http://stackoverflow.com/questions/19971968/go-golang-redis-too-many-open-files-error">Stack Overflow</a> 上的一个回答，这是由于 Linux 下设置的 <strong>文件描述符上限(file descriptors limit)</strong> 所引起的错误，在Ubuntu系统中，该值上限为 <strong>1024</strong> ，于是当 Redis 需要接收来自高并发所带来的连接请求时，连接数很有可能 <strong>超出文件描述符的上限值</strong> ，于是 Redis 就会报错了。</p>
 
@@ -596,7 +737,7 @@ created by net/http.(*Server).Serve
 内核（kernel）利用文件描述符（file descriptor）来访问文件。文件描述符是非负整数。打开现存文件或新建文件时，内核会返回一个文件描述符。读写文件也需要使用文件描述符来指定待读写的文件。</p>
 </blockquote>
 
-<h3 id="solve:5b2d3f0d3cc3f195aa4297d2d52b0993">Solve</h3>
+<h3 id="solve">Solve</h3>
 
 <p>要解决这个问题也很简单，只需要将服务器系统的文件描述符上限修改成一个更大的值即可：</p>
 
@@ -628,15 +769,15 @@ created by net/http.(*Server).Serve
 
     
 
-<h2 id="why-handlefunc-called-twice:07503605f6c05f9ac672084948703a1e">Why <strong>HandleFunc()</strong> called twice?</h2>
+<h2 id="why-handlefunc-called-twice">Why <strong>HandleFunc()</strong> called twice?</h2>
 
-<h3 id="abstract:07503605f6c05f9ac672084948703a1e">Abstract</h3>
+<h3 id="abstract">Abstract</h3>
 
 <p>今天遇到之前碰见过的一个问题，但是之前忘记研究了，正好今天终于把这个问题弄清楚了，于是记录下来。</p>
 
 <p>想必很多做后台的小伙伴都写过服务器了，但是有没有遇到服务器在 <strong>通过不同的（Brower、API）方式访问</strong> 的时候，服务器响应方法的 <strong>次数</strong> 是不一样的情况呢？</p>
 
-<h3 id="problem:07503605f6c05f9ac672084948703a1e">Problem</h3>
+<h3 id="problem">Problem</h3>
 
 <p>先来看看Golang中的简易服务器搭建代码：</p>
 
@@ -662,13 +803,13 @@ func main() {
 <p>通过 <code>curl http://localhost:8080</code> 命令进行访问的时候，服务器控制台只会打印 <strong>一行</strong> <code>Oh, Here is a Guy coming in!</code>。</p>
 </blockquote>
 
-<h2 id="why:07503605f6c05f9ac672084948703a1e">Why</h2>
+<h2 id="why">Why</h2>
 
 <p>为什么会出现那么有趣的问题呢？<a href="http://stackoverflow.com/questions/33432192/handlefunc-being-called-twice">StackOver</a>上也有人问了这个问题，原因出现在 Brower 上，通过打印 <code>requsets</code>，你会发现 Brower 还会发起二次请求去请求 <code>/favicon.ico</code>，也就是页面的小图标。</p>
 
 <p>所以这就是用 <code>CURL</code> 发起请求的时候，并不会出现二次请求的原因！</p>
 
-<h2 id="solve:07503605f6c05f9ac672084948703a1e">Solve</h2>
+<h2 id="solve">Solve</h2>
 
 <p>既然知道了这个问题出现在哪，剩下就好办了，既然浏览器要请求图标，那么我们就在写一个路由专门处理这个请求即可：</p>
 
@@ -694,7 +835,7 @@ func main() {
 
     
 
-<h2 id="golang-dev-log:4bb127d6454d4a5575ac334c2d512d93">Golang Dev Log</h2>
+<h2 id="golang-dev-log">Golang Dev Log</h2>
 
 <hr />
 
@@ -759,18 +900,18 @@ func main() {
 
     
 
-<h1 id="redigo-action:f13bb710c262a4678399c189d1ccbd61">Redigo Action</h1>
+<h1 id="redigo-action">Redigo Action</h1>
 
-<h4 id="redis-作为一个内存型的高性能数据库-如今是越来越火了-为了得到更高的-qps-以及-tps-我们无法忽视掉这个如此强大的数据库:f13bb710c262a4678399c189d1ccbd61">Redis 作为一个内存型的高性能数据库，如今是越来越火了，为了得到更高的 QPS 以及 TPS ，我们无法忽视掉这个如此强大的数据库。</h4>
+<h4 id="redis-作为一个内存型的高性能数据库-如今是越来越火了-为了得到更高的-qps-以及-tps-我们无法忽视掉这个如此强大的数据库">Redis 作为一个内存型的高性能数据库，如今是越来越火了，为了得到更高的 QPS 以及 TPS ，我们无法忽视掉这个如此强大的数据库。</h4>
 
-<h4 id="在-redis-官网中-golang语言的-框架-http-redis-io-clients-go-有两个是被官方所推荐的-分别为:f13bb710c262a4678399c189d1ccbd61">在 Redis 官网中，Golang语言的<a href="http:redis.io/clients#go">框架</a>有两个是被官方所推荐的，分别为：</h4>
+<h4 id="在-redis-官网中-golang语言的-框架-http-redis-io-clients-go-有两个是被官方所推荐的-分别为">在 Redis 官网中，Golang语言的<a href="http:redis.io/clients#go">框架</a>有两个是被官方所推荐的，分别为：</h4>
 
 <p><strong>1. <a href="https:github.com/garyburd/redigo">Redigo</a></strong>
 <strong>2. <a href="https:github.com/mediocregopher/radix.v2">Radix</a></strong></p>
 
-<h4 id="本着源码易读优先-我选择了-redigo-进行开发尝试-项目地址-点我-https-www-github-com-hackez-getacfunpage:f13bb710c262a4678399c189d1ccbd61">本着源码易读优先，我选择了 Redigo 进行开发尝试，项目地址<a href="https:www.github.com/HackeZ/getAcFunPage">点我</a>。</h4>
+<h4 id="本着源码易读优先-我选择了-redigo-进行开发尝试-项目地址-点我-https-www-github-com-hackez-getacfunpage">本着源码易读优先，我选择了 Redigo 进行开发尝试，项目地址<a href="https:www.github.com/HackeZ/getAcFunPage">点我</a>。</h4>
 
-<h3 id="action:f13bb710c262a4678399c189d1ccbd61">Action</h3>
+<h3 id="action">Action</h3>
 
 <p>熟悉Redis的同学都知道，Redis是 <strong>单进程，单线程，IO多路复用</strong> 的，这一点不同于 MySQL 的多线程。
  这就意味这Redis可以使用长连接来进行通信，那么，我们就需要一个连接池去管理这些长连接，当一个长连接使用完毕之后就可以交给下一个长连接继续进行使用。</p>
@@ -832,9 +973,9 @@ func main() {
    }
 </code></pre>
 
-<h5 id="到了这里-一个可用并且高性能的-redis-数据库的连接已经基本构建完毕了:f13bb710c262a4678399c189d1ccbd61">到了这里，一个可用并且高性能的 Redis 数据库的连接已经基本构建完毕了！</h5>
+<h5 id="到了这里-一个可用并且高性能的-redis-数据库的连接已经基本构建完毕了">到了这里，一个可用并且高性能的 Redis 数据库的连接已经基本构建完毕了！</h5>
 
-<h5 id="接下来就可以愉快地进行使用了:f13bb710c262a4678399c189d1ccbd61">接下来就可以愉快地进行使用了～</h5>
+<h5 id="接下来就可以愉快地进行使用了">接下来就可以愉快地进行使用了～</h5>
 
   </div>
   
@@ -849,13 +990,13 @@ func main() {
 
     
 
-<h1 id="about-two-different-cold-start:824da9944d1d4c2c4e626a02a40cf7ae">About Two Different Cold Start</h1>
+<h1 id="about-two-different-cold-start">About Two Different Cold Start</h1>
 
-<h2 id="app-cold-start:824da9944d1d4c2c4e626a02a40cf7ae">APP Cold Start</h2>
+<h2 id="app-cold-start">APP Cold Start</h2>
 
 <hr />
 
-<h2 id="what-s-app-cold-start:824da9944d1d4c2c4e626a02a40cf7ae"><strong>What&rsquo;s App Cold Start</strong></h2>
+<h2 id="what-s-app-cold-start"><strong>What&rsquo;s App Cold Start</strong></h2>
 
 <blockquote>
 <p>对于最近安装的App a，我们不可能得到该对于该App用户的特殊使用信息。尤其是打开该App的概率 P(a)。另一方面，对于给定的 feature（特征）的先验概率（指根据以往经验和分析得到的概率），可以从其他用户的信息中获取。</p>
@@ -863,23 +1004,21 @@ func main() {
 <p>因此，对于最近安装的App，怎么估计其打开概率P(a)是至关重要的。</p>
 </blockquote>
 
-<h2 id="yahoo-s-experimental-result:824da9944d1d4c2c4e626a02a40cf7ae"><strong>Yahoo&rsquo;s Experimental Result</strong></h2>
+<h2 id="yahoo-s-experimental-result"><strong>Yahoo&rsquo;s Experimental Result</strong></h2>
 
 <p>通过记录最近安装的App打开记录（活跃度），图5（Daily）以及图6（Hourly）：</p>
 
-<p><img src="http://7xsxev.com1.z0.glb.clouddn.com/Days-after-installation.png" alt="Days After Installation" />
-</p>
+<p><img src="http://7xsxev.com1.z0.glb.clouddn.com/Days-after-installation.png" alt="Days After Installation" /></p>
 
 <p>图 5  日常App安装后的活跃度</p>
 
-<p><img src="http://7xsxev.com1.z0.glb.clouddn.com/Days-after-installation.png" alt="Hours After Installation" />
-</p>
+<p><img src="http://7xsxev.com1.z0.glb.clouddn.com/Days-after-installation.png" alt="Hours After Installation" /></p>
 
 <p>图 6  每小时App安装后的活跃度</p>
 
 <p>从图 5 和 6 中可以看到，最近安装的App一个显着的特点是在安装后的数小时内非常活跃。但是经过这段时间之后，最近安装的App 的活跃度显着减少。与此相反，一些一开始活跃度并不高的 App 经常在它们安装后的很长一段时间依然在使用。</p>
 
-<h2 id="to-solve-app-cold-start:824da9944d1d4c2c4e626a02a40cf7ae"><strong>To Solve App Cold Start</strong></h2>
+<h2 id="to-solve-app-cold-start"><strong>To Solve App Cold Start</strong></h2>
 
 <p>因此，为了更好地获取最近安装App打开频率，我们根据它们的活跃度持续时间长短，定义两种App类型，分别为：</p>
 
@@ -889,8 +1028,7 @@ func main() {
 </ol>
 
 <p>为捕抓每个App在时间上的突出显著性，我们将App使用数据转化为 <strong>Beta(α,β)</strong> 值，为了区分时间显著性，我们使用尖峰（excess kurtosis）δ来评价每个App的时间使用峰度：
-<img src="http://7xsxev.com1.z0.glb.clouddn.com/Excess-kurtosis-expression.png" alt="Excess Kurtosis Expression" />
-</p>
+<img src="http://7xsxev.com1.z0.glb.clouddn.com/Excess-kurtosis-expression.png" alt="Excess Kurtosis Expression" /></p>
 
 <p>通过尖峰值可以判断最近安装App的类型：</p>
 
@@ -904,23 +1042,22 @@ func main() {
 
 <p>随着用户打开App的事件增加，我们可以计算最近安装App的打开概率，因此，我们使用贝叶斯平均其他用户的历史信息来计算接下来的使用信息。计算最近安装App的打开概率公式如下：</p>
 
-<p><img src="http://7xsxev.com1.z0.glb.clouddn.com/App-cold-start-expression.png" alt="App Cold Start Expression" />
-</p>
+<p><img src="http://7xsxev.com1.z0.glb.clouddn.com/App-cold-start-expression.png" alt="App Cold Start Expression" /></p>
 
 <p>通过计算公式，仅仅通过少量的用户打开App事件得到同一App的其他用户近似的非加权值的启动概率。<strong>用户打开App事件越多，该公式的准确率越高。</strong></p>
 
 <hr />
 
-<h2 id="user-cold-start:824da9944d1d4c2c4e626a02a40cf7ae">User Cold Start</h2>
+<h2 id="user-cold-start">User Cold Start</h2>
 
-<h2 id="what-s-user-cold-start:824da9944d1d4c2c4e626a02a40cf7ae"><strong>What&rsquo;s User Cold Start</strong></h2>
+<h2 id="what-s-user-cold-start"><strong>What&rsquo;s User Cold Start</strong></h2>
 
 <blockquote>
 <p>在这一小节，我们提出两种方法解决User冷启动问题，什么是User冷启动呢？
 当一个用户安装了一个Launcher软件（Aviate，Buzz，Go 等桌面软件），我们在不知道这个用户的任何信息下如何向该用户推荐App清单呢？这个就是User冷启动问题。</p>
 </blockquote>
 
-<h2 id="two-ways-to-solve:824da9944d1d4c2c4e626a02a40cf7ae"><strong>Two Ways to Solve</strong></h2>
+<h2 id="two-ways-to-solve"><strong>Two Ways to Solve</strong></h2>
 
 <ol>
 <li><p>最相似用户策略：
@@ -942,8 +1079,7 @@ func main() {
 </blockquote>
 
 <p>通过算法5，我们生成了伪用户数据：
-<img src="http://7xsxev.com1.z0.glb.clouddn.com/Build-pseudo-user.png" alt="Build Pseudo User" />
-</p>
+<img src="http://7xsxev.com1.z0.glb.clouddn.com/Build-pseudo-user.png" alt="Build Pseudo User" /></p>
 
   </div>
   
@@ -1064,7 +1200,7 @@ func main() {
 <li>Channel可分为双向与单向，一般通道都会声明为双向，只有在限制函数体中使用通道的方式（只允许发送或接收）才会使用单向Channel。</li>
 </ul>
 
-<h2 id="talk-is-cheap-show-me-the-code:470efe0e1a81224ed3dc573880ac9e1a">Talk is Cheap,Show me the Code!</h2>
+<h2 id="talk-is-cheap-show-me-the-code">Talk is Cheap,Show me the Code!</h2>
 
 <ul>
 <li>初始化通道</li>
@@ -1138,11 +1274,11 @@ close(intChan)
 
     
 
-<h1 id="socket-study:bd9a9c5f94f2e9bf495cac48092e4447">Socket Study</h1>
+<h1 id="socket-study">Socket Study</h1>
 
 <hr />
 
-<h2 id="what-is-socket:bd9a9c5f94f2e9bf495cac48092e4447">What is Socket</h2>
+<h2 id="what-is-socket">What is Socket</h2>
 
 <p>Socket(插座) 作为 UNIX的进程通信机制，一般被通称为</p>
 
@@ -1158,7 +1294,7 @@ close(intChan)
 
 <p>正如其英文意思 —— 插座，Socket在不同端口提供着不同的服务，互相之间互不干扰，你只需要将插头插入正确的插座，就可以得到你想要的服务了。</p>
 
-<h2 id="socket通讯过程:bd9a9c5f94f2e9bf495cac48092e4447">Socket通讯过程</h2>
+<h2 id="socket通讯过程">Socket通讯过程</h2>
 
 <p>Socket类似于电话插座，电话的通话双方相当于互相通信的2个进程，区号是它的网络地址；区内一个单位的交换机相当于一台主机，主机分配给每个用户的局内号码相当于socket号。</p>
 
@@ -1172,7 +1308,7 @@ close(intChan)
 <li>通话结束后，一方挂起电话相当于关闭socket，撤销连接；</li>
 </ul>
 
-<h2 id="socket-协议:bd9a9c5f94f2e9bf495cac48092e4447">Socket 协议</h2>
+<h2 id="socket-协议">Socket 协议</h2>
 
 <p>Socket协议：（协议，本地地址，本地端口）<br />
 一个完整的socket有一个本地唯一的socket号，由<strong>操作系统进行分配</strong>
@@ -1189,7 +1325,7 @@ close(intChan)
 
 <p>我们不妨考虑一下，两个<strong>完全随机</strong>的用户进程之间如何建立通信？假如通信双方没有任何一方的固定socket，就好比打电话的双方不知道彼此的电话号码，要通信是<strong>不可能的</strong>。</p>
 
-<h2 id="socket-api:bd9a9c5f94f2e9bf495cac48092e4447">Socket API</h2>
+<h2 id="socket-api">Socket API</h2>
 
 <p>在Java中，Socket API：
 &gt; java.net.Socket 继承于 java.lang.Object</p>
@@ -1222,7 +1358,7 @@ close(intChan)
 <p>注意：其中 getInputStream 以及 getOutStream 方法均可能产生一个 IOException，它必须被捕获，通常都会被另一个流对象使用。</p>
 </blockquote>
 
-<h2 id="socket连接过程:bd9a9c5f94f2e9bf495cac48092e4447">Socket连接过程</h2>
+<h2 id="socket连接过程">Socket连接过程</h2>
 
 <p>根据连接启动方式以及本地socket连接的目标，socket之间的连接过程可以分成三个步骤：</p>
 
@@ -1253,7 +1389,7 @@ close(intChan)
 
     
 
-<h1 id="about-me:8723697e33f65823610bf3f676b8d742">About Me</h1>
+<h1 id="about-me">About Me</h1>
 
 <p>我是朱冠州，以HackerZ的名字混迹于网络中。于1994年8月出生于广东肇庆，迷迷茫茫直至高中开始喜欢上计算机，于是便选择了计算机科学与技术这门学科考上了北京理工大学珠海学院。平常我是一个喜欢拍照/看推理小说/撸代码的一个小小码农。</p>
 
@@ -1261,7 +1397,7 @@ close(intChan)
 
 <p>我希望能成为一个能够改善我们身边生活/见证未来科技行业革新的一个<strong>创新者</strong>以及<strong>见证者</strong>。</p>
 
-<h1 id="contact-me:8723697e33f65823610bf3f676b8d742">Contact Me</h1>
+<h1 id="contact-me">Contact Me</h1>
 
 <ul>
 <li>Email: 767110505@qq.com</li>
@@ -1270,7 +1406,7 @@ close(intChan)
 <li>Blog: <a href="http://hackez.github.io">HackerZ</a></li>
 </ul>
 
-<h1 id="technology-stack:8723697e33f65823610bf3f676b8d742">Technology stack</h1>
+<h1 id="technology-stack">Technology stack</h1>
 
 <p>前端</p>
 
@@ -1309,7 +1445,7 @@ close(intChan)
 <li>Git</li>
 </ul>
 
-<h1 id="future:8723697e33f65823610bf3f676b8d742">Future</h1>
+<h1 id="future">Future</h1>
 
 <p>对于未来，我希望能够在广东找到一份我喜爱的工作，能保持我对新技术和事物的爱好，并投身于Coding的最前线。</p>
 
@@ -1385,7 +1521,7 @@ close(intChan)
 
     
 
-<h2 id="安装hugo:aba878e576894cc4457876fdf276811e">安装Hugo</h2>
+<h2 id="安装hugo">安装Hugo</h2>
 
 <hr />
 
@@ -1403,7 +1539,7 @@ close(intChan)
 
 <p>接下来就可以愉快地开始Hugo之旅了。</p>
 
-<h2 id="创建hugo项目:aba878e576894cc4457876fdf276811e">创建Hugo项目</h2>
+<h2 id="创建hugo项目">创建Hugo项目</h2>
 
 <hr />
 
@@ -1445,7 +1581,7 @@ title = &ldquo;My New Hugo Site&rdquo;</p>
 
 <p>地址，即可看到Hugo启动起来了。虽然现在站点是空白一片，但是通过添加Hugo主题，我们可以瞬间建立一个完整Blog站点。</p>
 
-<h2 id="选取hugo主题:aba878e576894cc4457876fdf276811e">选取Hugo主题</h2>
+<h2 id="选取hugo主题">选取Hugo主题</h2>
 
 <hr />
 
@@ -1488,7 +1624,7 @@ theme = &quot;hyde&quot;   # 指定themes
 
 <p>看看效果吧！</p>
 
-<h2 id="新建文章:aba878e576894cc4457876fdf276811e">新建文章</h2>
+<h2 id="新建文章">新建文章</h2>
 
 <hr />
 
@@ -1505,7 +1641,6 @@ theme = &quot;hyde&quot;   # 指定themes
 
 <blockquote>
 <p>welcome.md</p>
-</blockquote>
 
 <pre><code>+++    
 Categories = [&quot;Development&quot;, &quot;GoLang&quot;]    
@@ -1523,13 +1658,12 @@ title = &quot;Welcome&quot;
 
 <p>然后启动Hugo服务查看效果吧。</p>
 
-<blockquote>
 <p>$ hugo server</p>
 </blockquote>
 
 <p>到这里，基本的Hugo使用已经讲解完毕了，接下来就要将该静态站点迁移到我们自己的 github.io 中了。</p>
 
-<h2 id="使用github-pages:aba878e576894cc4457876fdf276811e">使用Github Pages</h2>
+<h2 id="使用github-pages">使用Github Pages</h2>
 
 <p>要使用 github-pages 首先需要注册属于自己的 github 账号，注册完成之后，创建一个 repository，名为</p>
 
@@ -1547,7 +1681,6 @@ title = &quot;Welcome&quot;
 
 <blockquote>
 <p>config.toml</p>
-</blockquote>
 
 <pre><code>baseurl = &quot;http://&amp;lt;USERNAME&gt;.github.io//&quot;
 # baseurl = &quot;http://replace-this-with-your-hugo-site.com/&quot;
@@ -1556,7 +1689,6 @@ title = &quot;Welcome&quot;
 
 <p>保存后，运行如下命令：</p>
 
-<blockquote>
 <p>$ hugo -v</p>
 </blockquote>
 
@@ -1568,7 +1700,7 @@ title = &quot;Welcome&quot;
 <p>http://&lt;USERNAME&gt;.github.io</p>
 </blockquote>
 
-<h2 id="配置属于自己的hugo主题:aba878e576894cc4457876fdf276811e">配置属于自己的Hugo主题</h2>
+<h2 id="配置属于自己的hugo主题">配置属于自己的Hugo主题</h2>
 
 <p>你们可以看到，我已经对原来的Hyde主题进行了修改了，那么是怎么做到的呢，我们可以直接对 themes/hyde 下的配置文件进行修改，增加自己想要的样式，相信聪明的你肯定可以很快熟悉 Hugo 的语法，创建属于自己的主题。</p>
 

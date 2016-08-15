@@ -39,7 +39,7 @@
 &lt;li&gt;Channel可分为双向与单向，一般通道都会声明为双向，只有在限制函数体中使用通道的方式（只允许发送或接收）才会使用单向Channel。&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h2 id=&#34;talk-is-cheap-show-me-the-code:470efe0e1a81224ed3dc573880ac9e1a&#34;&gt;Talk is Cheap,Show me the Code!&lt;/h2&gt;
+&lt;h2 id=&#34;talk-is-cheap-show-me-the-code&#34;&gt;Talk is Cheap,Show me the Code!&lt;/h2&gt;
 
 &lt;ul&gt;
 &lt;li&gt;初始化通道&lt;/li&gt;

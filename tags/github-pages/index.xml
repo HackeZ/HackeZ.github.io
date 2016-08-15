@@ -17,7 +17,7 @@
       <guid>http://hackez.github.io/build/</guid>
       <description>
 
-&lt;h2 id=&#34;安装hugo:aba878e576894cc4457876fdf276811e&#34;&gt;安装Hugo&lt;/h2&gt;
+&lt;h2 id=&#34;安装hugo&#34;&gt;安装Hugo&lt;/h2&gt;
 
 &lt;hr /&gt;
 
@@ -35,7 +35,7 @@
 
 &lt;p&gt;接下来就可以愉快地开始Hugo之旅了。&lt;/p&gt;
 
-&lt;h2 id=&#34;创建hugo项目:aba878e576894cc4457876fdf276811e&#34;&gt;创建Hugo项目&lt;/h2&gt;
+&lt;h2 id=&#34;创建hugo项目&#34;&gt;创建Hugo项目&lt;/h2&gt;
 
 &lt;hr /&gt;
 
@@ -77,7 +77,7 @@ title = &amp;ldquo;My New Hugo Site&amp;rdquo;&lt;/p&gt;
 
 &lt;p&gt;地址，即可看到Hugo启动起来了。虽然现在站点是空白一片，但是通过添加Hugo主题，我们可以瞬间建立一个完整Blog站点。&lt;/p&gt;
 
-&lt;h2 id=&#34;选取hugo主题:aba878e576894cc4457876fdf276811e&#34;&gt;选取Hugo主题&lt;/h2&gt;
+&lt;h2 id=&#34;选取hugo主题&#34;&gt;选取Hugo主题&lt;/h2&gt;
 
 &lt;hr /&gt;
 
@@ -120,7 +120,7 @@ theme = &amp;quot;hyde&amp;quot;   # 指定themes
 
 &lt;p&gt;看看效果吧！&lt;/p&gt;
 
-&lt;h2 id=&#34;新建文章:aba878e576894cc4457876fdf276811e&#34;&gt;新建文章&lt;/h2&gt;
+&lt;h2 id=&#34;新建文章&#34;&gt;新建文章&lt;/h2&gt;
 
 &lt;hr /&gt;
 
@@ -137,7 +137,6 @@ theme = &amp;quot;hyde&amp;quot;   # 指定themes
 
 &lt;blockquote&gt;
 &lt;p&gt;welcome.md&lt;/p&gt;
-&lt;/blockquote&gt;
 
 &lt;pre&gt;&lt;code&gt;+++    
 Categories = [&amp;quot;Development&amp;quot;, &amp;quot;GoLang&amp;quot;]    
@@ -155,13 +154,12 @@ title = &amp;quot;Welcome&amp;quot;
 
 &lt;p&gt;然后启动Hugo服务查看效果吧。&lt;/p&gt;
 
-&lt;blockquote&gt;
 &lt;p&gt;$ hugo server&lt;/p&gt;
 &lt;/blockquote&gt;
 
 &lt;p&gt;到这里，基本的Hugo使用已经讲解完毕了，接下来就要将该静态站点迁移到我们自己的 github.io 中了。&lt;/p&gt;
 
-&lt;h2 id=&#34;使用github-pages:aba878e576894cc4457876fdf276811e&#34;&gt;使用Github Pages&lt;/h2&gt;
+&lt;h2 id=&#34;使用github-pages&#34;&gt;使用Github Pages&lt;/h2&gt;
 
 &lt;p&gt;要使用 github-pages 首先需要注册属于自己的 github 账号，注册完成之后，创建一个 repository，名为&lt;/p&gt;
 
@@ -179,7 +177,6 @@ title = &amp;quot;Welcome&amp;quot;
 
 &lt;blockquote&gt;
 &lt;p&gt;config.toml&lt;/p&gt;
-&lt;/blockquote&gt;
 
 &lt;pre&gt;&lt;code&gt;baseurl = &amp;quot;http://&amp;amp;lt;USERNAME&amp;gt;.github.io//&amp;quot;
 # baseurl = &amp;quot;http://replace-this-with-your-hugo-site.com/&amp;quot;
@@ -188,7 +185,6 @@ title = &amp;quot;Welcome&amp;quot;
 
 &lt;p&gt;保存后，运行如下命令：&lt;/p&gt;
 
-&lt;blockquote&gt;
 &lt;p&gt;$ hugo -v&lt;/p&gt;
 &lt;/blockquote&gt;
 
@@ -200,7 +196,7 @@ title = &amp;quot;Welcome&amp;quot;
 &lt;p&gt;http://&amp;lt;USERNAME&amp;gt;.github.io&lt;/p&gt;
 &lt;/blockquote&gt;
 
-&lt;h2 id=&#34;配置属于自己的hugo主题:aba878e576894cc4457876fdf276811e&#34;&gt;配置属于自己的Hugo主题&lt;/h2&gt;
+&lt;h2 id=&#34;配置属于自己的hugo主题&#34;&gt;配置属于自己的Hugo主题&lt;/h2&gt;
 
 &lt;p&gt;你们可以看到，我已经对原来的Hyde主题进行了修改了，那么是怎么做到的呢，我们可以直接对 themes/hyde 下的配置文件进行修改，增加自己想要的样式，相信聪明的你肯定可以很快熟悉 Hugo 的语法，创建属于自己的主题。&lt;/p&gt;
 </description>

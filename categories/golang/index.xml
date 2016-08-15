@@ -17,9 +17,9 @@
       <guid>http://hackez.github.io/golang-package-dependency-management-tool/</guid>
       <description>
 
-&lt;h1 id=&#34;golang-package-dependency-management-tool:9a13315d2960edba4431d33d6ac1c8bc&#34;&gt;Golang Package Dependency Management Tool&lt;/h1&gt;
+&lt;h1 id=&#34;golang-package-dependency-management-tool&#34;&gt;Golang Package Dependency Management Tool&lt;/h1&gt;
 
-&lt;h2 id=&#34;intro:9a13315d2960edba4431d33d6ac1c8bc&#34;&gt;Intro&lt;/h2&gt;
+&lt;h2 id=&#34;intro&#34;&gt;Intro&lt;/h2&gt;
 
 &lt;p&gt;Golang一直以来被外界诟病的一个问题就是包的依赖管理问题。那么今天就来讲一个：&lt;/p&gt;
 
@@ -43,9 +43,9 @@
 
 &lt;p&gt;而 &lt;code&gt;gb&lt;/code&gt; 在这个概念的基础上新增了一个 &lt;code&gt;vendor&lt;/code&gt; 目录来存放项目依赖的第三方包（如 &lt;em&gt;beego&lt;/em&gt; ，&lt;em&gt;gracehttp&lt;/em&gt; 等）&lt;/p&gt;
 
-&lt;h2 id=&#34;gb-action:9a13315d2960edba4431d33d6ac1c8bc&#34;&gt;gb action&lt;/h2&gt;
+&lt;h2 id=&#34;gb-action&#34;&gt;gb action&lt;/h2&gt;
 
-&lt;h4 id=&#34;install:9a13315d2960edba4431d33d6ac1c8bc&#34;&gt;Install&lt;/h4&gt;
+&lt;h4 id=&#34;install&#34;&gt;Install&lt;/h4&gt;
 
 &lt;p&gt;gb ==&amp;gt; &lt;a href=&#34;https://getgb.io/&#34;&gt;首页&lt;/a&gt;  ==&amp;gt;  &lt;a href=&#34;https://github.com/constabulary/gb/&#34;&gt;Github&lt;/a&gt;&lt;/p&gt;
 
@@ -62,7 +62,7 @@
 &lt;p&gt;如安装报错，请检查你是否正确配置了 $GOPATH 等环境变量。&lt;/p&gt;
 &lt;/blockquote&gt;
 
-&lt;h4 id=&#34;use:9a13315d2960edba4431d33d6ac1c8bc&#34;&gt;Use&lt;/h4&gt;
+&lt;h4 id=&#34;use&#34;&gt;Use&lt;/h4&gt;
 
 &lt;p&gt;下面试着使用 &lt;code&gt;gb&lt;/code&gt; 来构建一个基于第三方包 &lt;code&gt;gracehttp&lt;/code&gt; 的简易 Golang Web 项目，来体验一下 &lt;code&gt;gb&lt;/code&gt; 的魅力。&lt;/p&gt;
 
@@ -130,9 +130,9 @@ $ ./bin/hellogb
 
 &lt;p&gt;最后访问 &lt;code&gt;http://127.0.0.1:8080/&lt;/code&gt; 即可访问 Web 服务。&lt;/p&gt;
 
-&lt;h4 id=&#34;command:9a13315d2960edba4431d33d6ac1c8bc&#34;&gt;Command&lt;/h4&gt;
+&lt;h4 id=&#34;command&#34;&gt;Command&lt;/h4&gt;
 
-&lt;h5 id=&#34;gb-command:9a13315d2960edba4431d33d6ac1c8bc&#34;&gt;gb Command&lt;/h5&gt;
+&lt;h5 id=&#34;gb-command&#34;&gt;gb Command&lt;/h5&gt;
 
 &lt;table&gt;
 &lt;thead&gt;
@@ -187,7 +187,7 @@ $ ./bin/hellogb
 
 &lt;hr /&gt;
 
-&lt;h5 id=&#34;gb-vendor-parameter:9a13315d2960edba4431d33d6ac1c8bc&#34;&gt;gb vendor Parameter&lt;/h5&gt;
+&lt;h5 id=&#34;gb-vendor-parameter&#34;&gt;gb vendor Parameter&lt;/h5&gt;
 
 &lt;table&gt;
 &lt;thead&gt;
@@ -244,14 +244,14 @@ $ ./bin/hellogb
       <guid>http://hackez.github.io/redigo-open2manyfiles/</guid>
       <description>
 
-&lt;h1 id=&#34;redigo-panic-error-open-too-many-files:5b2d3f0d3cc3f195aa4297d2d52b0993&#34;&gt;Redigo - panic error : open too many files.&lt;/h1&gt;
+&lt;h1 id=&#34;redigo-panic-error-open-too-many-files&#34;&gt;Redigo - panic error : open too many files.&lt;/h1&gt;
 
-&lt;h3 id=&#34;abstract:5b2d3f0d3cc3f195aa4297d2d52b0993&#34;&gt;Abstract&lt;/h3&gt;
+&lt;h3 id=&#34;abstract&#34;&gt;Abstract&lt;/h3&gt;
 
 &lt;p&gt;今天对 &lt;a href=&#34;https://www.github.com/HackeZ/getAcFunPage&#34;&gt;getAcFunPage&lt;/a&gt; 项目做 Benchmark 的时候发现了 Redis 会频繁报一个 &lt;code&gt;socket: too many open files&lt;/code&gt; 的错误，后来发现并不是代码的问题，而是 Linux 的设置问题。
 下面就来说说我是这么解决这个问题的。&lt;/p&gt;
 
-&lt;h3 id=&#34;problem:5b2d3f0d3cc3f195aa4297d2d52b0993&#34;&gt;Problem&lt;/h3&gt;
+&lt;h3 id=&#34;problem&#34;&gt;Problem&lt;/h3&gt;
 
 &lt;p&gt;Benchmark 时报错内容截取如下：&lt;/p&gt;
 
@@ -281,7 +281,7 @@ created by net/http.(*Server).Serve
 
 &lt;p&gt;由报错信息第一行中的 &lt;code&gt;dial tcp :6379&lt;/code&gt; 很容易看出，这是由 Redis 所引起的错误。&lt;/p&gt;
 
-&lt;h3 id=&#34;why:5b2d3f0d3cc3f195aa4297d2d52b0993&#34;&gt;Why&lt;/h3&gt;
+&lt;h3 id=&#34;why&#34;&gt;Why&lt;/h3&gt;
 
 &lt;p&gt;根据 &lt;a href=&#34;http://stackoverflow.com/questions/19971968/go-golang-redis-too-many-open-files-error&#34;&gt;Stack Overflow&lt;/a&gt; 上的一个回答，这是由于 Linux 下设置的 &lt;strong&gt;文件描述符上限(file descriptors limit)&lt;/strong&gt; 所引起的错误，在Ubuntu系统中，该值上限为 &lt;strong&gt;1024&lt;/strong&gt; ，于是当 Redis 需要接收来自高并发所带来的连接请求时，连接数很有可能 &lt;strong&gt;超出文件描述符的上限值&lt;/strong&gt; ，于是 Redis 就会报错了。&lt;/p&gt;
 
@@ -290,7 +290,7 @@ created by net/http.(*Server).Serve
 内核（kernel）利用文件描述符（file descriptor）来访问文件。文件描述符是非负整数。打开现存文件或新建文件时，内核会返回一个文件描述符。读写文件也需要使用文件描述符来指定待读写的文件。&lt;/p&gt;
 &lt;/blockquote&gt;
 
-&lt;h3 id=&#34;solve:5b2d3f0d3cc3f195aa4297d2d52b0993&#34;&gt;Solve&lt;/h3&gt;
+&lt;h3 id=&#34;solve&#34;&gt;Solve&lt;/h3&gt;
 
 &lt;p&gt;要解决这个问题也很简单，只需要将服务器系统的文件描述符上限修改成一个更大的值即可：&lt;/p&gt;
 
@@ -319,15 +319,15 @@ created by net/http.(*Server).Serve
       <guid>http://hackez.github.io/why-handlefunc-called-twice/</guid>
       <description>
 
-&lt;h2 id=&#34;why-handlefunc-called-twice:07503605f6c05f9ac672084948703a1e&#34;&gt;Why &lt;strong&gt;HandleFunc()&lt;/strong&gt; called twice?&lt;/h2&gt;
+&lt;h2 id=&#34;why-handlefunc-called-twice&#34;&gt;Why &lt;strong&gt;HandleFunc()&lt;/strong&gt; called twice?&lt;/h2&gt;
 
-&lt;h3 id=&#34;abstract:07503605f6c05f9ac672084948703a1e&#34;&gt;Abstract&lt;/h3&gt;
+&lt;h3 id=&#34;abstract&#34;&gt;Abstract&lt;/h3&gt;
 
 &lt;p&gt;今天遇到之前碰见过的一个问题，但是之前忘记研究了，正好今天终于把这个问题弄清楚了，于是记录下来。&lt;/p&gt;
 
 &lt;p&gt;想必很多做后台的小伙伴都写过服务器了，但是有没有遇到服务器在 &lt;strong&gt;通过不同的（Brower、API）方式访问&lt;/strong&gt; 的时候，服务器响应方法的 &lt;strong&gt;次数&lt;/strong&gt; 是不一样的情况呢？&lt;/p&gt;
 
-&lt;h3 id=&#34;problem:07503605f6c05f9ac672084948703a1e&#34;&gt;Problem&lt;/h3&gt;
+&lt;h3 id=&#34;problem&#34;&gt;Problem&lt;/h3&gt;
 
 &lt;p&gt;先来看看Golang中的简易服务器搭建代码：&lt;/p&gt;
 
@@ -353,13 +353,13 @@ func main() {
 &lt;p&gt;通过 &lt;code&gt;curl http://localhost:8080&lt;/code&gt; 命令进行访问的时候，服务器控制台只会打印 &lt;strong&gt;一行&lt;/strong&gt; &lt;code&gt;Oh, Here is a Guy coming in!&lt;/code&gt;。&lt;/p&gt;
 &lt;/blockquote&gt;
 
-&lt;h2 id=&#34;why:07503605f6c05f9ac672084948703a1e&#34;&gt;Why&lt;/h2&gt;
+&lt;h2 id=&#34;why&#34;&gt;Why&lt;/h2&gt;
 
 &lt;p&gt;为什么会出现那么有趣的问题呢？&lt;a href=&#34;http://stackoverflow.com/questions/33432192/handlefunc-being-called-twice&#34;&gt;StackOver&lt;/a&gt;上也有人问了这个问题，原因出现在 Brower 上，通过打印 &lt;code&gt;requsets&lt;/code&gt;，你会发现 Brower 还会发起二次请求去请求 &lt;code&gt;/favicon.ico&lt;/code&gt;，也就是页面的小图标。&lt;/p&gt;
 
 &lt;p&gt;所以这就是用 &lt;code&gt;CURL&lt;/code&gt; 发起请求的时候，并不会出现二次请求的原因！&lt;/p&gt;
 
-&lt;h2 id=&#34;solve:07503605f6c05f9ac672084948703a1e&#34;&gt;Solve&lt;/h2&gt;
+&lt;h2 id=&#34;solve&#34;&gt;Solve&lt;/h2&gt;
 
 &lt;p&gt;既然知道了这个问题出现在哪，剩下就好办了，既然浏览器要请求图标，那么我们就在写一个路由专门处理这个请求即可：&lt;/p&gt;
 
@@ -382,7 +382,7 @@ func main() {
       <guid>http://hackez.github.io/golang-dev-log/</guid>
       <description>
 
-&lt;h2 id=&#34;golang-dev-log:4bb127d6454d4a5575ac334c2d512d93&#34;&gt;Golang Dev Log&lt;/h2&gt;
+&lt;h2 id=&#34;golang-dev-log&#34;&gt;Golang Dev Log&lt;/h2&gt;
 
 &lt;hr /&gt;
 
@@ -444,18 +444,18 @@ func main() {
       <guid>http://hackez.github.io/redigo-action-1/</guid>
       <description>
 
-&lt;h1 id=&#34;redigo-action:f13bb710c262a4678399c189d1ccbd61&#34;&gt;Redigo Action&lt;/h1&gt;
+&lt;h1 id=&#34;redigo-action&#34;&gt;Redigo Action&lt;/h1&gt;
 
-&lt;h4 id=&#34;redis-作为一个内存型的高性能数据库-如今是越来越火了-为了得到更高的-qps-以及-tps-我们无法忽视掉这个如此强大的数据库:f13bb710c262a4678399c189d1ccbd61&#34;&gt;Redis 作为一个内存型的高性能数据库，如今是越来越火了，为了得到更高的 QPS 以及 TPS ，我们无法忽视掉这个如此强大的数据库。&lt;/h4&gt;
+&lt;h4 id=&#34;redis-作为一个内存型的高性能数据库-如今是越来越火了-为了得到更高的-qps-以及-tps-我们无法忽视掉这个如此强大的数据库&#34;&gt;Redis 作为一个内存型的高性能数据库，如今是越来越火了，为了得到更高的 QPS 以及 TPS ，我们无法忽视掉这个如此强大的数据库。&lt;/h4&gt;
 
-&lt;h4 id=&#34;在-redis-官网中-golang语言的-框架-http-redis-io-clients-go-有两个是被官方所推荐的-分别为:f13bb710c262a4678399c189d1ccbd61&#34;&gt;在 Redis 官网中，Golang语言的&lt;a href=&#34;http:redis.io/clients#go&#34;&gt;框架&lt;/a&gt;有两个是被官方所推荐的，分别为：&lt;/h4&gt;
+&lt;h4 id=&#34;在-redis-官网中-golang语言的-框架-http-redis-io-clients-go-有两个是被官方所推荐的-分别为&#34;&gt;在 Redis 官网中，Golang语言的&lt;a href=&#34;http:redis.io/clients#go&#34;&gt;框架&lt;/a&gt;有两个是被官方所推荐的，分别为：&lt;/h4&gt;
 
 &lt;p&gt;&lt;strong&gt;1. &lt;a href=&#34;https:github.com/garyburd/redigo&#34;&gt;Redigo&lt;/a&gt;&lt;/strong&gt;
 &lt;strong&gt;2. &lt;a href=&#34;https:github.com/mediocregopher/radix.v2&#34;&gt;Radix&lt;/a&gt;&lt;/strong&gt;&lt;/p&gt;
 
-&lt;h4 id=&#34;本着源码易读优先-我选择了-redigo-进行开发尝试-项目地址-点我-https-www-github-com-hackez-getacfunpage:f13bb710c262a4678399c189d1ccbd61&#34;&gt;本着源码易读优先，我选择了 Redigo 进行开发尝试，项目地址&lt;a href=&#34;https:www.github.com/HackeZ/getAcFunPage&#34;&gt;点我&lt;/a&gt;。&lt;/h4&gt;
+&lt;h4 id=&#34;本着源码易读优先-我选择了-redigo-进行开发尝试-项目地址-点我-https-www-github-com-hackez-getacfunpage&#34;&gt;本着源码易读优先，我选择了 Redigo 进行开发尝试，项目地址&lt;a href=&#34;https:www.github.com/HackeZ/getAcFunPage&#34;&gt;点我&lt;/a&gt;。&lt;/h4&gt;
 
-&lt;h3 id=&#34;action:f13bb710c262a4678399c189d1ccbd61&#34;&gt;Action&lt;/h3&gt;
+&lt;h3 id=&#34;action&#34;&gt;Action&lt;/h3&gt;
 
 &lt;p&gt;熟悉Redis的同学都知道，Redis是 &lt;strong&gt;单进程，单线程，IO多路复用&lt;/strong&gt; 的，这一点不同于 MySQL 的多线程。
  这就意味这Redis可以使用长连接来进行通信，那么，我们就需要一个连接池去管理这些长连接，当一个长连接使用完毕之后就可以交给下一个长连接继续进行使用。&lt;/p&gt;
@@ -517,9 +517,9 @@ func main() {
    }
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h5 id=&#34;到了这里-一个可用并且高性能的-redis-数据库的连接已经基本构建完毕了:f13bb710c262a4678399c189d1ccbd61&#34;&gt;到了这里，一个可用并且高性能的 Redis 数据库的连接已经基本构建完毕了！&lt;/h5&gt;
+&lt;h5 id=&#34;到了这里-一个可用并且高性能的-redis-数据库的连接已经基本构建完毕了&#34;&gt;到了这里，一个可用并且高性能的 Redis 数据库的连接已经基本构建完毕了！&lt;/h5&gt;
 
-&lt;h5 id=&#34;接下来就可以愉快地进行使用了:f13bb710c262a4678399c189d1ccbd61&#34;&gt;接下来就可以愉快地进行使用了～&lt;/h5&gt;
+&lt;h5 id=&#34;接下来就可以愉快地进行使用了&#34;&gt;接下来就可以愉快地进行使用了～&lt;/h5&gt;
 </description>
     </item>
     
@@ -631,7 +631,7 @@ func main() {
 &lt;li&gt;Channel可分为双向与单向，一般通道都会声明为双向，只有在限制函数体中使用通道的方式（只允许发送或接收）才会使用单向Channel。&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h2 id=&#34;talk-is-cheap-show-me-the-code:470efe0e1a81224ed3dc573880ac9e1a&#34;&gt;Talk is Cheap,Show me the Code!&lt;/h2&gt;
+&lt;h2 id=&#34;talk-is-cheap-show-me-the-code&#34;&gt;Talk is Cheap,Show me the Code!&lt;/h2&gt;
 
 &lt;ul&gt;
 &lt;li&gt;初始化通道&lt;/li&gt;
@@ -702,11 +702,11 @@ close(intChan)
       <guid>http://hackez.github.io/socket/</guid>
       <description>
 
-&lt;h1 id=&#34;socket-study:bd9a9c5f94f2e9bf495cac48092e4447&#34;&gt;Socket Study&lt;/h1&gt;
+&lt;h1 id=&#34;socket-study&#34;&gt;Socket Study&lt;/h1&gt;
 
 &lt;hr /&gt;
 
-&lt;h2 id=&#34;what-is-socket:bd9a9c5f94f2e9bf495cac48092e4447&#34;&gt;What is Socket&lt;/h2&gt;
+&lt;h2 id=&#34;what-is-socket&#34;&gt;What is Socket&lt;/h2&gt;
 
 &lt;p&gt;Socket(插座) 作为 UNIX的进程通信机制，一般被通称为&lt;/p&gt;
 
@@ -722,7 +722,7 @@ close(intChan)
 
 &lt;p&gt;正如其英文意思 —— 插座，Socket在不同端口提供着不同的服务，互相之间互不干扰，你只需要将插头插入正确的插座，就可以得到你想要的服务了。&lt;/p&gt;
 
-&lt;h2 id=&#34;socket通讯过程:bd9a9c5f94f2e9bf495cac48092e4447&#34;&gt;Socket通讯过程&lt;/h2&gt;
+&lt;h2 id=&#34;socket通讯过程&#34;&gt;Socket通讯过程&lt;/h2&gt;
 
 &lt;p&gt;Socket类似于电话插座，电话的通话双方相当于互相通信的2个进程，区号是它的网络地址；区内一个单位的交换机相当于一台主机，主机分配给每个用户的局内号码相当于socket号。&lt;/p&gt;
 
@@ -736,7 +736,7 @@ close(intChan)
 &lt;li&gt;通话结束后，一方挂起电话相当于关闭socket，撤销连接；&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h2 id=&#34;socket-协议:bd9a9c5f94f2e9bf495cac48092e4447&#34;&gt;Socket 协议&lt;/h2&gt;
+&lt;h2 id=&#34;socket-协议&#34;&gt;Socket 协议&lt;/h2&gt;
 
 &lt;p&gt;Socket协议：（协议，本地地址，本地端口）&lt;br /&gt;
 一个完整的socket有一个本地唯一的socket号，由&lt;strong&gt;操作系统进行分配&lt;/strong&gt;
@@ -753,7 +753,7 @@ close(intChan)
 
 &lt;p&gt;我们不妨考虑一下，两个&lt;strong&gt;完全随机&lt;/strong&gt;的用户进程之间如何建立通信？假如通信双方没有任何一方的固定socket，就好比打电话的双方不知道彼此的电话号码，要通信是&lt;strong&gt;不可能的&lt;/strong&gt;。&lt;/p&gt;
 
-&lt;h2 id=&#34;socket-api:bd9a9c5f94f2e9bf495cac48092e4447&#34;&gt;Socket API&lt;/h2&gt;
+&lt;h2 id=&#34;socket-api&#34;&gt;Socket API&lt;/h2&gt;
 
 &lt;p&gt;在Java中，Socket API：
 &amp;gt; java.net.Socket 继承于 java.lang.Object&lt;/p&gt;
@@ -786,7 +786,7 @@ close(intChan)
 &lt;p&gt;注意：其中 getInputStream 以及 getOutStream 方法均可能产生一个 IOException，它必须被捕获，通常都会被另一个流对象使用。&lt;/p&gt;
 &lt;/blockquote&gt;
 
-&lt;h2 id=&#34;socket连接过程:bd9a9c5f94f2e9bf495cac48092e4447&#34;&gt;Socket连接过程&lt;/h2&gt;
+&lt;h2 id=&#34;socket连接过程&#34;&gt;Socket连接过程&lt;/h2&gt;
 
 &lt;p&gt;根据连接启动方式以及本地socket连接的目标，socket之间的连接过程可以分成三个步骤：&lt;/p&gt;
 
@@ -814,7 +814,7 @@ close(intChan)
       <guid>http://hackez.github.io/about-me/</guid>
       <description>
 
-&lt;h1 id=&#34;about-me:8723697e33f65823610bf3f676b8d742&#34;&gt;About Me&lt;/h1&gt;
+&lt;h1 id=&#34;about-me&#34;&gt;About Me&lt;/h1&gt;
 
 &lt;p&gt;我是朱冠州，以HackerZ的名字混迹于网络中。于1994年8月出生于广东肇庆，迷迷茫茫直至高中开始喜欢上计算机，于是便选择了计算机科学与技术这门学科考上了北京理工大学珠海学院。平常我是一个喜欢拍照/看推理小说/撸代码的一个小小码农。&lt;/p&gt;
 
@@ -822,7 +822,7 @@ close(intChan)
 
 &lt;p&gt;我希望能成为一个能够改善我们身边生活/见证未来科技行业革新的一个&lt;strong&gt;创新者&lt;/strong&gt;以及&lt;strong&gt;见证者&lt;/strong&gt;。&lt;/p&gt;
 
-&lt;h1 id=&#34;contact-me:8723697e33f65823610bf3f676b8d742&#34;&gt;Contact Me&lt;/h1&gt;
+&lt;h1 id=&#34;contact-me&#34;&gt;Contact Me&lt;/h1&gt;
 
 &lt;ul&gt;
 &lt;li&gt;Email: 767110505@qq.com&lt;/li&gt;
@@ -831,7 +831,7 @@ close(intChan)
 &lt;li&gt;Blog: &lt;a href=&#34;http://hackez.github.io&#34;&gt;HackerZ&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h1 id=&#34;technology-stack:8723697e33f65823610bf3f676b8d742&#34;&gt;Technology stack&lt;/h1&gt;
+&lt;h1 id=&#34;technology-stack&#34;&gt;Technology stack&lt;/h1&gt;
 
 &lt;p&gt;前端&lt;/p&gt;
 
@@ -870,7 +870,7 @@ close(intChan)
 &lt;li&gt;Git&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h1 id=&#34;future:8723697e33f65823610bf3f676b8d742&#34;&gt;Future&lt;/h1&gt;
+&lt;h1 id=&#34;future&#34;&gt;Future&lt;/h1&gt;
 
 &lt;p&gt;对于未来，我希望能够在广东找到一份我喜爱的工作，能保持我对新技术和事物的爱好，并投身于Coding的最前线。&lt;/p&gt;
 </description>
@@ -940,7 +940,7 @@ close(intChan)
       <guid>http://hackez.github.io/build/</guid>
       <description>
 
-&lt;h2 id=&#34;安装hugo:aba878e576894cc4457876fdf276811e&#34;&gt;安装Hugo&lt;/h2&gt;
+&lt;h2 id=&#34;安装hugo&#34;&gt;安装Hugo&lt;/h2&gt;
 
 &lt;hr /&gt;
 
@@ -958,7 +958,7 @@ close(intChan)
 
 &lt;p&gt;接下来就可以愉快地开始Hugo之旅了。&lt;/p&gt;
 
-&lt;h2 id=&#34;创建hugo项目:aba878e576894cc4457876fdf276811e&#34;&gt;创建Hugo项目&lt;/h2&gt;
+&lt;h2 id=&#34;创建hugo项目&#34;&gt;创建Hugo项目&lt;/h2&gt;
 
 &lt;hr /&gt;
 
@@ -1000,7 +1000,7 @@ title = &amp;ldquo;My New Hugo Site&amp;rdquo;&lt;/p&gt;
 
 &lt;p&gt;地址，即可看到Hugo启动起来了。虽然现在站点是空白一片，但是通过添加Hugo主题，我们可以瞬间建立一个完整Blog站点。&lt;/p&gt;
 
-&lt;h2 id=&#34;选取hugo主题:aba878e576894cc4457876fdf276811e&#34;&gt;选取Hugo主题&lt;/h2&gt;
+&lt;h2 id=&#34;选取hugo主题&#34;&gt;选取Hugo主题&lt;/h2&gt;
 
 &lt;hr /&gt;
 
@@ -1043,7 +1043,7 @@ theme = &amp;quot;hyde&amp;quot;   # 指定themes
 
 &lt;p&gt;看看效果吧！&lt;/p&gt;
 
-&lt;h2 id=&#34;新建文章:aba878e576894cc4457876fdf276811e&#34;&gt;新建文章&lt;/h2&gt;
+&lt;h2 id=&#34;新建文章&#34;&gt;新建文章&lt;/h2&gt;
 
 &lt;hr /&gt;
 
@@ -1060,7 +1060,6 @@ theme = &amp;quot;hyde&amp;quot;   # 指定themes
 
 &lt;blockquote&gt;
 &lt;p&gt;welcome.md&lt;/p&gt;
-&lt;/blockquote&gt;
 
 &lt;pre&gt;&lt;code&gt;+++    
 Categories = [&amp;quot;Development&amp;quot;, &amp;quot;GoLang&amp;quot;]    
@@ -1078,13 +1077,12 @@ title = &amp;quot;Welcome&amp;quot;
 
 &lt;p&gt;然后启动Hugo服务查看效果吧。&lt;/p&gt;
 
-&lt;blockquote&gt;
 &lt;p&gt;$ hugo server&lt;/p&gt;
 &lt;/blockquote&gt;
 
 &lt;p&gt;到这里，基本的Hugo使用已经讲解完毕了，接下来就要将该静态站点迁移到我们自己的 github.io 中了。&lt;/p&gt;
 
-&lt;h2 id=&#34;使用github-pages:aba878e576894cc4457876fdf276811e&#34;&gt;使用Github Pages&lt;/h2&gt;
+&lt;h2 id=&#34;使用github-pages&#34;&gt;使用Github Pages&lt;/h2&gt;
 
 &lt;p&gt;要使用 github-pages 首先需要注册属于自己的 github 账号，注册完成之后，创建一个 repository，名为&lt;/p&gt;
 
@@ -1102,7 +1100,6 @@ title = &amp;quot;Welcome&amp;quot;
 
 &lt;blockquote&gt;
 &lt;p&gt;config.toml&lt;/p&gt;
-&lt;/blockquote&gt;
 
 &lt;pre&gt;&lt;code&gt;baseurl = &amp;quot;http://&amp;amp;lt;USERNAME&amp;gt;.github.io//&amp;quot;
 # baseurl = &amp;quot;http://replace-this-with-your-hugo-site.com/&amp;quot;
@@ -1111,7 +1108,6 @@ title = &amp;quot;Welcome&amp;quot;
 
 &lt;p&gt;保存后，运行如下命令：&lt;/p&gt;
 
-&lt;blockquote&gt;
 &lt;p&gt;$ hugo -v&lt;/p&gt;
 &lt;/blockquote&gt;
 
@@ -1123,7 +1119,7 @@ title = &amp;quot;Welcome&amp;quot;
 &lt;p&gt;http://&amp;lt;USERNAME&amp;gt;.github.io&lt;/p&gt;
 &lt;/blockquote&gt;
 
-&lt;h2 id=&#34;配置属于自己的hugo主题:aba878e576894cc4457876fdf276811e&#34;&gt;配置属于自己的Hugo主题&lt;/h2&gt;
+&lt;h2 id=&#34;配置属于自己的hugo主题&#34;&gt;配置属于自己的Hugo主题&lt;/h2&gt;
 
 &lt;p&gt;你们可以看到，我已经对原来的Hyde主题进行了修改了，那么是怎么做到的呢，我们可以直接对 themes/hyde 下的配置文件进行修改，增加自己想要的样式，相信聪明的你肯定可以很快熟悉 Hugo 的语法，创建属于自己的主题。&lt;/p&gt;
 </description>

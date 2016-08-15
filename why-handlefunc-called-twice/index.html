@@ -3,7 +3,7 @@
 <head>
   <link href="http://gmpg.org/xfn/11" rel="profile">
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
-  <meta name="generator" content="Hugo 0.14" />
+  <meta name="generator" content="Hugo 0.16" />
 
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
@@ -72,7 +72,7 @@
       
         <li><a href="/welcome/"> Welcome </a></li>
       
-        <li><a href="/booklist/"> Book List </a></li>
+        <li><a href="/booklist"> Book List </a></li>
       
     </ul>
 
@@ -87,15 +87,15 @@
 			  <span class="post-date">Sun, Jul 24, 2016</span>
 			      
 
-<h2 id="why-handlefunc-called-twice:07503605f6c05f9ac672084948703a1e">Why <strong>HandleFunc()</strong> called twice?</h2>
+<h2 id="why-handlefunc-called-twice">Why <strong>HandleFunc()</strong> called twice?</h2>
 
-<h3 id="abstract:07503605f6c05f9ac672084948703a1e">Abstract</h3>
+<h3 id="abstract">Abstract</h3>
 
 <p>今天遇到之前碰见过的一个问题，但是之前忘记研究了，正好今天终于把这个问题弄清楚了，于是记录下来。</p>
 
 <p>想必很多做后台的小伙伴都写过服务器了，但是有没有遇到服务器在 <strong>通过不同的（Brower、API）方式访问</strong> 的时候，服务器响应方法的 <strong>次数</strong> 是不一样的情况呢？</p>
 
-<h3 id="problem:07503605f6c05f9ac672084948703a1e">Problem</h3>
+<h3 id="problem">Problem</h3>
 
 <p>先来看看Golang中的简易服务器搭建代码：</p>
 
@@ -121,13 +121,13 @@ func main() {
 <p>通过 <code>curl http://localhost:8080</code> 命令进行访问的时候，服务器控制台只会打印 <strong>一行</strong> <code>Oh, Here is a Guy coming in!</code>。</p>
 </blockquote>
 
-<h2 id="why:07503605f6c05f9ac672084948703a1e">Why</h2>
+<h2 id="why">Why</h2>
 
 <p>为什么会出现那么有趣的问题呢？<a href="http://stackoverflow.com/questions/33432192/handlefunc-being-called-twice">StackOver</a>上也有人问了这个问题，原因出现在 Brower 上，通过打印 <code>requsets</code>，你会发现 Brower 还会发起二次请求去请求 <code>/favicon.ico</code>，也就是页面的小图标。</p>
 
 <p>所以这就是用 <code>CURL</code> 发起请求的时候，并不会出现二次请求的原因！</p>
 
-<h2 id="solve:07503605f6c05f9ac672084948703a1e">Solve</h2>
+<h2 id="solve">Solve</h2>
 
 <p>既然知道了这个问题出现在哪，剩下就好办了，既然浏览器要请求图标，那么我们就在写一个路由专门处理这个请求即可：</p>
 

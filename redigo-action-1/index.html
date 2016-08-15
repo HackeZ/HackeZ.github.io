@@ -3,7 +3,7 @@
 <head>
   <link href="http://gmpg.org/xfn/11" rel="profile">
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
-  <meta name="generator" content="Hugo 0.14" />
+  <meta name="generator" content="Hugo 0.16" />
 
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
@@ -72,7 +72,7 @@
       
         <li><a href="/welcome/"> Welcome </a></li>
       
-        <li><a href="/booklist/"> Book List </a></li>
+        <li><a href="/booklist"> Book List </a></li>
       
     </ul>
 
@@ -87,18 +87,18 @@
 			  <span class="post-date">Fri, Jul 22, 2016</span>
 			      
 
-<h1 id="redigo-action:f13bb710c262a4678399c189d1ccbd61">Redigo Action</h1>
+<h1 id="redigo-action">Redigo Action</h1>
 
-<h4 id="redis-作为一个内存型的高性能数据库-如今是越来越火了-为了得到更高的-qps-以及-tps-我们无法忽视掉这个如此强大的数据库:f13bb710c262a4678399c189d1ccbd61">Redis 作为一个内存型的高性能数据库，如今是越来越火了，为了得到更高的 QPS 以及 TPS ，我们无法忽视掉这个如此强大的数据库。</h4>
+<h4 id="redis-作为一个内存型的高性能数据库-如今是越来越火了-为了得到更高的-qps-以及-tps-我们无法忽视掉这个如此强大的数据库">Redis 作为一个内存型的高性能数据库，如今是越来越火了，为了得到更高的 QPS 以及 TPS ，我们无法忽视掉这个如此强大的数据库。</h4>
 
-<h4 id="在-redis-官网中-golang语言的-框架-http-redis-io-clients-go-有两个是被官方所推荐的-分别为:f13bb710c262a4678399c189d1ccbd61">在 Redis 官网中，Golang语言的<a href="http:redis.io/clients#go">框架</a>有两个是被官方所推荐的，分别为：</h4>
+<h4 id="在-redis-官网中-golang语言的-框架-http-redis-io-clients-go-有两个是被官方所推荐的-分别为">在 Redis 官网中，Golang语言的<a href="http:redis.io/clients#go">框架</a>有两个是被官方所推荐的，分别为：</h4>
 
 <p><strong>1. <a href="https:github.com/garyburd/redigo">Redigo</a></strong>
 <strong>2. <a href="https:github.com/mediocregopher/radix.v2">Radix</a></strong></p>
 
-<h4 id="本着源码易读优先-我选择了-redigo-进行开发尝试-项目地址-点我-https-www-github-com-hackez-getacfunpage:f13bb710c262a4678399c189d1ccbd61">本着源码易读优先，我选择了 Redigo 进行开发尝试，项目地址<a href="https:www.github.com/HackeZ/getAcFunPage">点我</a>。</h4>
+<h4 id="本着源码易读优先-我选择了-redigo-进行开发尝试-项目地址-点我-https-www-github-com-hackez-getacfunpage">本着源码易读优先，我选择了 Redigo 进行开发尝试，项目地址<a href="https:www.github.com/HackeZ/getAcFunPage">点我</a>。</h4>
 
-<h3 id="action:f13bb710c262a4678399c189d1ccbd61">Action</h3>
+<h3 id="action">Action</h3>
 
 <p>熟悉Redis的同学都知道，Redis是 <strong>单进程，单线程，IO多路复用</strong> 的，这一点不同于 MySQL 的多线程。
  这就意味这Redis可以使用长连接来进行通信，那么，我们就需要一个连接池去管理这些长连接，当一个长连接使用完毕之后就可以交给下一个长连接继续进行使用。</p>
@@ -160,9 +160,9 @@
    }
 </code></pre>
 
-<h5 id="到了这里-一个可用并且高性能的-redis-数据库的连接已经基本构建完毕了:f13bb710c262a4678399c189d1ccbd61">到了这里，一个可用并且高性能的 Redis 数据库的连接已经基本构建完毕了！</h5>
+<h5 id="到了这里-一个可用并且高性能的-redis-数据库的连接已经基本构建完毕了">到了这里，一个可用并且高性能的 Redis 数据库的连接已经基本构建完毕了！</h5>
 
-<h5 id="接下来就可以愉快地进行使用了:f13bb710c262a4678399c189d1ccbd61">接下来就可以愉快地进行使用了～</h5>
+<h5 id="接下来就可以愉快地进行使用了">接下来就可以愉快地进行使用了～</h5>
 
 			</div>
 

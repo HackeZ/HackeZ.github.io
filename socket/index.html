@@ -3,7 +3,7 @@
 <head>
   <link href="http://gmpg.org/xfn/11" rel="profile">
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
-  <meta name="generator" content="Hugo 0.14" />
+  <meta name="generator" content="Hugo 0.16" />
 
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
@@ -72,7 +72,7 @@
       
         <li><a href="/welcome/"> Welcome </a></li>
       
-        <li><a href="/booklist/"> Book List </a></li>
+        <li><a href="/booklist"> Book List </a></li>
       
     </ul>
 
@@ -87,11 +87,11 @@
 			  <span class="post-date">Tue, May 3, 2016</span>
 			      
 
-<h1 id="socket-study:bd9a9c5f94f2e9bf495cac48092e4447">Socket Study</h1>
+<h1 id="socket-study">Socket Study</h1>
 
 <hr />
 
-<h2 id="what-is-socket:bd9a9c5f94f2e9bf495cac48092e4447">What is Socket</h2>
+<h2 id="what-is-socket">What is Socket</h2>
 
 <p>Socket(插座) 作为 UNIX的进程通信机制，一般被通称为</p>
 
@@ -107,7 +107,7 @@
 
 <p>正如其英文意思 —— 插座，Socket在不同端口提供着不同的服务，互相之间互不干扰，你只需要将插头插入正确的插座，就可以得到你想要的服务了。</p>
 
-<h2 id="socket通讯过程:bd9a9c5f94f2e9bf495cac48092e4447">Socket通讯过程</h2>
+<h2 id="socket通讯过程">Socket通讯过程</h2>
 
 <p>Socket类似于电话插座，电话的通话双方相当于互相通信的2个进程，区号是它的网络地址；区内一个单位的交换机相当于一台主机，主机分配给每个用户的局内号码相当于socket号。</p>
 
@@ -121,7 +121,7 @@
 <li>通话结束后，一方挂起电话相当于关闭socket，撤销连接；</li>
 </ul>
 
-<h2 id="socket-协议:bd9a9c5f94f2e9bf495cac48092e4447">Socket 协议</h2>
+<h2 id="socket-协议">Socket 协议</h2>
 
 <p>Socket协议：（协议，本地地址，本地端口）<br />
 一个完整的socket有一个本地唯一的socket号，由<strong>操作系统进行分配</strong>
@@ -138,7 +138,7 @@
 
 <p>我们不妨考虑一下，两个<strong>完全随机</strong>的用户进程之间如何建立通信？假如通信双方没有任何一方的固定socket，就好比打电话的双方不知道彼此的电话号码，要通信是<strong>不可能的</strong>。</p>
 
-<h2 id="socket-api:bd9a9c5f94f2e9bf495cac48092e4447">Socket API</h2>
+<h2 id="socket-api">Socket API</h2>
 
 <p>在Java中，Socket API：
 &gt; java.net.Socket 继承于 java.lang.Object</p>
@@ -171,7 +171,7 @@
 <p>注意：其中 getInputStream 以及 getOutStream 方法均可能产生一个 IOException，它必须被捕获，通常都会被另一个流对象使用。</p>
 </blockquote>
 
-<h2 id="socket连接过程:bd9a9c5f94f2e9bf495cac48092e4447">Socket连接过程</h2>
+<h2 id="socket连接过程">Socket连接过程</h2>
 
 <p>根据连接启动方式以及本地socket连接的目标，socket之间的连接过程可以分成三个步骤：</p>
 

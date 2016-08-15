@@ -3,7 +3,7 @@
 <head>
   <link href="http://gmpg.org/xfn/11" rel="profile">
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
-  <meta name="generator" content="Hugo 0.14" />
+  <meta name="generator" content="Hugo 0.16" />
 
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
@@ -72,7 +72,7 @@
       
         <li><a href="/welcome/"> Welcome </a></li>
       
-        <li><a href="/booklist/"> Book List </a></li>
+        <li><a href="/booklist"> Book List </a></li>
       
     </ul>
 
@@ -87,9 +87,9 @@
 			  <span class="post-date">Sat, Jul 30, 2016</span>
 			      
 
-<h1 id="c专家编程-笔记本:8fd2d17e4b9c550871f8ea39cdb0938b">《C专家编程》 笔记本</h1>
+<h1 id="c专家编程-笔记本">《C专家编程》 笔记本</h1>
 
-<h3 id="c专家编程-是每一位程序员应该读的第二本c语言书籍:8fd2d17e4b9c550871f8ea39cdb0938b">《C专家编程》是每一位程序员应该读的第二本C语言书籍！</h3>
+<h3 id="c专家编程-是每一位程序员应该读的第二本c语言书籍">《C专家编程》是每一位程序员应该读的第二本C语言书籍！</h3>
 
 <blockquote>
 <p>讲了各种c的缺陷，推荐go用户好好体验，很多都在go里做了修正 —— [ggarlic]()</p>
@@ -138,58 +138,48 @@ NULL 用于表示什么都不指向；</p></li>
 
 <li><p>如果需要使用一些临时变量的时候，请把它放在块的开始处！</p></li>
 
-<li><p>缺省采用 &ldquo;Fall Through&rdquo;，在 <strong>97%</strong> 的情况下都是错误的！</p></li>
-</ol>
+<li><p>缺省采用 &ldquo;Fall Through&rdquo;，在 <strong>97%</strong> 的情况下都是错误的！</p>
 
 <pre><code class="language-c">// Fall Through : End without break;
 switch (number) {
-    case 1: printf(&quot;case 1\n&quot;);
-    case 2: printf(&quot;case 2\n&quot;);
-    case 3: printf(&quot;case 3\n&quot;);
-    ...
+case 1: printf(&quot;case 1\n&quot;);
+case 2: printf(&quot;case 2\n&quot;);
+case 3: printf(&quot;case 3\n&quot;);
+...
 }
-</code></pre>
+</code></pre></li>
 
-<ol>
-<li>一种简单的方法，使一段代码第一次执行时的行为与以后的执行的行为不同；</li>
-</ol>
+<li><p>一种简单的方法，使一段代码第一次执行时的行为与以后的执行的行为不同；</p>
 
 <pre><code class="language-c">generate_initializer(char * string) 
 {
-    static char separator = ' ';
-    printf(&quot;%c %s\n&quot;, separator, string);
-    separator = ',';
+static char separator = ' ';
+printf(&quot;%c %s\n&quot;, separator, string);
+separator = ',';
 }
-</code></pre>
+</code></pre></li>
 
-<ol>
-<li>重载之过：</li>
-</ol>
-
-<pre><code class="language-c">// 这是多少个乘号？
+<li><p>重载之过：
+```c
+// 这是多少个乘号？
 p = N * sizeof * q;
 r = malloc(p);
-// 答案：1个，sizeof操作符将指针q指向的东西作为操作数，它返回q所指对象的类型的字节数
-
-// 这是int的长度乘以p？还是把未知类型的指针强制转换为int？
-apple = sizeof(int) * p;
-</code></pre>
-
-<ol>
-<li>什么是 <strong>结合性</strong> ？</li>
+// 答案：1个，sizeof操作符将指针q指向的东西作为操作数，它返回q所指对象的类型的字节数</p></li>
 </ol>
 
-<blockquote>
-<p>在几个操作符具有相同优先级的时候决定先运行哪一个。</p>
-</blockquote>
+<p>// 这是int的长度乘以p？还是把未知类型的指针强制转换为int？
+apple = sizeof(int) * p;</p>
 
-<ol>
-<li><p>为什么要使用 fgets() 而不是 gets() ？</p></li>
+<pre><code>
+18. 什么是 **结合性** ？
 
-<li><p>注释符缺陷：</p></li>
-</ol>
+&gt; 在几个操作符具有相同优先级的时候决定先运行哪一个。
 
-<pre><code class="language-c">a //*
+19. 为什么要使用 fgets() 而不是 gets() ？
+
+20. 注释符缺陷：
+```c
+a //*
 //*/ b
 </code></pre>
 
@@ -200,15 +190,13 @@ apple = sizeof(int) * p;
 <ol>
 <li><p>早用line，勤用lint。当你做错事的时候，他会告诉你哪里不对，应该始终使用lint程序，按照它的道德标准办事。像使用 <code>go-lint</code> 一样写出优秀的代码。</p></li>
 
-<li><p>将结构的声明与变量的定义分开可以使代码更加容易阅读：</p></li>
-</ol>
+<li><p>将结构的声明与变量的定义分开可以使代码更加容易阅读：</p>
 
 <pre><code class="language-c">struct veg { int weight, price_per_lb; };
 struct veg onion, radish, turnip;
-</code></pre>
+</code></pre></li>
 
-<ol>
-<li><code>union</code> 与 <code>struct</code> 不同的是：</li>
+<li><p><code>union</code> 与 <code>struct</code> 不同的是：</p></li>
 </ol>
 
 <blockquote>
@@ -240,15 +228,13 @@ struct creature {
 </code></pre>
 
 <ol>
-<li><code>enum</code> 也就是 Golang 中的 <code>toao</code>：</li>
-</ol>
+<li><p><code>enum</code> 也就是 Golang 中的 <code>toao</code>：</p>
 
 <pre><code class="language-c">enum sizes { small = 7, medium, large = 10, humungous };
 // medium = 8 ; humungous = 11;
-</code></pre>
+</code></pre></li>
 
-<ol>
-<li>理解C语言声明的优先级规则
+<li><p>理解C语言声明的优先级规则</p>
 
 <ul>
 <li>A 声明从它的名字开始读取，然后按照优先级顺序依次读取。</li>

@@ -3,7 +3,7 @@
 <head>
   <link href="http://gmpg.org/xfn/11" rel="profile">
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
-  <meta name="generator" content="Hugo 0.14" />
+  <meta name="generator" content="Hugo 0.16" />
 
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
@@ -72,7 +72,7 @@
       
         <li><a href="/welcome/"> Welcome </a></li>
       
-        <li><a href="/booklist/"> Book List </a></li>
+        <li><a href="/booklist"> Book List </a></li>
       
     </ul>
 
@@ -87,7 +87,7 @@
 			  <span class="post-date">Wed, Apr 13, 2016</span>
 			      
 
-<h2 id="安装hugo:aba878e576894cc4457876fdf276811e">安装Hugo</h2>
+<h2 id="安装hugo">安装Hugo</h2>
 
 <hr />
 
@@ -105,7 +105,7 @@
 
 <p>接下来就可以愉快地开始Hugo之旅了。</p>
 
-<h2 id="创建hugo项目:aba878e576894cc4457876fdf276811e">创建Hugo项目</h2>
+<h2 id="创建hugo项目">创建Hugo项目</h2>
 
 <hr />
 
@@ -147,7 +147,7 @@ title = &ldquo;My New Hugo Site&rdquo;</p>
 
 <p>地址，即可看到Hugo启动起来了。虽然现在站点是空白一片，但是通过添加Hugo主题，我们可以瞬间建立一个完整Blog站点。</p>
 
-<h2 id="选取hugo主题:aba878e576894cc4457876fdf276811e">选取Hugo主题</h2>
+<h2 id="选取hugo主题">选取Hugo主题</h2>
 
 <hr />
 
@@ -190,7 +190,7 @@ theme = &quot;hyde&quot;   # 指定themes
 
 <p>看看效果吧！</p>
 
-<h2 id="新建文章:aba878e576894cc4457876fdf276811e">新建文章</h2>
+<h2 id="新建文章">新建文章</h2>
 
 <hr />
 
@@ -207,7 +207,6 @@ theme = &quot;hyde&quot;   # 指定themes
 
 <blockquote>
 <p>welcome.md</p>
-</blockquote>
 
 <pre><code>+++    
 Categories = [&quot;Development&quot;, &quot;GoLang&quot;]    
@@ -225,13 +224,12 @@ title = &quot;Welcome&quot;
 
 <p>然后启动Hugo服务查看效果吧。</p>
 
-<blockquote>
 <p>$ hugo server</p>
 </blockquote>
 
 <p>到这里，基本的Hugo使用已经讲解完毕了，接下来就要将该静态站点迁移到我们自己的 github.io 中了。</p>
 
-<h2 id="使用github-pages:aba878e576894cc4457876fdf276811e">使用Github Pages</h2>
+<h2 id="使用github-pages">使用Github Pages</h2>
 
 <p>要使用 github-pages 首先需要注册属于自己的 github 账号，注册完成之后，创建一个 repository，名为</p>
 
@@ -249,7 +247,6 @@ title = &quot;Welcome&quot;
 
 <blockquote>
 <p>config.toml</p>
-</blockquote>
 
 <pre><code>baseurl = &quot;http://&amp;lt;USERNAME&gt;.github.io//&quot;
 # baseurl = &quot;http://replace-this-with-your-hugo-site.com/&quot;
@@ -258,7 +255,6 @@ title = &quot;Welcome&quot;
 
 <p>保存后，运行如下命令：</p>
 
-<blockquote>
 <p>$ hugo -v</p>
 </blockquote>
 
@@ -270,7 +266,7 @@ title = &quot;Welcome&quot;
 <p>http://&lt;USERNAME&gt;.github.io</p>
 </blockquote>
 
-<h2 id="配置属于自己的hugo主题:aba878e576894cc4457876fdf276811e">配置属于自己的Hugo主题</h2>
+<h2 id="配置属于自己的hugo主题">配置属于自己的Hugo主题</h2>
 
 <p>你们可以看到，我已经对原来的Hyde主题进行了修改了，那么是怎么做到的呢，我们可以直接对 themes/hyde 下的配置文件进行修改，增加自己想要的样式，相信聪明的你肯定可以很快熟悉 Hugo 的语法，创建属于自己的主题。</p>
 

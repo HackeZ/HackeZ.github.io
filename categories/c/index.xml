@@ -17,9 +17,9 @@
       <guid>http://hackez.github.io/C-Prefess-Program/</guid>
       <description>
 
-&lt;h1 id=&#34;c专家编程-笔记本:8fd2d17e4b9c550871f8ea39cdb0938b&#34;&gt;《C专家编程》 笔记本&lt;/h1&gt;
+&lt;h1 id=&#34;c专家编程-笔记本&#34;&gt;《C专家编程》 笔记本&lt;/h1&gt;
 
-&lt;h3 id=&#34;c专家编程-是每一位程序员应该读的第二本c语言书籍:8fd2d17e4b9c550871f8ea39cdb0938b&#34;&gt;《C专家编程》是每一位程序员应该读的第二本C语言书籍！&lt;/h3&gt;
+&lt;h3 id=&#34;c专家编程-是每一位程序员应该读的第二本c语言书籍&#34;&gt;《C专家编程》是每一位程序员应该读的第二本C语言书籍！&lt;/h3&gt;
 
 &lt;blockquote&gt;
 &lt;p&gt;讲了各种c的缺陷，推荐go用户好好体验，很多都在go里做了修正 —— [ggarlic]()&lt;/p&gt;
@@ -68,58 +68,48 @@ NULL 用于表示什么都不指向；&lt;/p&gt;&lt;/li&gt;
 
 &lt;li&gt;&lt;p&gt;如果需要使用一些临时变量的时候，请把它放在块的开始处！&lt;/p&gt;&lt;/li&gt;
 
-&lt;li&gt;&lt;p&gt;缺省采用 &amp;ldquo;Fall Through&amp;rdquo;，在 &lt;strong&gt;97%&lt;/strong&gt; 的情况下都是错误的！&lt;/p&gt;&lt;/li&gt;
-&lt;/ol&gt;
+&lt;li&gt;&lt;p&gt;缺省采用 &amp;ldquo;Fall Through&amp;rdquo;，在 &lt;strong&gt;97%&lt;/strong&gt; 的情况下都是错误的！&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-c&#34;&gt;// Fall Through : End without break;
 switch (number) {
-    case 1: printf(&amp;quot;case 1\n&amp;quot;);
-    case 2: printf(&amp;quot;case 2\n&amp;quot;);
-    case 3: printf(&amp;quot;case 3\n&amp;quot;);
-    ...
+case 1: printf(&amp;quot;case 1\n&amp;quot;);
+case 2: printf(&amp;quot;case 2\n&amp;quot;);
+case 3: printf(&amp;quot;case 3\n&amp;quot;);
+...
 }
-&lt;/code&gt;&lt;/pre&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
 
-&lt;ol&gt;
-&lt;li&gt;一种简单的方法，使一段代码第一次执行时的行为与以后的执行的行为不同；&lt;/li&gt;
-&lt;/ol&gt;
+&lt;li&gt;&lt;p&gt;一种简单的方法，使一段代码第一次执行时的行为与以后的执行的行为不同；&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-c&#34;&gt;generate_initializer(char * string) 
 {
-    static char separator = &#39; &#39;;
-    printf(&amp;quot;%c %s\n&amp;quot;, separator, string);
-    separator = &#39;,&#39;;
+static char separator = &#39; &#39;;
+printf(&amp;quot;%c %s\n&amp;quot;, separator, string);
+separator = &#39;,&#39;;
 }
-&lt;/code&gt;&lt;/pre&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
 
-&lt;ol&gt;
-&lt;li&gt;重载之过：&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-c&#34;&gt;// 这是多少个乘号？
+&lt;li&gt;&lt;p&gt;重载之过：
+```c
+// 这是多少个乘号？
 p = N * sizeof * q;
 r = malloc(p);
-// 答案：1个，sizeof操作符将指针q指向的东西作为操作数，它返回q所指对象的类型的字节数
-
-// 这是int的长度乘以p？还是把未知类型的指针强制转换为int？
-apple = sizeof(int) * p;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;ol&gt;
-&lt;li&gt;什么是 &lt;strong&gt;结合性&lt;/strong&gt; ？&lt;/li&gt;
+// 答案：1个，sizeof操作符将指针q指向的东西作为操作数，它返回q所指对象的类型的字节数&lt;/p&gt;&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;blockquote&gt;
-&lt;p&gt;在几个操作符具有相同优先级的时候决定先运行哪一个。&lt;/p&gt;
-&lt;/blockquote&gt;
+&lt;p&gt;// 这是int的长度乘以p？还是把未知类型的指针强制转换为int？
+apple = sizeof(int) * p;&lt;/p&gt;
 
-&lt;ol&gt;
-&lt;li&gt;&lt;p&gt;为什么要使用 fgets() 而不是 gets() ？&lt;/p&gt;&lt;/li&gt;
+&lt;pre&gt;&lt;code&gt;
+18. 什么是 **结合性** ？
 
-&lt;li&gt;&lt;p&gt;注释符缺陷：&lt;/p&gt;&lt;/li&gt;
-&lt;/ol&gt;
+&amp;gt; 在几个操作符具有相同优先级的时候决定先运行哪一个。
 
-&lt;pre&gt;&lt;code class=&#34;language-c&#34;&gt;a //*
+19. 为什么要使用 fgets() 而不是 gets() ？
+
+20. 注释符缺陷：
+```c
+a //*
 //*/ b
 &lt;/code&gt;&lt;/pre&gt;
 
@@ -130,15 +120,13 @@ apple = sizeof(int) * p;
 &lt;ol&gt;
 &lt;li&gt;&lt;p&gt;早用line，勤用lint。当你做错事的时候，他会告诉你哪里不对，应该始终使用lint程序，按照它的道德标准办事。像使用 &lt;code&gt;go-lint&lt;/code&gt; 一样写出优秀的代码。&lt;/p&gt;&lt;/li&gt;
 
-&lt;li&gt;&lt;p&gt;将结构的声明与变量的定义分开可以使代码更加容易阅读：&lt;/p&gt;&lt;/li&gt;
-&lt;/ol&gt;
+&lt;li&gt;&lt;p&gt;将结构的声明与变量的定义分开可以使代码更加容易阅读：&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-c&#34;&gt;struct veg { int weight, price_per_lb; };
 struct veg onion, radish, turnip;
-&lt;/code&gt;&lt;/pre&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
 
-&lt;ol&gt;
-&lt;li&gt;&lt;code&gt;union&lt;/code&gt; 与 &lt;code&gt;struct&lt;/code&gt; 不同的是：&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;code&gt;union&lt;/code&gt; 与 &lt;code&gt;struct&lt;/code&gt; 不同的是：&lt;/p&gt;&lt;/li&gt;
 &lt;/ol&gt;
 
 &lt;blockquote&gt;
@@ -170,15 +158,13 @@ struct creature {
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;ol&gt;
-&lt;li&gt;&lt;code&gt;enum&lt;/code&gt; 也就是 Golang 中的 &lt;code&gt;toao&lt;/code&gt;：&lt;/li&gt;
-&lt;/ol&gt;
+&lt;li&gt;&lt;p&gt;&lt;code&gt;enum&lt;/code&gt; 也就是 Golang 中的 &lt;code&gt;toao&lt;/code&gt;：&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-c&#34;&gt;enum sizes { small = 7, medium, large = 10, humungous };
 // medium = 8 ; humungous = 11;
-&lt;/code&gt;&lt;/pre&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
 
-&lt;ol&gt;
-&lt;li&gt;理解C语言声明的优先级规则
+&lt;li&gt;&lt;p&gt;理解C语言声明的优先级规则&lt;/p&gt;
 
 &lt;ul&gt;
 &lt;li&gt;A 声明从它的名字开始读取，然后按照优先级顺序依次读取。&lt;/li&gt;

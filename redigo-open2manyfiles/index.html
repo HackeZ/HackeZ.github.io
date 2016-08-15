@@ -3,7 +3,7 @@
 <head>
   <link href="http://gmpg.org/xfn/11" rel="profile">
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
-  <meta name="generator" content="Hugo 0.14" />
+  <meta name="generator" content="Hugo 0.16" />
 
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
@@ -72,7 +72,7 @@
       
         <li><a href="/welcome/"> Welcome </a></li>
       
-        <li><a href="/booklist/"> Book List </a></li>
+        <li><a href="/booklist"> Book List </a></li>
       
     </ul>
 
@@ -87,14 +87,14 @@
 			  <span class="post-date">Wed, Jul 27, 2016</span>
 			      
 
-<h1 id="redigo-panic-error-open-too-many-files:5b2d3f0d3cc3f195aa4297d2d52b0993">Redigo - panic error : open too many files.</h1>
+<h1 id="redigo-panic-error-open-too-many-files">Redigo - panic error : open too many files.</h1>
 
-<h3 id="abstract:5b2d3f0d3cc3f195aa4297d2d52b0993">Abstract</h3>
+<h3 id="abstract">Abstract</h3>
 
 <p>今天对 <a href="https://www.github.com/HackeZ/getAcFunPage">getAcFunPage</a> 项目做 Benchmark 的时候发现了 Redis 会频繁报一个 <code>socket: too many open files</code> 的错误，后来发现并不是代码的问题，而是 Linux 的设置问题。
 下面就来说说我是这么解决这个问题的。</p>
 
-<h3 id="problem:5b2d3f0d3cc3f195aa4297d2d52b0993">Problem</h3>
+<h3 id="problem">Problem</h3>
 
 <p>Benchmark 时报错内容截取如下：</p>
 
@@ -124,7 +124,7 @@ created by net/http.(*Server).Serve
 
 <p>由报错信息第一行中的 <code>dial tcp :6379</code> 很容易看出，这是由 Redis 所引起的错误。</p>
 
-<h3 id="why:5b2d3f0d3cc3f195aa4297d2d52b0993">Why</h3>
+<h3 id="why">Why</h3>
 
 <p>根据 <a href="http://stackoverflow.com/questions/19971968/go-golang-redis-too-many-open-files-error">Stack Overflow</a> 上的一个回答，这是由于 Linux 下设置的 <strong>文件描述符上限(file descriptors limit)</strong> 所引起的错误，在Ubuntu系统中，该值上限为 <strong>1024</strong> ，于是当 Redis 需要接收来自高并发所带来的连接请求时，连接数很有可能 <strong>超出文件描述符的上限值</strong> ，于是 Redis 就会报错了。</p>
 
@@ -133,7 +133,7 @@ created by net/http.(*Server).Serve
 内核（kernel）利用文件描述符（file descriptor）来访问文件。文件描述符是非负整数。打开现存文件或新建文件时，内核会返回一个文件描述符。读写文件也需要使用文件描述符来指定待读写的文件。</p>
 </blockquote>
 
-<h3 id="solve:5b2d3f0d3cc3f195aa4297d2d52b0993">Solve</h3>
+<h3 id="solve">Solve</h3>
 
 <p>要解决这个问题也很简单，只需要将服务器系统的文件描述符上限修改成一个更大的值即可：</p>
 
