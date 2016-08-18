@@ -6,8 +6,62 @@
     <description>Recent content in Development on HackerZ - Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 15 Aug 2016 22:49:10 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 18 Aug 2016 16:03:05 +0800</lastBuildDate>
     <atom:link href="http://hackez.github.io/categories/development/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Global Ignore File in Git</title>
+      <link>http://hackez.github.io/global_gitignore/</link>
+      <pubDate>Thu, 18 Aug 2016 16:03:05 +0800</pubDate>
+      
+      <guid>http://hackez.github.io/global_gitignore/</guid>
+      <description>
+
+&lt;h2 id=&#34;intro&#34;&gt;Intro&lt;/h2&gt;
+
+&lt;p&gt;自从换了 OSX 进行开发，就发现每当修改了项目文件， OSX 在项目目录都会生成一个 &lt;code&gt;.DS_Store&lt;/code&gt; 的隐藏文件，该文件用于记录当前目录下文件的 Meta 信息。&lt;/p&gt;
+
+&lt;p&gt;对于这样的情况，我不可能在每个项目的根目录都配置一个 &lt;code&gt;.gitignore&lt;/code&gt; 文件，这样可复用性太地了，于是我便想能不能配置一个 Git 的 &lt;code&gt;.gitignore_global&lt;/code&gt; 文件，统一忽略掉所有我不需要上传的文件呢。&lt;/p&gt;
+
+&lt;h2 id=&#34;solve&#34;&gt;Solve&lt;/h2&gt;
+
+&lt;p&gt;Git 还真有这样的方法，它提供了一个 &lt;strong&gt;忽略规则&lt;/strong&gt; ，我们可以通过编写一个忽略规则文件，然后通过如下的命令配置进 Git :&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;$ git config --global core.excludesfile &#39;忽略文件完整路径&#39;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;即可。&lt;/p&gt;
+
+&lt;h2 id=&#34;global-gitignore&#34;&gt;Global GitIgnore&lt;/h2&gt;
+
+&lt;p&gt;新建一个 &lt;code&gt;.gitignore_global&lt;/code&gt; 文件，并往里面编写忽略文件语法，该语法符合正则表达式， &lt;code&gt;#&lt;/code&gt; 号为注释，每一行为一个忽略规则：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;# OSX
+.DS_Store
+.DS_Store*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Python
+*.pyc
+
+# C
+*.[ao]
+
+# Package
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
     
     <item>
       <title>How To Install Scikit-learn Under OSX 10.11</title>
@@ -30,7 +84,7 @@
 
 &lt;p&gt;而并没有 &lt;code&gt;scikit-learn&lt;/code&gt;，然后当我使用&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;conda install scikit-learn
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;conda install scikit-learn
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;进行安装之后发现还是无法使用这个缺省的库，经我多方查找资料，原来是 &lt;code&gt;Mac 10.11&lt;/code&gt; 版本中自带的 &lt;code&gt;Python 2.7&lt;/code&gt; 环境与 &lt;code&gt;Anaconda&lt;/code&gt; 的环境是分离的，所以只能 &lt;code&gt;Anaconda&lt;/code&gt; 中使用这些库。&lt;/p&gt;
@@ -41,7 +95,7 @@
 
 &lt;p&gt;当我开始用 &lt;code&gt;pip&lt;/code&gt; 安装第三方包的时候出现了如下的错误：&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;Collecting numpy
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;Collecting numpy
 
 Using cached numpy-1.10.2-cp27-none-macosx_10_6_intel.macosx_10_9_intel.macosx_10_9_x86_64.macosx_10_10_intel.macosx_10_10_x86_64.whlInstalling
  collected packages: numpy
@@ -82,7 +136,7 @@ shutil.move(old, new)
 
 &lt;p&gt;而 Python 库所在的路径为：&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;/System/Library/Frameworks/Python.framework/Versions/2.7/...
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;/System/Library/Frameworks/Python.framework/Versions/2.7/...
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;当然是属于其完整性保护的保护伞之下的，所以我需要把 &lt;code&gt;SIP&lt;/code&gt; 关掉之后才能对其进行安装。&lt;/p&gt;
@@ -115,14 +169,14 @@ shutil.move(old, new)
 
 &lt;p&gt;好吧，终于解决了上面这些问题了，安装应该没有问题了吧？很可惜，当我运行完：&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;$ sudo pip install numpy
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;$ sudo pip install numpy
 $ sudo pip install scipy
 $ sudo pip install scikit-learn
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;然后在 &lt;code&gt;Python&lt;/code&gt; 下 &lt;code&gt;import sklearn&lt;/code&gt; 时发生了如下错误：&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;Traceback (most recent call last):
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;Traceback (most recent call last):
 File &amp;quot;&amp;lt;stdin&amp;gt;&amp;quot;, line 1, in &amp;lt;module&amp;gt;
 File &amp;quot;/Library/Python/2.7/site-packages/sklearn/__init__.py&amp;quot;, line 57, in &amp;lt;module&amp;gt;
 from .base import clone
@@ -136,7 +190,7 @@ ValueError: numpy.dtype has the wrong size, try recompiling
 
 &lt;p&gt;好惨，经过多方搜索，绝大部分的解答都是：&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;$ pip uninstall numpy scipy scikit-learn
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;$ pip uninstall numpy scipy scikit-learn
 $ pip install numpy scipy scikit-learn
 &lt;/code&gt;&lt;/pre&gt;
 
@@ -146,7 +200,7 @@ $ pip install numpy scipy scikit-learn
 
 &lt;p&gt;而是到 Github 中找到 &lt;a href=&#34;https://github.com/scikit-learn/scikit-learn&#34;&gt;scikit-learn&lt;/a&gt; 项目进行安装：&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;$ git clone https://github.com/scikit-learn/scikit-learn.git
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;$ git clone https://github.com/scikit-learn/scikit-learn.git
 $ sudo python setup.py install
 &lt;/code&gt;&lt;/pre&gt;
 
@@ -1375,18 +1429,6 @@ title = &amp;quot;Welcome&amp;quot;
 &lt;h2 id=&#34;配置属于自己的hugo主题&#34;&gt;配置属于自己的Hugo主题&lt;/h2&gt;
 
 &lt;p&gt;你们可以看到，我已经对原来的Hyde主题进行了修改了，那么是怎么做到的呢，我们可以直接对 themes/hyde 下的配置文件进行修改，增加自己想要的样式，相信聪明的你肯定可以很快熟悉 Hugo 的语法，创建属于自己的主题。&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Welcome</title>
-      <link>http://hackez.github.io/welcome/</link>
-      <pubDate>Tue, 29 Mar 2016 14:38:19 +0800</pubDate>
-      
-      <guid>http://hackez.github.io/welcome/</guid>
-      <description>&lt;p&gt;这是使用Hugo创建的站点中的第一篇文章，我是HackerZ。&lt;/p&gt;
-
-&lt;p&gt;如果你想知道如何使用Hugo搭建这样一个Blog的话，可以看看&lt;a href=&#34;http://hackez.github.io/build&#34;&gt;这里&lt;/a&gt;。&lt;/p&gt;
 </description>
     </item>
     
