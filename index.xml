@@ -6,8 +6,103 @@
     <description>Recent content on HackerZ - Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 18 Aug 2016 16:03:05 +0800</lastBuildDate>
+    <lastBuildDate>Sat, 20 Aug 2016 16:17:42 +0800</lastBuildDate>
     <atom:link href="http://hackez.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Fun in Docker Day-1</title>
+      <link>http://hackez.github.io/fun-in-docker-1/</link>
+      <pubDate>Sat, 20 Aug 2016 16:17:42 +0800</pubDate>
+      
+      <guid>http://hackez.github.io/fun-in-docker-1/</guid>
+      <description>
+
+&lt;h2 id=&#34;intro&#34;&gt;Intro&lt;/h2&gt;
+
+&lt;p&gt;今天心血来潮，想在 OSX 中重新体验一下 &lt;code&gt;Docker&lt;/code&gt;，结果因为 &lt;code&gt;Docker&lt;/code&gt; 是基于 &lt;code&gt;Linux&lt;/code&gt;，在 OSX 中实在是 Fun 不起来，于是便纪录下来这天的过程。&lt;/p&gt;
+
+&lt;h2 id=&#34;install&#34;&gt;Install&lt;/h2&gt;
+
+&lt;p&gt;这部分没什么好说的， &lt;code&gt;Docker&lt;/code&gt; 官方已经出了 &lt;a href=&#34;https://docs.docker.com/docker-for-mac/&#34;&gt;OSX&lt;/a&gt; 的安装包，直接下载拖进 &lt;code&gt;Application/&lt;/code&gt; 即可完成安装。&lt;/p&gt;
+
+&lt;p&gt;安装完成之后，可以直接在命令行中运行：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;$ docker --version  # Docker 主体
+$ docker-compose --version  # 定义和管理复杂 Docker 应用的工具
+$ docker-machine --version  # 简化 Docker 安装的工具
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;查看所有的安装工具是否能够正确启动。&lt;/p&gt;
+
+&lt;p&gt;之后，便可以尝试运行 &lt;code&gt;Hello World&lt;/code&gt; 和 &lt;code&gt;nginx&lt;/code&gt; 玩一下了。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;# Hello World
+$ docker run hello-world
+
+# nginx
+$ docker run -d -p 80:80 --name webserver nginx
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;package&#34;&gt;Package&lt;/h2&gt;
+
+&lt;p&gt;以我的开源项目 &lt;a href=&#34;https://www.github.com/HackeZ/getMeizi&#34;&gt;getMeizi&lt;/a&gt; 为例子尝试打包 &lt;code&gt;Golang应用&lt;/code&gt; 。&lt;/p&gt;
+
+&lt;h4 id=&#34;first-try&#34;&gt;First Try&lt;/h4&gt;
+
+&lt;p&gt;首先我在项目的根目录下编写了一个 &lt;code&gt;Dockerfile&lt;/code&gt; 文件，其内容为：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;FROM golang:onbuild
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;然后通过 &lt;code&gt;$ docker build -t getmeizi .&lt;/code&gt; 来构建一个镜像。&lt;/p&gt;
+
+&lt;p&gt;但是这样构建的镜像会将 &lt;code&gt;Golang&lt;/code&gt; 的整个环境都打包进去，生成的镜像大小为 &lt;code&gt;832.5 MB&lt;/code&gt; 。&lt;/p&gt;
+
+&lt;p&gt;很显然我们会更加愿意得到一个更灵活小巧的镜像，于是，我的目光转向了 &lt;code&gt;scratch&lt;/code&gt; 。&lt;/p&gt;
+
+&lt;h4 id=&#34;second-try&#34;&gt;Second Try&lt;/h4&gt;
+
+&lt;p&gt;修改 &lt;code&gt;Dockerfile&lt;/code&gt; 文件内容为：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;FROM scratch
+ADD main /
+CMD [&amp;quot;/main&amp;quot;]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;然后先将 &lt;code&gt;getMeizi&lt;/code&gt; 应用编译完：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;最后使用 &lt;code&gt;$ docker build -t getmeizi .&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;构建即可生成一个仅有 &lt;code&gt;5.83 MB&lt;/code&gt; 大小的镜像。&lt;/p&gt;
+
+&lt;h2 id=&#34;push&#34;&gt;Push&lt;/h2&gt;
+
+&lt;p&gt;最后将打包好的镜像发布到 &lt;strong&gt;Docker.io&lt;/strong&gt; 中：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;$ docker images
+# REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+# getmeizi            latest              7ddcbed63a17        2 minutes ago         5.839 MB
+
+$ docker tag 7ddcbed63a17 hackerz/getmeizi
+
+$ docker images
+# REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+# getmeizi            latest              7ddcbed63a17        3 minutes ago         5.839 MB
+# hackerz/getmeizi    latest              7ddcbed63a17        3 minutes ago         5.839 MB
+
+$ docker login
+# ***
+# Login Succeeded
+
+$ docker push hackerz/getmeizi
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;打开 &lt;a href=&#34;https://hub.docker.com/r/hackerz/getmeizi/&#34;&gt;hackerz/getmeizi&lt;/a&gt; 查看并编辑镜像描述。&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Global Ignore File in Git</title>
@@ -1386,62 +1481,6 @@ close(intChan)
 &lt;h1 id=&#34;future&#34;&gt;Future&lt;/h1&gt;
 
 &lt;p&gt;对于未来，我希望能够在广东找到一份我喜爱的工作，能保持我对新技术和事物的爱好，并投身于Coding的最前线。&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Qiniu Go SDK v7 Problem</title>
-      <link>http://hackez.github.io/qn-sdkv7-pb/</link>
-      <pubDate>Fri, 15 Apr 2016 16:46:54 +0800</pubDate>
-      
-      <guid>http://hackez.github.io/qn-sdkv7-pb/</guid>
-      <description>&lt;p&gt;下载七牛Go SDK v7遇到的问题&lt;/p&gt;
-
-&lt;p&gt;今天想要使用七牛的Go SDK时候遇到了肯定会出现的一个情况，那就是&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;$ go get -u qiniupkg.com/api.v7&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;命令出现了&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;golang.org/x/net/context&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;不能下载的问题，首先说一下为什么肯定会报错的问题，那就是Go官方将这个包的下载地址更改了（后来翻墙到Go官网发现的），但是不知道为什么go get命令还是将这个包的下载地址设置为原来的那个。
-好吧，于是我试着使用七牛提供的方法下载了那个压缩包，并将其解压在&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;$GOPATH/src&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;目录下，再次运行go get 命令，这时候出现了&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;golang.org/x/net/content is not using a known version&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;的错误。
-无奈之下，只有翻墙出去Go官方网站查看文档了，然后发现Go官方将这个&lt;a href=&#34;https://github.com/golang/net&#34;&gt;net包&lt;/a&gt;放在了Github中，于是我在Github中下载下来这个包，然后在&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;$GOPATH/src&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;下，也就是Github.com文件夹的平级目录下手动创建了该路径&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;&amp;hellip;/golang.org/x&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;，然后将net包放进去，再次运行&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;$ go get -u qiniupkg.com/api.v7&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;OK，成功了，接下来就可以开始愉快地玩耍了:)&lt;/p&gt;
 </description>
     </item>
     
