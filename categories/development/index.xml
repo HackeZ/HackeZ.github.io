@@ -6,8 +6,188 @@
     <description>Recent content in Development on HackerZ - Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 20 Aug 2016 16:17:42 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 31 Aug 2016 19:17:28 +0800</lastBuildDate>
     <atom:link href="http://hackez.github.io/categories/development/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Fun in Docker Day-2</title>
+      <link>http://hackez.github.io/fun-in-docker-2/</link>
+      <pubDate>Wed, 31 Aug 2016 19:17:28 +0800</pubDate>
+      
+      <guid>http://hackez.github.io/fun-in-docker-2/</guid>
+      <description>
+
+&lt;h2 id=&#34;intro&#34;&gt;Intro&lt;/h2&gt;
+
+&lt;p&gt;今天来详细讲一下之前没有讲清楚的 Docker 镜像打包方法。&lt;/p&gt;
+
+&lt;h2 id=&#34;page-command&#34;&gt;Page Command&lt;/h2&gt;
+
+&lt;p&gt;我们都知道，打包 Docker 应用有两种方式：&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;在已经存在的 images 中 commit 修改。&lt;/li&gt;
+&lt;li&gt;创建一个全新的 images 。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;这两种方法各有优缺点。下面都来说一下怎么进行操作。&lt;/p&gt;
+
+&lt;h2 id=&#34;way-one&#34;&gt;Way One&lt;/h2&gt;
+
+&lt;p&gt;在已有的 images 中修改并 commit&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;优点：
+
+&lt;ul&gt;
+&lt;li&gt;这是最方便快捷的方法&lt;/li&gt;
+&lt;li&gt;可以避免自己打包而导致出现的一些问题，如静态文件引用错误等&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;缺点：
+
+&lt;ul&gt;
+&lt;li&gt;可定制程度低&lt;/li&gt;
+&lt;li&gt;打包出来的镜像文件可能会很大，不利于存储&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;在 Docker 官网的文档中已经很详细操作过了，下面的是我翻译的版本。具体的官方英文&lt;a href=&#34;https://docs.docker.com/engine/tutorials/dockerimages/#/updating-and-committing-an-image&#34;&gt;点我&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;首先你需要一个 images 才能进行更新操作呀，所以首先：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;#   获取 images
+$ docker pull training/sinatra
+#   运行 images 并进入到命令行中
+$ docker run -t -i training/sinatra /bin/bash
+root@0b2616b0e5a8:/#
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;记住这个被创建容器的 ID， &lt;code&gt;0b2616b0e5a8&lt;/code&gt; ，一会你会用得上的。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;接上面的操作&amp;hellip;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;#   首先更新一下 Ruby
+root@0b2616b0e5a8:/# apt-get install -y ruby2.0-dev
+#   然后安装  gem  json
+root@0b2616b0e5a8:/# gem2.0 install json
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;完成了这些更改之后，你可以运行 &lt;code&gt;exit&lt;/code&gt; 命令退出。&lt;/p&gt;
+
+&lt;p&gt;现在你可以像使用 &lt;code&gt;git&lt;/code&gt; 一样更新这个镜像了：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;#   &#39;-m&#39; &#39;-a&#39; 这些看起来很熟悉啦，和 git 中是一样的，就不再说了...
+$ docker commit -m &amp;quot;Added json gem&amp;quot; -a &amp;quot;Kate Smith&amp;quot; \
+0b2616b0e5a8 ouruser/sinatra:v2
+
+4f177bd27a9ff0f6dc2a830403925b5360bfe0b93d476f7fc3231110e7f71b1c
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;然后运行一下 &lt;code&gt;docker images&lt;/code&gt; 来看看新创建的容器吧&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;$ docker images
+
+REPOSITORY          TAG     IMAGE ID       CREATED       SIZE
+training/sinatra    latest  5bc342fa0b91   10 hours ago  446.7 MB
+ouruser/sinatra     v2      3c59e02ddd1a   10 hours ago  446.7 MB
+ouruser/sinatra     latest  5db5f8471261   10 hours ago  446.7 MB
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;way-two&#34;&gt;Way Two&lt;/h2&gt;
+
+&lt;p&gt;完全创建一个新的 images 是很多人第一时间就想做的，但是官网简介中并没有太多详细标注的细节，那么我就以我的第一视角讲诉一下我是怎么创建一个全新的  images 的。&lt;/p&gt;
+
+&lt;p&gt;依然是 Go ，首先创建一个简单的读取文件内容的项目：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;$ cd $GOPATH/src
+$ mkdir File_Reader
+$ vim File_Reader/main.go
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;源代码如下：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;package main
+
+import (
+	&amp;quot;bufio&amp;quot;
+	&amp;quot;fmt&amp;quot;
+	&amp;quot;io&amp;quot;
+	&amp;quot;log&amp;quot;
+	&amp;quot;os&amp;quot;
+)
+
+func main() {
+	file, err := os.OpenFile(&amp;quot;./file.txt&amp;quot;, os.O_RDONLY, os.ModePerm)
+	defer file.Close()
+
+	if err != nil {
+		log.Println(&amp;quot;file.txt open false!&amp;quot;)
+	}
+
+	fileReader := bufio.NewReader(file)
+
+	for {
+		line, err := fileReader.ReadString(&#39;\n&#39;)
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+			log.Println(&amp;quot;Read File Content Failed!&amp;quot;, err.Error())
+			return
+		}
+		fmt.Println(line)
+	}
+
+	fmt.Println(&amp;quot;File Read Done!&amp;quot;)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;接下来就是在当前目录下创建一个 &lt;code&gt;file.txt&lt;/code&gt; ，然后输入你想要的内容进去。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;$ &amp;quot;xxxxxx&amp;quot; &amp;gt;&amp;gt; file.txt
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;接下来就需要先将源代码文件编译成二进制文件，因为如果我们希望这个 images 越小，越少的编译环境可以达到更好的效果。
+命令如之前一样：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;$ CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;然后你可以看到当前目录下出现了一个 &lt;code&gt;main&lt;/code&gt; 的可执行文件。&lt;/p&gt;
+
+&lt;p&gt;重要的步骤来了，当前目录下创建一个 &lt;code&gt;Dockerfile&lt;/code&gt; 文件，输入如下内容：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;FROM scratch
+MAINTAINER HackerZ
+ADD main /
+ADD file.txt /
+CMD [&amp;quot;/main&amp;quot;]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;我来解释一下这些都是什么意思：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;FROM : Docker 用来指定该镜像是基于哪个基础镜像构建的&lt;/li&gt;
+&lt;li&gt;MAINTAINER : 镜像创建人的名字&lt;/li&gt;
+&lt;li&gt;ADD  : 从 Dockerfile 所在目录拷贝文件到指定路径下&lt;/li&gt;
+&lt;li&gt;CMD  : 用来指示当运行 &lt;code&gt;docker run&lt;/code&gt; 命令运行该镜像时要执行的命令&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;其余的还有：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;EXPOSE : 开放的网络端口号&lt;/li&gt;
+&lt;li&gt;ENV    : 设置环境变量&lt;/li&gt;
+&lt;li&gt;VOLUME : 可以将本地文件夹或者其他容器的文件夹挂载到该容器中。&lt;/li&gt;
+&lt;li&gt;WORKDIR: 切换目录用，可以多次切换(相当于cd命令)，对RUN,CMD,ENTRYPOINT生效&lt;/li&gt;
+&lt;li&gt;ONBUILD: ONBUILD 指定的命令在构建镜像时并不执行，而是在它的子镜像中执行&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;好了，运行 &lt;code&gt;docker build -t fileReader .&lt;/code&gt; 创建全新的 images 吧。&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Fun in Docker Day-1</title>
@@ -1275,62 +1455,6 @@ close(intChan)
 &lt;h1 id=&#34;future&#34;&gt;Future&lt;/h1&gt;
 
 &lt;p&gt;对于未来，我希望能够在广东找到一份我喜爱的工作，能保持我对新技术和事物的爱好，并投身于Coding的最前线。&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Qiniu Go SDK v7 Problem</title>
-      <link>http://hackez.github.io/qn-sdkv7-pb/</link>
-      <pubDate>Fri, 15 Apr 2016 16:46:54 +0800</pubDate>
-      
-      <guid>http://hackez.github.io/qn-sdkv7-pb/</guid>
-      <description>&lt;p&gt;下载七牛Go SDK v7遇到的问题&lt;/p&gt;
-
-&lt;p&gt;今天想要使用七牛的Go SDK时候遇到了肯定会出现的一个情况，那就是&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;$ go get -u qiniupkg.com/api.v7&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;命令出现了&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;golang.org/x/net/context&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;不能下载的问题，首先说一下为什么肯定会报错的问题，那就是Go官方将这个包的下载地址更改了（后来翻墙到Go官网发现的），但是不知道为什么go get命令还是将这个包的下载地址设置为原来的那个。
-好吧，于是我试着使用七牛提供的方法下载了那个压缩包，并将其解压在&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;$GOPATH/src&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;目录下，再次运行go get 命令，这时候出现了&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;golang.org/x/net/content is not using a known version&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;的错误。
-无奈之下，只有翻墙出去Go官方网站查看文档了，然后发现Go官方将这个&lt;a href=&#34;https://github.com/golang/net&#34;&gt;net包&lt;/a&gt;放在了Github中，于是我在Github中下载下来这个包，然后在&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;$GOPATH/src&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;下，也就是Github.com文件夹的平级目录下手动创建了该路径&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;&amp;hellip;/golang.org/x&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;，然后将net包放进去，再次运行&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;$ go get -u qiniupkg.com/api.v7&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;OK，成功了，接下来就可以开始愉快地玩耍了:)&lt;/p&gt;
 </description>
     </item>
     

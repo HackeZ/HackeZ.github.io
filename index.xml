@@ -6,8 +6,188 @@
     <description>Recent content on HackerZ - Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 20 Aug 2016 16:17:42 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 31 Aug 2016 19:17:28 +0800</lastBuildDate>
     <atom:link href="http://hackez.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Fun in Docker Day-2</title>
+      <link>http://hackez.github.io/fun-in-docker-2/</link>
+      <pubDate>Wed, 31 Aug 2016 19:17:28 +0800</pubDate>
+      
+      <guid>http://hackez.github.io/fun-in-docker-2/</guid>
+      <description>
+
+&lt;h2 id=&#34;intro&#34;&gt;Intro&lt;/h2&gt;
+
+&lt;p&gt;今天来详细讲一下之前没有讲清楚的 Docker 镜像打包方法。&lt;/p&gt;
+
+&lt;h2 id=&#34;page-command&#34;&gt;Page Command&lt;/h2&gt;
+
+&lt;p&gt;我们都知道，打包 Docker 应用有两种方式：&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;在已经存在的 images 中 commit 修改。&lt;/li&gt;
+&lt;li&gt;创建一个全新的 images 。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;这两种方法各有优缺点。下面都来说一下怎么进行操作。&lt;/p&gt;
+
+&lt;h2 id=&#34;way-one&#34;&gt;Way One&lt;/h2&gt;
+
+&lt;p&gt;在已有的 images 中修改并 commit&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;优点：
+
+&lt;ul&gt;
+&lt;li&gt;这是最方便快捷的方法&lt;/li&gt;
+&lt;li&gt;可以避免自己打包而导致出现的一些问题，如静态文件引用错误等&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;缺点：
+
+&lt;ul&gt;
+&lt;li&gt;可定制程度低&lt;/li&gt;
+&lt;li&gt;打包出来的镜像文件可能会很大，不利于存储&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;在 Docker 官网的文档中已经很详细操作过了，下面的是我翻译的版本。具体的官方英文&lt;a href=&#34;https://docs.docker.com/engine/tutorials/dockerimages/#/updating-and-committing-an-image&#34;&gt;点我&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;首先你需要一个 images 才能进行更新操作呀，所以首先：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;#   获取 images
+$ docker pull training/sinatra
+#   运行 images 并进入到命令行中
+$ docker run -t -i training/sinatra /bin/bash
+root@0b2616b0e5a8:/#
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;记住这个被创建容器的 ID， &lt;code&gt;0b2616b0e5a8&lt;/code&gt; ，一会你会用得上的。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;接上面的操作&amp;hellip;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;#   首先更新一下 Ruby
+root@0b2616b0e5a8:/# apt-get install -y ruby2.0-dev
+#   然后安装  gem  json
+root@0b2616b0e5a8:/# gem2.0 install json
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;完成了这些更改之后，你可以运行 &lt;code&gt;exit&lt;/code&gt; 命令退出。&lt;/p&gt;
+
+&lt;p&gt;现在你可以像使用 &lt;code&gt;git&lt;/code&gt; 一样更新这个镜像了：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;#   &#39;-m&#39; &#39;-a&#39; 这些看起来很熟悉啦，和 git 中是一样的，就不再说了...
+$ docker commit -m &amp;quot;Added json gem&amp;quot; -a &amp;quot;Kate Smith&amp;quot; \
+0b2616b0e5a8 ouruser/sinatra:v2
+
+4f177bd27a9ff0f6dc2a830403925b5360bfe0b93d476f7fc3231110e7f71b1c
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;然后运行一下 &lt;code&gt;docker images&lt;/code&gt; 来看看新创建的容器吧&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;$ docker images
+
+REPOSITORY          TAG     IMAGE ID       CREATED       SIZE
+training/sinatra    latest  5bc342fa0b91   10 hours ago  446.7 MB
+ouruser/sinatra     v2      3c59e02ddd1a   10 hours ago  446.7 MB
+ouruser/sinatra     latest  5db5f8471261   10 hours ago  446.7 MB
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;way-two&#34;&gt;Way Two&lt;/h2&gt;
+
+&lt;p&gt;完全创建一个新的 images 是很多人第一时间就想做的，但是官网简介中并没有太多详细标注的细节，那么我就以我的第一视角讲诉一下我是怎么创建一个全新的  images 的。&lt;/p&gt;
+
+&lt;p&gt;依然是 Go ，首先创建一个简单的读取文件内容的项目：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;$ cd $GOPATH/src
+$ mkdir File_Reader
+$ vim File_Reader/main.go
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;源代码如下：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;package main
+
+import (
+	&amp;quot;bufio&amp;quot;
+	&amp;quot;fmt&amp;quot;
+	&amp;quot;io&amp;quot;
+	&amp;quot;log&amp;quot;
+	&amp;quot;os&amp;quot;
+)
+
+func main() {
+	file, err := os.OpenFile(&amp;quot;./file.txt&amp;quot;, os.O_RDONLY, os.ModePerm)
+	defer file.Close()
+
+	if err != nil {
+		log.Println(&amp;quot;file.txt open false!&amp;quot;)
+	}
+
+	fileReader := bufio.NewReader(file)
+
+	for {
+		line, err := fileReader.ReadString(&#39;\n&#39;)
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+			log.Println(&amp;quot;Read File Content Failed!&amp;quot;, err.Error())
+			return
+		}
+		fmt.Println(line)
+	}
+
+	fmt.Println(&amp;quot;File Read Done!&amp;quot;)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;接下来就是在当前目录下创建一个 &lt;code&gt;file.txt&lt;/code&gt; ，然后输入你想要的内容进去。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;$ &amp;quot;xxxxxx&amp;quot; &amp;gt;&amp;gt; file.txt
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;接下来就需要先将源代码文件编译成二进制文件，因为如果我们希望这个 images 越小，越少的编译环境可以达到更好的效果。
+命令如之前一样：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;$ CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;然后你可以看到当前目录下出现了一个 &lt;code&gt;main&lt;/code&gt; 的可执行文件。&lt;/p&gt;
+
+&lt;p&gt;重要的步骤来了，当前目录下创建一个 &lt;code&gt;Dockerfile&lt;/code&gt; 文件，输入如下内容：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;FROM scratch
+MAINTAINER HackerZ
+ADD main /
+ADD file.txt /
+CMD [&amp;quot;/main&amp;quot;]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;我来解释一下这些都是什么意思：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;FROM : Docker 用来指定该镜像是基于哪个基础镜像构建的&lt;/li&gt;
+&lt;li&gt;MAINTAINER : 镜像创建人的名字&lt;/li&gt;
+&lt;li&gt;ADD  : 从 Dockerfile 所在目录拷贝文件到指定路径下&lt;/li&gt;
+&lt;li&gt;CMD  : 用来指示当运行 &lt;code&gt;docker run&lt;/code&gt; 命令运行该镜像时要执行的命令&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;其余的还有：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;EXPOSE : 开放的网络端口号&lt;/li&gt;
+&lt;li&gt;ENV    : 设置环境变量&lt;/li&gt;
+&lt;li&gt;VOLUME : 可以将本地文件夹或者其他容器的文件夹挂载到该容器中。&lt;/li&gt;
+&lt;li&gt;WORKDIR: 切换目录用，可以多次切换(相当于cd命令)，对RUN,CMD,ENTRYPOINT生效&lt;/li&gt;
+&lt;li&gt;ONBUILD: ONBUILD 指定的命令在构建镜像时并不执行，而是在它的子镜像中执行&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;好了，运行 &lt;code&gt;docker build -t fileReader .&lt;/code&gt; 创建全新的 images 吧。&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Fun in Docker Day-1</title>
@@ -1411,76 +1591,6 @@ close(intChan)
 &lt;p&gt;&lt;strong&gt;连接确认&lt;/strong&gt;：是指当服务器端socket监听到或者说是接收到客户端socekt的连接请求，它就响应客户端socket的请求，建立一个新的进程，把服务器端socket的&lt;strong&gt;描述&lt;/strong&gt;发给客户端，一旦客户端&lt;strong&gt;确认了此描述&lt;/strong&gt;，连接就建立好了。而服务器端socket继续处于监听状态，继续等待其他客户端socket的连接请求。&lt;/p&gt;
 
 &lt;p&gt;Socket UDP &amp;amp;&amp;amp; TCP&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>About Me</title>
-      <link>http://hackez.github.io/about-me/</link>
-      <pubDate>Sat, 30 Apr 2016 19:14:56 +0800</pubDate>
-      
-      <guid>http://hackez.github.io/about-me/</guid>
-      <description>
-
-&lt;h1 id=&#34;about-me&#34;&gt;About Me&lt;/h1&gt;
-
-&lt;p&gt;我是朱冠州，以HackerZ的名字混迹于网络中。于1994年8月出生于广东肇庆，迷迷茫茫直至高中开始喜欢上计算机，于是便选择了计算机科学与技术这门学科考上了北京理工大学珠海学院。平常我是一个喜欢拍照/看推理小说/撸代码的一个小小码农。&lt;/p&gt;
-
-&lt;p&gt;我的大学生活是从&lt;strong&gt;C语言&lt;/strong&gt;开始的，一路上在 &lt;strong&gt;PHP/JAVA/Android/Node/Web&lt;/strong&gt; 中迷失了自我，直至我遇上了&lt;strong&gt;Golang&lt;/strong&gt;，我喜欢Go的那种优雅/简练的语法，更喜欢在Golang世界中的那种自由，所以我心甘情愿当一个Gopher。&lt;/p&gt;
-
-&lt;p&gt;我希望能成为一个能够改善我们身边生活/见证未来科技行业革新的一个&lt;strong&gt;创新者&lt;/strong&gt;以及&lt;strong&gt;见证者&lt;/strong&gt;。&lt;/p&gt;
-
-&lt;h1 id=&#34;contact-me&#34;&gt;Contact Me&lt;/h1&gt;
-
-&lt;ul&gt;
-&lt;li&gt;Email: 767110505@qq.com&lt;/li&gt;
-&lt;li&gt;Weibo: &lt;a href=&#34;http://weibo.com/u/2246744750&#34;&gt;HackerZGZ&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;Github: &lt;a href=&#34;https://github.com/HackeZ&#34;&gt;HackeZ&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;Blog: &lt;a href=&#34;http://hackez.github.io&#34;&gt;HackerZ&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h1 id=&#34;technology-stack&#34;&gt;Technology stack&lt;/h1&gt;
-
-&lt;p&gt;前端&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;HTML/CSS/JavaScript&lt;/li&gt;
-&lt;li&gt;JQuery&lt;/li&gt;
-&lt;li&gt;ReactJS&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;后端&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;PHP (ThinkPHP)&lt;/li&gt;
-&lt;li&gt;NodeJS (Express)&lt;/li&gt;
-&lt;li&gt;Golang (Beego/Hugo)&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;数据库&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;MySQL&lt;/li&gt;
-&lt;li&gt;MongoDB&lt;/li&gt;
-&lt;li&gt;Redis&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;移动端&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;Andorid&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;工具&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;Linux&lt;/li&gt;
-&lt;li&gt;Git&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h1 id=&#34;future&#34;&gt;Future&lt;/h1&gt;
-
-&lt;p&gt;对于未来，我希望能够在广东找到一份我喜爱的工作，能保持我对新技术和事物的爱好，并投身于Coding的最前线。&lt;/p&gt;
 </description>
     </item>
     
