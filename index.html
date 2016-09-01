@@ -88,6 +88,75 @@
       
   <div class="post">
     <h1 class="post-title">
+      <a href="http://hackez.github.io/how2use-captcha-in-beego/">
+        How to Use Captcha in Beego Correct
+      </a>
+    </h1>
+
+    <span class="post-date">Thu, Sep 1, 2016</span>
+
+    
+
+<h2 id="intro">Intro</h2>
+
+<p>最近在做 Beego 的 Web 网站开发，主题是 <code>个人词典</code> ，项目地址 <a href="https://github.com/HackeZ/Personal-Dictionary">点我</a> 。
+在关于 Beego 的验证码使用方法上出现了问题，后面通过阅读 Beego 的源码解决了该问题，下面来详细讲诉一下。</p>
+
+<h2 id="problem">Problem</h2>
+
+<p>先来看看错误的代码吧</p>
+
+<pre><code class="language-go">// ...
+var cpt *captcha.Captcha
+
+func (c *MainController) Login () {
+    // ...
+    // Get Verification Code.
+    store = cache.NewMemoryCache()
+    cpt = captcha.NewWithFilter(&quot;/captcha/&quot;, store)
+	cpt.ChallengeNums, _ = beego.AppConfig.Int(&quot;captcha_length&quot;)
+	cpt.StdWidth = 100
+	cpt.StdHeight = 42
+
+    c.TplName = &quot;login.tpl&quot;
+}
+</code></pre>
+
+<p>这样写出现的问题是，开启服务器之后，只有第一次输入的验证码是正确的，一旦刷新页面或者已经登录之后，无论再次怎么进行登录都是 <code>验证码不正确</code> 的错误。
+甚至在很多情况下都会出现验证码图片显示不出来。</p>
+
+<h2 id="solve">Solve</h2>
+
+<p>其实很容易就可以想到是 Cache 模块而导致的问题，因为 Beego 的 Memory Cache 从源代码中看其实就是一个存放在内存的 <code>Map</code> ，而且该 <code>Map</code> 是带生存周期的。所以应该将 <code>Cache</code> 设置为一个全局变量，那么才能可以让 <code>Captcha</code> 每次都能到正确的内存地址中的 Map 存取数据。而不是每次访问都新建一次 <code>Cache</code> 。</p>
+
+<p>正确的用法如下：</p>
+
+<pre><code class="language-go">// ...
+var cpt *captcha.Captcha
+var store cache.Cache
+
+func (c *MainController) Login () {
+    // ...
+    // Get Verification Code.
+    cpt = captcha.NewWithFilter(&quot;/captcha/&quot;, store)
+	cpt.ChallengeNums, _ = beego.AppConfig.Int(&quot;captcha_length&quot;)
+	cpt.StdWidth = 100
+	cpt.StdHeight = 42
+
+    c.TplName = &quot;login.tpl&quot;
+}
+
+func init() {
+    store = cache.NewMemoryCache()
+}
+</code></pre>
+
+<p>这样，无论是怎么折腾该验证码， <code>Captcha</code> 都能到正确的 <code>Map</code> 中进行操作，一切的问题都解决了。</p>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
       <a href="http://hackez.github.io/fun-in-docker-2/">
         Fun in Docker Day-2
       </a>
