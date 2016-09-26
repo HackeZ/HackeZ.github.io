@@ -6,8 +6,117 @@
     <description>Recent content in Golang on HackerZ - Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 16 Sep 2016 10:07:54 +0800</lastBuildDate>
+    <lastBuildDate>Sun, 25 Sep 2016 23:27:46 +0800</lastBuildDate>
     <atom:link href="http://hackez.github.io/categories/golang/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>CircuitBreaker 设计模式</title>
+      <link>http://hackez.github.io/circuitbreaker/</link>
+      <pubDate>Sun, 25 Sep 2016 23:27:46 +0800</pubDate>
+      
+      <guid>http://hackez.github.io/circuitbreaker/</guid>
+      <description>
+
+&lt;h2 id=&#34;intro&#34;&gt;Intro&lt;/h2&gt;
+
+&lt;p&gt;今天发现了 &lt;a href=&#34;https://github.com/sony/&#34;&gt;Sony&lt;/a&gt; 竟然在 Github 上开源了他们的一些项目！而他们也是在用 &lt;code&gt;Golang&lt;/code&gt; 在开发后台！&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Amazing&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;于是不亦乐乎地看起了其中的 Golang 开源项目，而其中一个名为 &lt;a href=&#34;https://github.com/sony/gobreaker&#34;&gt;sony/gobreaker&lt;/a&gt; 的项目引起了我的注意。&lt;/p&gt;
+
+&lt;p&gt;项目简述中描述了这是一个 Golang 版本的 &lt;strong&gt;CircuitBreaker&lt;/strong&gt; 实现！&lt;/p&gt;
+
+&lt;p&gt;那么什么是 &lt;strong&gt;CircuitBreaker（断路器）&lt;/strong&gt; 呢？下面就来一起看看。&lt;/p&gt;
+
+&lt;h2 id=&#34;what-is-circuitbreaker&#34;&gt;What is CircuitBreaker&lt;/h2&gt;
+
+&lt;p&gt;根据传统的解释，断路器是广泛用于 &lt;em&gt;电子工程产业&lt;/em&gt; 的一个重要安全保障！&lt;/p&gt;
+
+&lt;p&gt;当你家里的洗衣机漏电了，电流就会瞬间增大，那么连接家里总线的 &lt;strong&gt;断路器&lt;/strong&gt; 就会剩下，及时切断总电源，防止意外的发生！&lt;/p&gt;
+
+&lt;p&gt;那么在最近的 &lt;code&gt;微服务&lt;/code&gt; 越来越流行的时代，软件架构开始将 &lt;strong&gt;断路器&lt;/strong&gt; 这一概念添加进来了。&lt;/p&gt;
+
+&lt;p&gt;我们知道，当你一旦开始将系统中的一部分拆解为一个独立服务，那么你就已经走进了 &lt;code&gt;微服务&lt;/code&gt; 的时代了。
+而在微服务中最重要的是要保证服务运行的稳定性，如果独立服务无法提供高质量或者是不能提供服务，那么这将会导致整个系统的崩溃！&lt;/p&gt;
+
+&lt;p&gt;而 &lt;code&gt;微服务&lt;/code&gt; 会遇到的故障有可能是：
+    - 瞬时故障：如慢的网络连接、超时，资源过度使用而暂时不可用；
+    - 不容易预见的突发故障：需要更长时间来纠正的故障；&lt;/p&gt;
+
+&lt;p&gt;而解决这些故障常常有两种方法：
+    - 重试机制：对于预期的短暂故障问题，通过重试模式是可以解决的；
+    - 断路器（CircuitBreaker）模式：将受保护的服务封装在一个可以监控故障的断路器对象中，当故障达到一定门限，断路器将跳闸（trip），所有后继调用将不会发往受保护的服务而由断路器对象之间返回错误。对于需要更长时间解决的故障问题，不断重试就没有太大意义了，可以使用断路器模式。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://martinfowler.com/bliki/images/circuitBreaker/sketch.png?_=0.814744712175792&#34; alt=&#34;CircuitBreaker - Sketch&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://martinfowler.com/bliki/images/circuitBreaker/state.png?_=0.47541342622693494&#34; alt=&#34;CircuitBreaker - State&#34; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;action-in-gobreaker&#34;&gt;Action in gobreaker&lt;/h2&gt;
+
+&lt;p&gt;简单介绍完 CircuitBreaker 的概念，那么接下来就结合 &lt;a href=&#34;https://github.com/sony/gobreaker&#34;&gt;gobreaker&lt;/a&gt; 的源码实际看看如何设计一个 断触器。&lt;/p&gt;
+
+&lt;p&gt;首先一个值得我们关注的点是 CircuitBreaker State， 它被设计为 &lt;strong&gt;3&lt;/strong&gt; 种状态：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;type State int
+const (
+    StateClosed State = iota
+    StateHalfOpen
+    StateOpen
+)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;CircuitBreaker 会根据当前处于不同的 &lt;code&gt;State&lt;/code&gt; ，而判断最多可以通过多少个 &lt;code&gt;Request&lt;/code&gt; 。&lt;/p&gt;
+
+&lt;p&gt;接下来是 &lt;code&gt;Setting&lt;/code&gt; ，通过 Setting 对象的值，可以新建出一个 CircuitBreaker ：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;type Settings struct {
+	Name          string  // CircuitBreaker 的名字
+	MaxRequests   uint32  // 最大连接数，根据 State 会自动调节允许通过的 Request 值
+	Interval      time.Duration // 当 CircuitBreaker 处于 Close 状态的时候，循环该时间段，清空连接数
+	Timeout       time.Duration // 当 CircuitBreaker 处于 Open 状态的时候，如果触发了该超时时间，将它置为 Half-Open
+	ReadyToTrip   func(counts Counts) bool // 判断当前失败数，是否应该进入 Close 状态
+	OnStateChange func(name string, from State, to State) // 当状态发生变化时候，触发该函数
+}
+
+func NewCircuitBreaker(st Settings) *CircuitBreaker {
+    ...
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;因为这个源码实现其实非常简单，我也就不一一讲诉了，就再将一个比较重要的函数 &lt;code&gt;Execute&lt;/code&gt; 吧：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;func (cb *CircuitBreaker) Execute(req func() (interface{}, error)) (interface{}, error) {
+	generation, err := cb.beforeRequest()
+	if err != nil {
+		return nil, err
+	}
+
+	defer func() {
+		e := recover()
+		if e != nil {
+			cb.afterRequest(generation, fmt.Errorf(&amp;quot;panic in request&amp;quot;))
+			panic(e)
+		}
+	}()
+
+	result, err := req()
+	cb.afterRequest(generation, err)
+	return result, err
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;该函数用于执行需要 CircuitBreaker 触发的函数，详情可以参考这里 =&amp;gt; &lt;a href=&#34;https://github.com/sony/gobreaker/blob/master/example/http_breaker.go&#34;&gt;example&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;首先执行 CircuitBreaker 的 beforeRequest，然后执行传进来的 req 函数，最后执行 afterRequest ，并捕获异常，如果有异常， recover 它，不停止程序，返回错误信息。&lt;/p&gt;
+
+&lt;h2 id=&#34;参考网站&#34;&gt;参考网站&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&#34;http://blog.sina.com.cn/s/blog_72ef7bea0102vvsn.html&#34;&gt;mryqu - blog&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;http://www.cnblogs.com/davidwang456/p/3976607.html&#34;&gt;English&lt;/a&gt;&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>tcpdump in Action</title>
@@ -1448,76 +1557,6 @@ close(intChan)
 &lt;p&gt;&lt;strong&gt;连接确认&lt;/strong&gt;：是指当服务器端socket监听到或者说是接收到客户端socekt的连接请求，它就响应客户端socket的请求，建立一个新的进程，把服务器端socket的&lt;strong&gt;描述&lt;/strong&gt;发给客户端，一旦客户端&lt;strong&gt;确认了此描述&lt;/strong&gt;，连接就建立好了。而服务器端socket继续处于监听状态，继续等待其他客户端socket的连接请求。&lt;/p&gt;
 
 &lt;p&gt;Socket UDP &amp;amp;&amp;amp; TCP&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>About Me</title>
-      <link>http://hackez.github.io/about-me/</link>
-      <pubDate>Sat, 30 Apr 2016 19:14:56 +0800</pubDate>
-      
-      <guid>http://hackez.github.io/about-me/</guid>
-      <description>
-
-&lt;h1 id=&#34;about-me&#34;&gt;About Me&lt;/h1&gt;
-
-&lt;p&gt;我是朱冠州，以HackerZ的名字混迹于网络中。于1994年8月出生于广东肇庆，迷迷茫茫直至高中开始喜欢上计算机，于是便选择了计算机科学与技术这门学科考上了北京理工大学珠海学院。平常我是一个喜欢拍照/看推理小说/撸代码的一个小小码农。&lt;/p&gt;
-
-&lt;p&gt;我的大学生活是从&lt;strong&gt;C语言&lt;/strong&gt;开始的，一路上在 &lt;strong&gt;PHP/JAVA/Android/Node/Web&lt;/strong&gt; 中迷失了自我，直至我遇上了&lt;strong&gt;Golang&lt;/strong&gt;，我喜欢Go的那种优雅/简练的语法，更喜欢在Golang世界中的那种自由，所以我心甘情愿当一个Gopher。&lt;/p&gt;
-
-&lt;p&gt;我希望能成为一个能够改善我们身边生活/见证未来科技行业革新的一个&lt;strong&gt;创新者&lt;/strong&gt;以及&lt;strong&gt;见证者&lt;/strong&gt;。&lt;/p&gt;
-
-&lt;h1 id=&#34;contact-me&#34;&gt;Contact Me&lt;/h1&gt;
-
-&lt;ul&gt;
-&lt;li&gt;Email: 767110505@qq.com&lt;/li&gt;
-&lt;li&gt;Weibo: &lt;a href=&#34;http://weibo.com/u/2246744750&#34;&gt;HackerZGZ&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;Github: &lt;a href=&#34;https://github.com/HackeZ&#34;&gt;HackeZ&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;Blog: &lt;a href=&#34;http://hackez.github.io&#34;&gt;HackerZ&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h1 id=&#34;technology-stack&#34;&gt;Technology stack&lt;/h1&gt;
-
-&lt;p&gt;前端&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;HTML/CSS/JavaScript&lt;/li&gt;
-&lt;li&gt;JQuery&lt;/li&gt;
-&lt;li&gt;ReactJS&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;后端&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;PHP (ThinkPHP)&lt;/li&gt;
-&lt;li&gt;NodeJS (Express)&lt;/li&gt;
-&lt;li&gt;Golang (Beego/Hugo)&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;数据库&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;MySQL&lt;/li&gt;
-&lt;li&gt;MongoDB&lt;/li&gt;
-&lt;li&gt;Redis&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;移动端&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;Andorid&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;工具&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;Linux&lt;/li&gt;
-&lt;li&gt;Git&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h1 id=&#34;future&#34;&gt;Future&lt;/h1&gt;
-
-&lt;p&gt;对于未来，我希望能够在广东找到一份我喜爱的工作，能保持我对新技术和事物的爱好，并投身于Coding的最前线。&lt;/p&gt;
 </description>
     </item>
     
