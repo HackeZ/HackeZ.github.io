@@ -6,8 +6,60 @@
     <description>Recent content in Development on HackerZ - Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 25 Sep 2016 23:27:46 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 28 Sep 2016 09:47:55 +0800</lastBuildDate>
     <atom:link href="http://hackez.github.io/categories/development/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Update Mac OS Problem</title>
+      <link>http://hackez.github.io/update_macos_problem/</link>
+      <pubDate>Wed, 28 Sep 2016 09:47:55 +0800</pubDate>
+      
+      <guid>http://hackez.github.io/update_macos_problem/</guid>
+      <description>
+
+&lt;h2 id=&#34;intro&#34;&gt;Intro&lt;/h2&gt;
+
+&lt;p&gt;最近将 Mac OS 升级到 Sierra(10.12) ，升级完成后，部分的 Go 应用无法正常启动了，下面说说我是怎么解决的。&lt;/p&gt;
+
+&lt;h2 id=&#34;problem&#34;&gt;Problem&lt;/h2&gt;
+
+&lt;p&gt;直接给出当我运行 &lt;code&gt;go-sqlite3&lt;/code&gt; 包时候的报错信息吧：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;../github.com/mattn/go-sqlite3/sqlite3-binding.c:20515:17: warning: &#39;OSAtomicCompareAndSwapPtrBarrier&#39; is deprecated: first deprecated in macOS 10.12 - Use atomic_compare_exchange_strong() from &amp;lt;stdatomic.h&amp;gt; instead [-Wdeprecated-declarations]
+/usr/include/libkern/OSAtomicDeprecated.h:547:6: note: &#39;OSAtomicCompareAndSwapPtrBarrier&#39; has been explicitly marked deprecated here
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;从报错的信息应该能猜想到是 &lt;code&gt;go-sqlite3&lt;/code&gt; 包下的 &lt;code&gt;sqlite3-binding.c&lt;/code&gt; 文件的依赖头文件不被支持了。&lt;/p&gt;
+
+&lt;p&gt;但是经过查看，该头文件的确存在而且应该是没有错误的，那么问题出现在哪呢？&lt;/p&gt;
+
+&lt;h2 id=&#34;slove&#34;&gt;Slove&lt;/h2&gt;
+
+&lt;p&gt;后来我想是不是因为这个包我没有更新而出现的不兼容呢？于是我尝试了：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;git pull&lt;/li&gt;
+&lt;li&gt;go install github.com/mattn/go-sqlite3&lt;/li&gt;
+&lt;li&gt;brew update # 因为我之前已经安装了，未安装的同学可以试试 $ brew install sqlite3&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;当我运行到 brew 命令时候发现， &lt;code&gt;/usr/local/&lt;/code&gt; 目录的权限在当前账户下无法进行写入？&lt;/p&gt;
+
+&lt;p&gt;猫腻出来了，接下来我输入 &lt;code&gt;$ sudo chown -R $(whoami) /usr/local&lt;/code&gt; 更改权限，再次运行 &lt;code&gt;go-sqlite3&lt;/code&gt; ，应用正常了！&lt;/p&gt;
+
+&lt;h2 id=&#34;last&#34;&gt;Last&lt;/h2&gt;
+
+&lt;p&gt;因为更新系统之后，账户的很多权限都会被覆盖掉，所以不要怕，多多尝试给权限，说不定就好了呢！&lt;/p&gt;
+
+&lt;p&gt;P.S. 更新完系统之后 &lt;code&gt;Git&lt;/code&gt; 不能正常使用的，报错信息：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;xcrun: error: invalid active developer path (/Library/Developer/CommandLineTools), 
+missing xcrun at: /Library/Developer/CommandLineTools/usr/bin/xcrun
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;可以通过命令 &lt;code&gt;xcode-select --install&lt;/code&gt; 下载 XCODE 的插件解决。&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>CircuitBreaker 设计模式</title>
@@ -1581,47 +1633,6 @@ func main() {
 
 &lt;p&gt;通过算法5，我们生成了伪用户数据：
 &lt;img src=&#34;http://7xsxev.com1.z0.glb.clouddn.com/Build-pseudo-user.png&#34; alt=&#34;Build Pseudo User&#34; /&gt;&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Learning in Hadoop - Day 1</title>
-      <link>http://hackez.github.io/hadoop-1/</link>
-      <pubDate>Mon, 13 Jun 2016 20:45:25 +0800</pubDate>
-      
-      <guid>http://hackez.github.io/hadoop-1/</guid>
-      <description>&lt;p&gt;第一次玩Hadoop&lt;/p&gt;
-
-&lt;p&gt;最近在折腾机器学习，因为查阅到Yahoo的&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;《Predicting The Next App That You Are Going To Use》&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;这一篇Paper的时候，它提到了Google的 &lt;strong&gt;MapReduce&lt;/strong&gt;以及 &lt;strong&gt;Word2Vec&lt;/strong&gt; 。相信折腾过机器学习的小伙伴都会比较熟悉这两个东西了。于是，为了更深入地进行学习，我便无情地掉进了这个 &lt;strong&gt;坑&lt;/strong&gt; 里。&lt;/p&gt;
-
-&lt;p&gt;首先介绍一下背景，Yahoo的这篇Paper主要就是根据用户日常APP的使用习惯，然后对用户下一启动的APP进行预测。因为Yahoo认为日常手机的使用场景会对哪个APP的开启与否有着很强的关联性，于是他们便使用了 &lt;strong&gt;Word2Vec&lt;/strong&gt; 对用户手机中记录的6个手机事件：&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;&lt;em&gt;Last Location Update&lt;/em&gt;&lt;/li&gt;
-&lt;li&gt;&lt;em&gt;Last Charge Cavle&lt;/em&gt;&lt;/li&gt;
-&lt;li&gt;&lt;em&gt;Last Audio Cable&lt;/em&gt;&lt;/li&gt;
-&lt;li&gt;&lt;em&gt;Last Context Trigger&lt;/em&gt;&lt;/li&gt;
-&lt;li&gt;&lt;em&gt;Last Context Pulled&lt;/em&gt;&lt;/li&gt;
-&lt;li&gt;&lt;em&gt;Last App Open&lt;/em&gt;&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;进行计算词向量，用于文本预测。而Word2Vec有着3个广为流传的版本：&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;C&lt;/li&gt;
-&lt;li&gt;Python&lt;/li&gt;
-&lt;li&gt;Java&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;但是这3个版本对于Yahoo来说性能都是不足的，经我测试，一个800M的文本在C语言版本中计算时间需要20Min！&lt;/p&gt;
-
-&lt;p&gt;而在预测下一个APP这个场景里，这种计算速度是完全不可以接受的，于是Yahoo他们利用MapReduce重写了一个Word2Vec，将这个版本放在云端进行计算。这就是我进行MapReduce学习的原因。&lt;/p&gt;
 </description>
     </item>
     
