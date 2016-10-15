@@ -6,8 +6,105 @@
     <description>Recent content in Development on HackerZ - Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 28 Sep 2016 09:47:55 +0800</lastBuildDate>
+    <lastBuildDate>Sat, 15 Oct 2016 23:33:50 +0800</lastBuildDate>
     <atom:link href="http://hackez.github.io/tags/development/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Golang Error: bad file descriptor</title>
+      <link>http://hackez.github.io/golang-bad-file-descriptor/</link>
+      <pubDate>Sat, 15 Oct 2016 23:33:50 +0800</pubDate>
+      
+      <guid>http://hackez.github.io/golang-bad-file-descriptor/</guid>
+      <description>
+
+&lt;h2 id=&#34;intro&#34;&gt;Intro&lt;/h2&gt;
+
+&lt;p&gt;好久没写 Blog 了，正好今天写了一个爬取 &lt;strong&gt;Bing&lt;/strong&gt; 首页高清图片的服务 Application =&amp;gt; &lt;a href=&#34;https://github.com/HackeZ/bingImgCrawer&#34;&gt;bingImgCrawer&lt;/a&gt; 碰到了之前遇到的一个写文件的问题，现在就将其纪录下来吧。&lt;/p&gt;
+
+&lt;h2 id=&#34;problem&#34;&gt;Problem&lt;/h2&gt;
+
+&lt;p&gt;我的需求是将匹配出来的 &lt;strong&gt;图片URL&lt;/strong&gt; 按照日期纪录到 &lt;code&gt;img_url.txt&lt;/code&gt; 文件中。&lt;/p&gt;
+
+&lt;p&gt;下面是我的问题代码：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;const (
+    LogFile = &amp;quot;./img_url.txt&amp;quot;
+)
+func logFile(url string) {
+    ver file *os.File 
+    var err error
+    if isExist(LogFile) {
+        file, err = os.OpenFile(LogFile, os.O_APPEND, 0666)
+    } else {
+        log.Println(&amp;quot;log file not exist, creating...&amp;quot;)
+		file, err = os.Create(LogFile)
+    }
+    defer file.Close()
+    ...
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;当文件已经存在的时候，调用 &lt;code&gt;file, err = os.OpenFile(LogFile, O_APPEND, 0666)&lt;/code&gt; 语句打开的 file 变量在使用 &lt;code&gt;file.WriteString(...)&lt;/code&gt; 方法的时候，会出现错误信息：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;write ./img_url.txt: bad file descriptor
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;solve&#34;&gt;Solve&lt;/h2&gt;
+
+&lt;p&gt;当第一次遇到该错误的时候，我还以为是上一次的线程使用完 &lt;code&gt;img_url.txt&lt;/code&gt; 之后没有释放掉文件句柄，而导致第二次获取该文件句柄的时候出现的 &lt;code&gt;bad file descriptor&lt;/code&gt; 错误。&lt;/p&gt;
+
+&lt;p&gt;于是我将打开该文件的变量作为 &lt;strong&gt;全局变量&lt;/strong&gt; 进行写入操作，问题依然没有得到解决（因为改动太多，代码就不放出来了）&lt;/p&gt;
+
+&lt;p&gt;于是只能借助万能的 stack overflow 了。。。&lt;/p&gt;
+
+&lt;p&gt;解决办法 =&amp;gt; &lt;a href=&#34;http://stackoverflow.com/questions/33851692/golang-bad-file-descriptor&#34;&gt;Golang bad file descriptor&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;原来是我没有将写文件的 &lt;strong&gt;flag&lt;/strong&gt; 也写进去&amp;hellip;原来 &lt;code&gt;O_APPEND&lt;/code&gt; 只是负责当用户有写入文件这个动作的时候，将文件指针指向文件结尾。&lt;/p&gt;
+
+&lt;p&gt;正确写法：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;    if isExist(LogFile) {
+        file, err = os.OpenFile(LogFile, os.O_WRONLY | os.O_APPEND, 0666)
+    } else {
+        log.Println(&amp;quot;log file not exist, creating...&amp;quot;)
+		file, err = os.Create(LogFile)
+    }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;最后再好奇一件事情， &lt;code&gt;os.O_WRONLY | os.O_APPEND&lt;/code&gt; 的结果是什么呢？&lt;/p&gt;
+
+&lt;p&gt;上代码：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func main() {
+    fmt.Println(os.O_APPEND)  // 8
+	fmt.Println(os.O_WRONLY)  // 1
+	fmt.Println(os.O_RDWR)    // 2
+	fmt.Println(os.O_APPEND | os.O_WRONLY) // 9
+	fmt.Println(os.O_APPEND | os.O_RDWR)   // 10
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;最后翻定义，见 &lt;code&gt;/usr/local/go/src/syscall/zerrors_darwin_amd64.go&lt;/code&gt; :&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    ...
+    O_APPEND = 0x8
+    ...
+    O_RDWR = 0x2
+    ...
+    O_WRONLY = 0x1
+    ...
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;OVER&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;references&#34;&gt;References&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://stackoverflow.com/questions/33851692/golang-bad-file-descriptor&#34;&gt;Golang bad file descriptor&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://blog.csdn.net/yjp19871013/article/details/8138449&#34;&gt;关于打开文件时O_APPEND标志的作用&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
     
     <item>
       <title>Update Mac OS Problem</title>
@@ -1651,93 +1748,6 @@ func main() {
     md.Corrent(&amp;quot;./markdown/markdown-style.css&amp;quot;)
 }
 &lt;/code&gt;&lt;/pre&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Redigo Action - 1</title>
-      <link>http://hackez.github.io/redigo-action-1/</link>
-      <pubDate>Fri, 22 Jul 2016 10:41:10 +0800</pubDate>
-      
-      <guid>http://hackez.github.io/redigo-action-1/</guid>
-      <description>
-
-&lt;h1 id=&#34;redigo-action&#34;&gt;Redigo Action&lt;/h1&gt;
-
-&lt;h4 id=&#34;redis-作为一个内存型的高性能数据库-如今是越来越火了-为了得到更高的-qps-以及-tps-我们无法忽视掉这个如此强大的数据库&#34;&gt;Redis 作为一个内存型的高性能数据库，如今是越来越火了，为了得到更高的 QPS 以及 TPS ，我们无法忽视掉这个如此强大的数据库。&lt;/h4&gt;
-
-&lt;h4 id=&#34;在-redis-官网中-golang语言的-框架-http-redis-io-clients-go-有两个是被官方所推荐的-分别为&#34;&gt;在 Redis 官网中，Golang语言的&lt;a href=&#34;http:redis.io/clients#go&#34;&gt;框架&lt;/a&gt;有两个是被官方所推荐的，分别为：&lt;/h4&gt;
-
-&lt;p&gt;&lt;strong&gt;1. &lt;a href=&#34;https:github.com/garyburd/redigo&#34;&gt;Redigo&lt;/a&gt;&lt;/strong&gt;
-&lt;strong&gt;2. &lt;a href=&#34;https:github.com/mediocregopher/radix.v2&#34;&gt;Radix&lt;/a&gt;&lt;/strong&gt;&lt;/p&gt;
-
-&lt;h4 id=&#34;本着源码易读优先-我选择了-redigo-进行开发尝试-项目地址-点我-https-www-github-com-hackez-getacfunpage&#34;&gt;本着源码易读优先，我选择了 Redigo 进行开发尝试，项目地址&lt;a href=&#34;https:www.github.com/HackeZ/getAcFunPage&#34;&gt;点我&lt;/a&gt;。&lt;/h4&gt;
-
-&lt;h3 id=&#34;action&#34;&gt;Action&lt;/h3&gt;
-
-&lt;p&gt;熟悉Redis的同学都知道，Redis是 &lt;strong&gt;单进程，单线程，IO多路复用&lt;/strong&gt; 的，这一点不同于 MySQL 的多线程。
- 这就意味这Redis可以使用长连接来进行通信，那么，我们就需要一个连接池去管理这些长连接，当一个长连接使用完毕之后就可以交给下一个长连接继续进行使用。&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;&lt;strong&gt;连接池&lt;/strong&gt;
-基本思想是在系统初始化的时候，将数据库连接作为对象存储在内存中，当用户需要访问数据库时，并非建立一个新的连接，而是从连接池中取出一个已建立的空闲连接对象。使用完毕后，用户也并非将连接关闭，而是将连接放回连接池中，以供下一个请求访问使用。
-而连接的建立、断开都由连接池自身来管理。同时，还可以通过设置连接池的参数来控制连接池中的初始连接数、连接的上下限数以及每个连接的最大使用次数、最大空闲时间等等。
-也可以通过其自身的管理机制来监视数据库连接的数量、使用情况等。&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;而 Redigo 就是支持连接池的，看看 &lt;a href=&#34;https:github.com/garyburd/redigo/blob/master/redis/pool.go#L43&#34;&gt;Redigo - Pool&lt;/a&gt;.
-其 L43 ～ L92 就给出了一个完整的 连接池 的正确打开方式。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;func newPool(server, password string) *redis.Pool {
-      return &amp;amp;redis.Pool{
-          MaxIdle: 3,
-          IdleTimeout: 240 * time.Second,
-          Dial: func () (redis.Conn, error) {
-            c, err := redis.Dial(&amp;quot;tcp&amp;quot;, server)
-            if err != nil {
-                return nil, err
-            }
-            if _, err := c.Do(&amp;quot;AUTH&amp;quot;, password); err != nil {
-                c.Close()
-                return nil, err
-              }
-               return c, err
-          },
-          TestOnBorrow: func(c redis.Conn, t time.Time) error {
-              _, err := c.Do(&amp;quot;PING&amp;quot;)
-              return err
-          },
-      }
-  }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;这段简单易懂的代码返回了一个可用的 Redis 连接池，为了能够进行长连接处理，我们还需要定义一个全局的 &lt;strong&gt;redis.Pool&lt;/strong&gt; 变量进行使用。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;  var (
-      pool *redis.Pool
-      redisServer = flag.String(&amp;quot;redisServer&amp;quot;, &amp;quot;:6379&amp;quot;, &amp;quot;&amp;quot;)
-      redisPassword = flag.String(&amp;quot;redisPassword&amp;quot;, &amp;quot;&amp;quot;, &amp;quot;&amp;quot;)
-  )
-
-  func main() {
-      flag.Parse()
-      pool = newPool(*redisServer, *redisPassword)
-      ...
-  }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;当 &lt;strong&gt;request请求&lt;/strong&gt; 来到，我们就可以这样进行获取连接，并且一定记得在使用完毕之后将连接放回连接池。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;   func serveHome(w http.ResponseWriter, r *http.Request) {
-       conn := pool.Get()
-       defer conn.Close()
-       ....
-   }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h5 id=&#34;到了这里-一个可用并且高性能的-redis-数据库的连接已经基本构建完毕了&#34;&gt;到了这里，一个可用并且高性能的 Redis 数据库的连接已经基本构建完毕了！&lt;/h5&gt;
-
-&lt;h5 id=&#34;接下来就可以愉快地进行使用了&#34;&gt;接下来就可以愉快地进行使用了～&lt;/h5&gt;
 </description>
     </item>
     

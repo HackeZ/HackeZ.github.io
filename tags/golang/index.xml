@@ -6,8 +6,105 @@
     <description>Recent content in Golang on HackerZ - Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 25 Sep 2016 23:27:46 +0800</lastBuildDate>
+    <lastBuildDate>Sat, 15 Oct 2016 23:33:50 +0800</lastBuildDate>
     <atom:link href="http://hackez.github.io/tags/golang/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Golang Error: bad file descriptor</title>
+      <link>http://hackez.github.io/golang-bad-file-descriptor/</link>
+      <pubDate>Sat, 15 Oct 2016 23:33:50 +0800</pubDate>
+      
+      <guid>http://hackez.github.io/golang-bad-file-descriptor/</guid>
+      <description>
+
+&lt;h2 id=&#34;intro&#34;&gt;Intro&lt;/h2&gt;
+
+&lt;p&gt;好久没写 Blog 了，正好今天写了一个爬取 &lt;strong&gt;Bing&lt;/strong&gt; 首页高清图片的服务 Application =&amp;gt; &lt;a href=&#34;https://github.com/HackeZ/bingImgCrawer&#34;&gt;bingImgCrawer&lt;/a&gt; 碰到了之前遇到的一个写文件的问题，现在就将其纪录下来吧。&lt;/p&gt;
+
+&lt;h2 id=&#34;problem&#34;&gt;Problem&lt;/h2&gt;
+
+&lt;p&gt;我的需求是将匹配出来的 &lt;strong&gt;图片URL&lt;/strong&gt; 按照日期纪录到 &lt;code&gt;img_url.txt&lt;/code&gt; 文件中。&lt;/p&gt;
+
+&lt;p&gt;下面是我的问题代码：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;const (
+    LogFile = &amp;quot;./img_url.txt&amp;quot;
+)
+func logFile(url string) {
+    ver file *os.File 
+    var err error
+    if isExist(LogFile) {
+        file, err = os.OpenFile(LogFile, os.O_APPEND, 0666)
+    } else {
+        log.Println(&amp;quot;log file not exist, creating...&amp;quot;)
+		file, err = os.Create(LogFile)
+    }
+    defer file.Close()
+    ...
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;当文件已经存在的时候，调用 &lt;code&gt;file, err = os.OpenFile(LogFile, O_APPEND, 0666)&lt;/code&gt; 语句打开的 file 变量在使用 &lt;code&gt;file.WriteString(...)&lt;/code&gt; 方法的时候，会出现错误信息：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;write ./img_url.txt: bad file descriptor
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;solve&#34;&gt;Solve&lt;/h2&gt;
+
+&lt;p&gt;当第一次遇到该错误的时候，我还以为是上一次的线程使用完 &lt;code&gt;img_url.txt&lt;/code&gt; 之后没有释放掉文件句柄，而导致第二次获取该文件句柄的时候出现的 &lt;code&gt;bad file descriptor&lt;/code&gt; 错误。&lt;/p&gt;
+
+&lt;p&gt;于是我将打开该文件的变量作为 &lt;strong&gt;全局变量&lt;/strong&gt; 进行写入操作，问题依然没有得到解决（因为改动太多，代码就不放出来了）&lt;/p&gt;
+
+&lt;p&gt;于是只能借助万能的 stack overflow 了。。。&lt;/p&gt;
+
+&lt;p&gt;解决办法 =&amp;gt; &lt;a href=&#34;http://stackoverflow.com/questions/33851692/golang-bad-file-descriptor&#34;&gt;Golang bad file descriptor&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;原来是我没有将写文件的 &lt;strong&gt;flag&lt;/strong&gt; 也写进去&amp;hellip;原来 &lt;code&gt;O_APPEND&lt;/code&gt; 只是负责当用户有写入文件这个动作的时候，将文件指针指向文件结尾。&lt;/p&gt;
+
+&lt;p&gt;正确写法：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;    if isExist(LogFile) {
+        file, err = os.OpenFile(LogFile, os.O_WRONLY | os.O_APPEND, 0666)
+    } else {
+        log.Println(&amp;quot;log file not exist, creating...&amp;quot;)
+		file, err = os.Create(LogFile)
+    }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;最后再好奇一件事情， &lt;code&gt;os.O_WRONLY | os.O_APPEND&lt;/code&gt; 的结果是什么呢？&lt;/p&gt;
+
+&lt;p&gt;上代码：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func main() {
+    fmt.Println(os.O_APPEND)  // 8
+	fmt.Println(os.O_WRONLY)  // 1
+	fmt.Println(os.O_RDWR)    // 2
+	fmt.Println(os.O_APPEND | os.O_WRONLY) // 9
+	fmt.Println(os.O_APPEND | os.O_RDWR)   // 10
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;最后翻定义，见 &lt;code&gt;/usr/local/go/src/syscall/zerrors_darwin_amd64.go&lt;/code&gt; :&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    ...
+    O_APPEND = 0x8
+    ...
+    O_RDWR = 0x2
+    ...
+    O_WRONLY = 0x1
+    ...
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;OVER&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;references&#34;&gt;References&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://stackoverflow.com/questions/33851692/golang-bad-file-descriptor&#34;&gt;Golang bad file descriptor&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://blog.csdn.net/yjp19871013/article/details/8138449&#34;&gt;关于打开文件时O_APPEND标志的作用&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
     
     <item>
       <title>CircuitBreaker 设计模式</title>
@@ -1571,99 +1668,6 @@ func main() {
 &lt;p&gt;中的 &lt;strong&gt;len&lt;/strong&gt; 变量与函数 &lt;strong&gt;len()&lt;/strong&gt; 重复而出现的命名错误，所以只需要将 &lt;strong&gt;len&lt;/strong&gt; 变量重新命名即可解决该问题。&lt;/p&gt;
 
 &lt;p&gt;总结：在Golang中使用的变量一定不要和某个函数名字相同，否则不会通过，我现在暂时不清楚是Golang编译器出现的问题，还是Golang本来就不允许这样写，我会继续查阅相关文档查清楚！&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>The Channel in Golang</title>
-      <link>http://hackez.github.io/channel/</link>
-      <pubDate>Wed, 11 May 2016 19:41:18 +0800</pubDate>
-      
-      <guid>http://hackez.github.io/channel/</guid>
-      <description>
-
-&lt;p&gt;Golang中的Channel分析&lt;/p&gt;
-
-&lt;p&gt;作为Golang语言的核心，并发编程是学习Golang的必经之路。对于不同进程之间的通信手段总会涉及到跨进程通信，那么这个通信手段必须是一个可共享内存的方法，而Golang提倡的理念为：&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;“应该以通信作为手段来共享内存”&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;而这一句话的直接体现在于Golang所提供的一个预定义数据类型 —— &lt;strong&gt;Channel&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;Channel提供了一种机制。它既可以 &lt;strong&gt;同步&lt;/strong&gt; 两个被并发执行的函数，又可以让这两个函数通过传递特定类型的值来进行 &lt;strong&gt;通信&lt;/strong&gt;。使用Channel可以让我们编写更清晰且正确的代码。&lt;/p&gt;
-
-&lt;p&gt;关于使用Channel需要记住的知识点：&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;在同一时刻，仅有一个Goroutine能向同一个Channel发送元素值，同时也只有一个Goroutine能从它哪里接收元素值。&lt;/li&gt;
-&lt;li&gt;Channel是一个FIFO的消息队列。&lt;/li&gt;
-&lt;li&gt;Channel中的元素值已经确保具有原子性。&lt;/li&gt;
-&lt;li&gt;Channel可以分为缓冲与非缓冲，它们之间的差别非常大。&lt;/li&gt;
-&lt;li&gt;Channel可分为双向与单向，一般通道都会声明为双向，只有在限制函数体中使用通道的方式（只允许发送或接收）才会使用单向Channel。&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&#34;talk-is-cheap-show-me-the-code&#34;&gt;Talk is Cheap,Show me the Code!&lt;/h2&gt;
-
-&lt;ul&gt;
-&lt;li&gt;初始化通道&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;因为Channel属于引用类型之一，所以必须使用make关键字初始化它。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;// 缓冲通道（容纳int类型元素，有长度，可暂存元素）
-intChan := make(chan int, 5)
-
-// 非缓冲通道（容纳byte类型元素，无长度，不可暂存元素）
-byteChan := make(chan byte)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;ul&gt;
-&lt;li&gt;发送元素值&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;// 向intChan通道发送一个元素值为5的元素
-intChan &amp;lt;- 5
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;注意：向一个值为nil的Channel进行发送操作会造成当前Goroutine &lt;strong&gt;永久阻塞！&lt;/strong&gt;。&lt;br /&gt;
-而向一个已经塞满元素的Channel进行发送操作则会将当前的Goroutine &lt;strong&gt;阻塞&lt;/strong&gt;，直至Channel中的元素被接收，所以一般会在 &lt;strong&gt;select&lt;/strong&gt; 代码块中进行发送操作。&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;接收元素值&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;// 在intChan通道中接收一个元素值
-elem := &amp;lt;-intChan
-
-// 接收元素值，并判断该通道是否已经关闭
-elem, ok := &amp;lt;-intChan
-if !ok {
-    fmt.Println(&amp;quot;Channel is Closed!&amp;quot;)
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;同样需要注意的是，如果向一个值为nil的Channel进行接收操作，同样会造成 &lt;strong&gt;永久阻塞！&lt;/strong&gt;&lt;br /&gt;
-而向一个没有元素值的Channel进行接收操作，也会将当前的Goroutine &lt;strong&gt;阻塞&lt;/strong&gt;，直至Channel中有了新的元素。&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;关闭Channel&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;关闭Channel并不是如其字面意思，完全将Channel关闭。而其正确的作用是告诉系统，不应该再允许任何针对被关闭的通道的发送操作，该通道已经被关闭，但是已经缓存在Channel中的元素不会受到影响，这也是Channel非常优秀的特性之一。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;// 调用内建函数close()关闭Channel
-close(intChan)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;注意，无论任何时候，我们都 &lt;strong&gt;不应该&lt;/strong&gt; 在接收端关闭Channel，因为我们永远都不知道发送端是否已经将元素发送完毕。&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;最后，可以到&lt;a href=&#34;https://www.github.com/HackeZ&#34;&gt;这里&lt;/a&gt;学习更多的Channel相关代码！&lt;/p&gt;
-&lt;/blockquote&gt;
 </description>
     </item>
     

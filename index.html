@@ -88,6 +88,106 @@
       
   <div class="post">
     <h1 class="post-title">
+      <a href="http://hackez.github.io/golang-bad-file-descriptor/">
+        Golang Error: bad file descriptor
+      </a>
+    </h1>
+
+    <span class="post-date">Sat, Oct 15, 2016</span>
+
+    
+
+<h2 id="intro">Intro</h2>
+
+<p>好久没写 Blog 了，正好今天写了一个爬取 <strong>Bing</strong> 首页高清图片的服务 Application =&gt; <a href="https://github.com/HackeZ/bingImgCrawer">bingImgCrawer</a> 碰到了之前遇到的一个写文件的问题，现在就将其纪录下来吧。</p>
+
+<h2 id="problem">Problem</h2>
+
+<p>我的需求是将匹配出来的 <strong>图片URL</strong> 按照日期纪录到 <code>img_url.txt</code> 文件中。</p>
+
+<p>下面是我的问题代码：</p>
+
+<pre><code class="language-golang">const (
+    LogFile = &quot;./img_url.txt&quot;
+)
+func logFile(url string) {
+    ver file *os.File 
+    var err error
+    if isExist(LogFile) {
+        file, err = os.OpenFile(LogFile, os.O_APPEND, 0666)
+    } else {
+        log.Println(&quot;log file not exist, creating...&quot;)
+		file, err = os.Create(LogFile)
+    }
+    defer file.Close()
+    ...
+}
+</code></pre>
+
+<p>当文件已经存在的时候，调用 <code>file, err = os.OpenFile(LogFile, O_APPEND, 0666)</code> 语句打开的 file 变量在使用 <code>file.WriteString(...)</code> 方法的时候，会出现错误信息：</p>
+
+<pre><code>write ./img_url.txt: bad file descriptor
+</code></pre>
+
+<h2 id="solve">Solve</h2>
+
+<p>当第一次遇到该错误的时候，我还以为是上一次的线程使用完 <code>img_url.txt</code> 之后没有释放掉文件句柄，而导致第二次获取该文件句柄的时候出现的 <code>bad file descriptor</code> 错误。</p>
+
+<p>于是我将打开该文件的变量作为 <strong>全局变量</strong> 进行写入操作，问题依然没有得到解决（因为改动太多，代码就不放出来了）</p>
+
+<p>于是只能借助万能的 stack overflow 了。。。</p>
+
+<p>解决办法 =&gt; <a href="http://stackoverflow.com/questions/33851692/golang-bad-file-descriptor">Golang bad file descriptor</a></p>
+
+<p>原来是我没有将写文件的 <strong>flag</strong> 也写进去&hellip;原来 <code>O_APPEND</code> 只是负责当用户有写入文件这个动作的时候，将文件指针指向文件结尾。</p>
+
+<p>正确写法：</p>
+
+<pre><code class="language-golang">    if isExist(LogFile) {
+        file, err = os.OpenFile(LogFile, os.O_WRONLY | os.O_APPEND, 0666)
+    } else {
+        log.Println(&quot;log file not exist, creating...&quot;)
+		file, err = os.Create(LogFile)
+    }
+</code></pre>
+
+<p>最后再好奇一件事情， <code>os.O_WRONLY | os.O_APPEND</code> 的结果是什么呢？</p>
+
+<p>上代码：</p>
+
+<pre><code class="language-golang">func main() {
+    fmt.Println(os.O_APPEND)  // 8
+	fmt.Println(os.O_WRONLY)  // 1
+	fmt.Println(os.O_RDWR)    // 2
+	fmt.Println(os.O_APPEND | os.O_WRONLY) // 9
+	fmt.Println(os.O_APPEND | os.O_RDWR)   // 10
+}
+</code></pre>
+
+<p>最后翻定义，见 <code>/usr/local/go/src/syscall/zerrors_darwin_amd64.go</code> :</p>
+
+<pre><code>    ...
+    O_APPEND = 0x8
+    ...
+    O_RDWR = 0x2
+    ...
+    O_WRONLY = 0x1
+    ...
+</code></pre>
+
+<p><strong>OVER</strong></p>
+
+<h2 id="references">References</h2>
+
+<ul>
+<li><a href="http://stackoverflow.com/questions/33851692/golang-bad-file-descriptor">Golang bad file descriptor</a></li>
+<li><a href="http://blog.csdn.net/yjp19871013/article/details/8138449">关于打开文件时O_APPEND标志的作用</a></li>
+</ul>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
       <a href="http://hackez.github.io/update_macos_problem/">
         Update Mac OS Problem
       </a>
