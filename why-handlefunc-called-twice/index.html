@@ -11,9 +11,9 @@
   <title> Why HandleFunc Called Twice &middot; HackerZ - Blog </title>
 
   
-  <link rel="stylesheet" href="http://localhost/css/poole.css">
-  <link rel="stylesheet" href="http://localhost/css/syntax.css">
-  <link rel="stylesheet" href="http://localhost/css/hyde.css">
+  <link rel="stylesheet" href="http://hackez.github.io/css/poole.css">
+  <link rel="stylesheet" href="http://hackez.github.io/css/syntax.css">
+  <link rel="stylesheet" href="http://hackez.github.io/css/hyde.css">
   <link rel="stylesheet" href="http://fonts.useso.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
 
   
@@ -54,12 +54,12 @@
 		<div class="sidebar">
   <div class="container sidebar-sticky">
   <div class="round-head">
-    <img style="margin: auto;" src="http://localhost/author-head.png" alt="">
+    <img style="margin: auto;" src="http://hackez.github.io/author-head.png" alt="">
     <p style="text-align: center;"></p>
   </div>
 
     <div class="sidebar-about">
-      <a href="http://localhost/"><h1>HackerZ - Blog</h1></a>
+      <a href="http://hackez.github.io/"><h1>HackerZ - Blog</h1></a>
       <p class="lead">
        Welcome to my personal Blog 
       </p>
@@ -109,14 +109,14 @@ func main() {
 }
 </code></pre>
 
-<p>这是一个最简单的Golang服务器搭建，当http访问 <code>http://localhost:8080</code> 的时候，该服务器会对客户端返回 <code>hello~ You are in!</code> ，同时在服务器控制台中打印 <code>Oh, Here is a Guy coming in!</code> 。</p>
+<p>这是一个最简单的Golang服务器搭建，当http访问 <code>http://hackez.github.io:8080</code> 的时候，该服务器会对客户端返回 <code>hello~ You are in!</code> ，同时在服务器控制台中打印 <code>Oh, Here is a Guy coming in!</code> 。</p>
 
 <p>有意思的部分来了：</p>
 
 <blockquote>
 <p>通过 <strong>Brower</strong> 访问的时候，服务器控制台会打印出 <strong>两行</strong> <code>Oh, Here is a Guy coming in!</code>。</p>
 
-<p>通过 <code>curl http://localhost:8080</code> 命令进行访问的时候，服务器控制台只会打印 <strong>一行</strong> <code>Oh, Here is a Guy coming in!</code>。</p>
+<p>通过 <code>curl http://hackez.github.io:8080</code> 命令进行访问的时候，服务器控制台只会打印 <strong>一行</strong> <code>Oh, Here is a Guy coming in!</code>。</p>
 </blockquote>
 
 <h2 id="why">Why</h2>

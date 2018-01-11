@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Beego on HackerZ - Blog</title>
-    <link>http://localhost/tags/beego/index.xml</link>
+    <link>http://hackez.github.io/tags/beego/index.xml</link>
     <description>Recent content in Beego on HackerZ - Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <atom:link href="http://localhost/tags/beego/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://hackez.github.io/tags/beego/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>How to Use Captcha in Beego Correct</title>
-      <link>http://localhost/how2use-captcha-in-beego/</link>
+      <link>http://hackez.github.io/how2use-captcha-in-beego/</link>
       <pubDate>Thu, 01 Sep 2016 18:45:49 +0800</pubDate>
       
-      <guid>http://localhost/how2use-captcha-in-beego/</guid>
+      <guid>http://hackez.github.io/how2use-captcha-in-beego/</guid>
       <description>
 
 &lt;h2 id=&#34;intro&#34;&gt;Intro&lt;/h2&gt;

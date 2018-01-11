@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Python on HackerZ - Blog</title>
-    <link>http://localhost/categories/python/index.xml</link>
+    <link>http://hackez.github.io/categories/python/index.xml</link>
     <description>Recent content in Python on HackerZ - Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <atom:link href="http://localhost/categories/python/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://hackez.github.io/categories/python/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>How To Install Scikit-learn Under OSX 10.11</title>
-      <link>http://localhost/how-2-install-scikit-learn/</link>
+      <link>http://hackez.github.io/how-2-install-scikit-learn/</link>
       <pubDate>Mon, 15 Aug 2016 22:49:10 +0800</pubDate>
       
-      <guid>http://localhost/how-2-install-scikit-learn/</guid>
+      <guid>http://hackez.github.io/how-2-install-scikit-learn/</guid>
       <description>
 
 &lt;h1 id=&#34;如何在osx下安装正确安装-scikit-learn&#34;&gt;如何在osx下安装正确安装 scikit-learn&lt;/h1&gt;

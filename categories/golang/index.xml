@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Golang on HackerZ - Blog</title>
-    <link>http://localhost/categories/golang/index.xml</link>
+    <link>http://hackez.github.io/categories/golang/index.xml</link>
     <description>Recent content in Golang on HackerZ - Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <atom:link href="http://localhost/categories/golang/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://hackez.github.io/categories/golang/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>go-sql-deiver 源码解析</title>
-      <link>http://localhost/go-sql-driver-source-code/</link>
+      <link>http://hackez.github.io/go-sql-driver-source-code/</link>
       <pubDate>Sun, 15 Oct 2017 20:31:55 +0800</pubDate>
       
-      <guid>http://localhost/go-sql-driver-source-code/</guid>
+      <guid>http://hackez.github.io/go-sql-driver-source-code/</guid>
       <description>
 
 &lt;h2 id=&#34;intro&#34;&gt;Intro&lt;/h2&gt;
@@ -1010,10 +1010,10 @@ func (tx *mysqlTx) Rollback() (err error) {
     
     <item>
       <title>Golang Error: bad file descriptor</title>
-      <link>http://localhost/golang-bad-file-descriptor/</link>
+      <link>http://hackez.github.io/golang-bad-file-descriptor/</link>
       <pubDate>Sat, 15 Oct 2016 23:33:50 +0800</pubDate>
       
-      <guid>http://localhost/golang-bad-file-descriptor/</guid>
+      <guid>http://hackez.github.io/golang-bad-file-descriptor/</guid>
       <description>
 
 &lt;h2 id=&#34;intro&#34;&gt;Intro&lt;/h2&gt;
@@ -1107,10 +1107,10 @@ func logFile(url string) {
     
     <item>
       <title>CircuitBreaker 设计模式</title>
-      <link>http://localhost/circuitbreaker/</link>
+      <link>http://hackez.github.io/circuitbreaker/</link>
       <pubDate>Sun, 25 Sep 2016 23:27:46 +0800</pubDate>
       
-      <guid>http://localhost/circuitbreaker/</guid>
+      <guid>http://hackez.github.io/circuitbreaker/</guid>
       <description>
 
 &lt;h2 id=&#34;intro&#34;&gt;Intro&lt;/h2&gt;
@@ -1216,10 +1216,10 @@ func NewCircuitBreaker(st Settings) *CircuitBreaker {
     
     <item>
       <title>tcpdump in Action</title>
-      <link>http://localhost/tcpdump-in-action/</link>
+      <link>http://hackez.github.io/tcpdump-in-action/</link>
       <pubDate>Fri, 16 Sep 2016 10:07:54 +0800</pubDate>
       
-      <guid>http://localhost/tcpdump-in-action/</guid>
+      <guid>http://hackez.github.io/tcpdump-in-action/</guid>
       <description>
 
 &lt;h2 id=&#34;intro&#34;&gt;Intro&lt;/h2&gt;
@@ -1282,10 +1282,10 @@ func main() {
     
     <item>
       <title>Action in Protocol Buffers</title>
-      <link>http://localhost/protocol-buffers/</link>
+      <link>http://hackez.github.io/protocol-buffers/</link>
       <pubDate>Fri, 09 Sep 2016 09:44:00 +0800</pubDate>
       
-      <guid>http://localhost/protocol-buffers/</guid>
+      <guid>http://hackez.github.io/protocol-buffers/</guid>
       <description>
 
 &lt;h2 id=&#34;intro&#34;&gt;Intro&lt;/h2&gt;
@@ -1520,10 +1520,10 @@ var fileDescriptor0 = []byte{
     
     <item>
       <title>How to Use Captcha in Beego Correct</title>
-      <link>http://localhost/how2use-captcha-in-beego/</link>
+      <link>http://hackez.github.io/how2use-captcha-in-beego/</link>
       <pubDate>Thu, 01 Sep 2016 18:45:49 +0800</pubDate>
       
-      <guid>http://localhost/how2use-captcha-in-beego/</guid>
+      <guid>http://hackez.github.io/how2use-captcha-in-beego/</guid>
       <description>
 
 &lt;h2 id=&#34;intro&#34;&gt;Intro&lt;/h2&gt;
@@ -1586,10 +1586,10 @@ func init() {
     
     <item>
       <title>Fun in Docker Day-2</title>
-      <link>http://localhost/fun-in-docker-2/</link>
+      <link>http://hackez.github.io/fun-in-docker-2/</link>
       <pubDate>Wed, 31 Aug 2016 19:17:28 +0800</pubDate>
       
-      <guid>http://localhost/fun-in-docker-2/</guid>
+      <guid>http://hackez.github.io/fun-in-docker-2/</guid>
       <description>
 
 &lt;h2 id=&#34;intro&#34;&gt;Intro&lt;/h2&gt;
@@ -1766,10 +1766,10 @@ CMD [&amp;quot;/main&amp;quot;]
     
     <item>
       <title>Fun in Docker Day-1</title>
-      <link>http://localhost/fun-in-docker-1/</link>
+      <link>http://hackez.github.io/fun-in-docker-1/</link>
       <pubDate>Sat, 20 Aug 2016 16:17:42 +0800</pubDate>
       
-      <guid>http://localhost/fun-in-docker-1/</guid>
+      <guid>http://hackez.github.io/fun-in-docker-1/</guid>
       <description>
 
 &lt;h2 id=&#34;intro&#34;&gt;Intro&lt;/h2&gt;
@@ -1861,10 +1861,10 @@ $ docker push hackerz/getmeizi
     
     <item>
       <title>Golang Package Dependency Management Tool</title>
-      <link>http://localhost/golang-package-dependency-management-tool/</link>
+      <link>http://hackez.github.io/golang-package-dependency-management-tool/</link>
       <pubDate>Sun, 07 Aug 2016 11:11:25 +0800</pubDate>
       
-      <guid>http://localhost/golang-package-dependency-management-tool/</guid>
+      <guid>http://hackez.github.io/golang-package-dependency-management-tool/</guid>
       <description>
 
 &lt;h1 id=&#34;golang-package-dependency-management-tool&#34;&gt;Golang Package Dependency Management Tool&lt;/h1&gt;
@@ -2088,10 +2088,10 @@ $ ./bin/hellogb
     
     <item>
       <title>redigo : open too many files</title>
-      <link>http://localhost/redigo-open2manyfiles/</link>
+      <link>http://hackez.github.io/redigo-open2manyfiles/</link>
       <pubDate>Wed, 27 Jul 2016 13:29:11 +0800</pubDate>
       
-      <guid>http://localhost/redigo-open2manyfiles/</guid>
+      <guid>http://hackez.github.io/redigo-open2manyfiles/</guid>
       <description>
 
 &lt;h1 id=&#34;redigo-panic-error-open-too-many-files&#34;&gt;Redigo - panic error : open too many files.&lt;/h1&gt;
@@ -2163,10 +2163,10 @@ created by net/http.(*Server).Serve
     
     <item>
       <title>Why HandleFunc Called Twice</title>
-      <link>http://localhost/why-handlefunc-called-twice/</link>
+      <link>http://hackez.github.io/why-handlefunc-called-twice/</link>
       <pubDate>Sun, 24 Jul 2016 20:03:59 +0800</pubDate>
       
-      <guid>http://localhost/why-handlefunc-called-twice/</guid>
+      <guid>http://hackez.github.io/why-handlefunc-called-twice/</guid>
       <description>
 
 &lt;h2 id=&#34;why-handlefunc-called-twice&#34;&gt;Why &lt;strong&gt;HandleFunc()&lt;/strong&gt; called twice?&lt;/h2&gt;
@@ -2193,14 +2193,14 @@ func main() {
 }
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;这是一个最简单的Golang服务器搭建，当http访问 &lt;code&gt;http://localhost:8080&lt;/code&gt; 的时候，该服务器会对客户端返回 &lt;code&gt;hello~ You are in!&lt;/code&gt; ，同时在服务器控制台中打印 &lt;code&gt;Oh, Here is a Guy coming in!&lt;/code&gt; 。&lt;/p&gt;
+&lt;p&gt;这是一个最简单的Golang服务器搭建，当http访问 &lt;code&gt;http://hackez.github.io:8080&lt;/code&gt; 的时候，该服务器会对客户端返回 &lt;code&gt;hello~ You are in!&lt;/code&gt; ，同时在服务器控制台中打印 &lt;code&gt;Oh, Here is a Guy coming in!&lt;/code&gt; 。&lt;/p&gt;
 
 &lt;p&gt;有意思的部分来了：&lt;/p&gt;
 
 &lt;blockquote&gt;
 &lt;p&gt;通过 &lt;strong&gt;Brower&lt;/strong&gt; 访问的时候，服务器控制台会打印出 &lt;strong&gt;两行&lt;/strong&gt; &lt;code&gt;Oh, Here is a Guy coming in!&lt;/code&gt;。&lt;/p&gt;
 
-&lt;p&gt;通过 &lt;code&gt;curl http://localhost:8080&lt;/code&gt; 命令进行访问的时候，服务器控制台只会打印 &lt;strong&gt;一行&lt;/strong&gt; &lt;code&gt;Oh, Here is a Guy coming in!&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;通过 &lt;code&gt;curl http://hackez.github.io:8080&lt;/code&gt; 命令进行访问的时候，服务器控制台只会打印 &lt;strong&gt;一行&lt;/strong&gt; &lt;code&gt;Oh, Here is a Guy coming in!&lt;/code&gt;。&lt;/p&gt;
 &lt;/blockquote&gt;
 
 &lt;h2 id=&#34;why&#34;&gt;Why&lt;/h2&gt;
@@ -2226,10 +2226,10 @@ func main() {
     
     <item>
       <title>Golang Dev Log</title>
-      <link>http://localhost/golang-dev-log/</link>
+      <link>http://hackez.github.io/golang-dev-log/</link>
       <pubDate>Sat, 23 Jul 2016 16:34:45 +0800</pubDate>
       
-      <guid>http://localhost/golang-dev-log/</guid>
+      <guid>http://hackez.github.io/golang-dev-log/</guid>
       <description>
 
 &lt;h2 id=&#34;golang-dev-log&#34;&gt;Golang Dev Log&lt;/h2&gt;
@@ -2288,10 +2288,10 @@ func main() {
     
     <item>
       <title>Redigo Action - 1</title>
-      <link>http://localhost/redigo-action-1/</link>
+      <link>http://hackez.github.io/redigo-action-1/</link>
       <pubDate>Fri, 22 Jul 2016 10:41:10 +0800</pubDate>
       
-      <guid>http://localhost/redigo-action-1/</guid>
+      <guid>http://hackez.github.io/redigo-action-1/</guid>
       <description>
 
 &lt;h1 id=&#34;redigo-action&#34;&gt;Redigo Action&lt;/h1&gt;
@@ -2375,10 +2375,10 @@ func main() {
     
     <item>
       <title>Learning in Hadoop - Day 1</title>
-      <link>http://localhost/hadoop-1/</link>
+      <link>http://hackez.github.io/hadoop-1/</link>
       <pubDate>Mon, 13 Jun 2016 20:45:25 +0800</pubDate>
       
-      <guid>http://localhost/hadoop-1/</guid>
+      <guid>http://hackez.github.io/hadoop-1/</guid>
       <description>&lt;p&gt;第一次玩Hadoop&lt;/p&gt;
 
 &lt;p&gt;最近在折腾机器学习，因为查阅到Yahoo的&lt;/p&gt;
@@ -2416,10 +2416,10 @@ func main() {
     
     <item>
       <title>Named Question in Golang</title>
-      <link>http://localhost/lenproblem/</link>
+      <link>http://hackez.github.io/lenproblem/</link>
       <pubDate>Thu, 02 Jun 2016 11:08:54 +0800</pubDate>
       
-      <guid>http://localhost/lenproblem/</guid>
+      <guid>http://hackez.github.io/lenproblem/</guid>
       <description>&lt;p&gt;Golang中遇到的命名问题&lt;/p&gt;
 
 &lt;p&gt;昨天在写随机生成字符串代码时候遇到了一个Golang的命名问题，代码如下：&lt;/p&gt;

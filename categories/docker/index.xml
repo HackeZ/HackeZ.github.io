@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Docker on HackerZ - Blog</title>
-    <link>http://localhost/categories/docker/index.xml</link>
+    <link>http://hackez.github.io/categories/docker/index.xml</link>
     <description>Recent content in Docker on HackerZ - Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <atom:link href="http://localhost/categories/docker/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://hackez.github.io/categories/docker/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>Fun in Docker Day-2</title>
-      <link>http://localhost/fun-in-docker-2/</link>
+      <link>http://hackez.github.io/fun-in-docker-2/</link>
       <pubDate>Wed, 31 Aug 2016 19:17:28 +0800</pubDate>
       
-      <guid>http://localhost/fun-in-docker-2/</guid>
+      <guid>http://hackez.github.io/fun-in-docker-2/</guid>
       <description>
 
 &lt;h2 id=&#34;intro&#34;&gt;Intro&lt;/h2&gt;
@@ -190,10 +190,10 @@ CMD [&amp;quot;/main&amp;quot;]
     
     <item>
       <title>Fun in Docker Day-1</title>
-      <link>http://localhost/fun-in-docker-1/</link>
+      <link>http://hackez.github.io/fun-in-docker-1/</link>
       <pubDate>Sat, 20 Aug 2016 16:17:42 +0800</pubDate>
       
-      <guid>http://localhost/fun-in-docker-1/</guid>
+      <guid>http://hackez.github.io/fun-in-docker-1/</guid>
       <description>
 
 &lt;h2 id=&#34;intro&#34;&gt;Intro&lt;/h2&gt;
