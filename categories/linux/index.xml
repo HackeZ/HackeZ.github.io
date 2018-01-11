@@ -2,19 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Linux on HackerZ - Blog</title>
-    <link>http://hackez.github.io/categories/linux/</link>
+    <link>http://localhost/categories/linux/index.xml</link>
     <description>Recent content in Linux on HackerZ - Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 18 Aug 2016 16:03:05 +0800</lastBuildDate>
-    <atom:link href="http://hackez.github.io/categories/linux/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://localhost/categories/linux/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>Global Ignore File in Git</title>
-      <link>http://hackez.github.io/global_gitignore/</link>
+      <link>http://localhost/global_gitignore/</link>
       <pubDate>Thu, 18 Aug 2016 16:03:05 +0800</pubDate>
       
-      <guid>http://hackez.github.io/global_gitignore/</guid>
+      <guid>http://localhost/global_gitignore/</guid>
       <description>
 
 &lt;h2 id=&#34;intro&#34;&gt;Intro&lt;/h2&gt;

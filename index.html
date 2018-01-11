@@ -3,7 +3,7 @@
 <head>
   <link href="http://gmpg.org/xfn/11" rel="profile">
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
-  <meta name="generator" content="Hugo 0.16" />
+  <meta name="generator" content="Hugo 0.18" />
 
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
@@ -11,9 +11,9 @@
   <title> HackerZ - Blog &middot; HackerZ - Blog </title>
 
   
-  <link rel="stylesheet" href="http://hackez.github.io/css/poole.css">
-  <link rel="stylesheet" href="http://hackez.github.io/css/syntax.css">
-  <link rel="stylesheet" href="http://hackez.github.io/css/hyde.css">
+  <link rel="stylesheet" href="http://localhost/css/poole.css">
+  <link rel="stylesheet" href="http://localhost/css/syntax.css">
+  <link rel="stylesheet" href="http://localhost/css/hyde.css">
   <link rel="stylesheet" href="http://fonts.useso.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
 
   
@@ -28,7 +28,9 @@
   <link rel="shortcut icon" href="/favicon.png">
 
   
-  <link href="http://hackez.github.io/index.xml" rel="alternate" type="application/rss+xml" title="HackerZ - Blog" />
+  
+    <link href="http://localhost/index.xml" rel="alternate" type="application/rss+xml" title="HackerZ - Blog" />
+  
 
   
   
@@ -55,12 +57,12 @@
 <div class="sidebar">
   <div class="container sidebar-sticky">
   <div class="round-head">
-    <img style="margin: auto;" src="http://hackez.github.io/author-head.png" alt="HackerZ">
-    <p style="text-align: center;">HackerZ</p>
+    <img style="margin: auto;" src="http://localhost/author-head.png" alt="">
+    <p style="text-align: center;"></p>
   </div>
 
     <div class="sidebar-about">
-      <a href="http://hackez.github.io/"><h1>HackerZ - Blog</h1></a>
+      <a href="http://localhost/"><h1>HackerZ - Blog</h1></a>
       <p class="lead">
        Welcome to my personal Blog 
       </p>
@@ -69,15 +71,13 @@
     <ul class="sidebar-nav">
       <li><a href="/">Home</a> </li>
       
-        <li><a href="/about-me/"> About Me </a></li>
-      
         <li><a href="/welcome/"> Welcome </a></li>
       
         <li><a href="/booklist"> Book List </a></li>
       
     </ul>
 
-    <p>&copy; 2016. All rights reserved. </p>
+    <p>&copy; 2018. All rights reserved. </p>
   </div>
 </div>
 
@@ -88,7 +88,1010 @@
       
   <div class="post">
     <h1 class="post-title">
-      <a href="http://hackez.github.io/golang-bad-file-descriptor/">
+      <a href="http://localhost/go-sql-driver-source-code/">
+        go-sql-deiver 源码解析
+      </a>
+    </h1>
+
+    <span class="post-date">Sun, Oct 15, 2017</span>
+
+    
+
+<h2 id="intro">Intro</h2>
+
+<p>最近正在给 <code>mysql</code> 封装一个库，顺带研究一下 <code>go-mysql-driver</code> 这个库的源码实现。</p>
+
+<h2 id="buffer-go">Buffer.go</h2>
+
+<p><code>buffer</code> 是一个用于给 <strong>数据库连接</strong> (<code>net.Conn</code>) 进行缓冲的一个数据结构，其结构为：</p>
+
+<pre><code class="language-go">type buffer struct {
+    buf 	[]byte     // 缓冲池中的数据
+  	nc  	net.Conn   // 负责缓冲的数据库连接对象
+  	idx 	int		   // 已读数据索引
+    length 	int        // 缓冲池中未读数据的长度
+   	timeout time.Duration // 数据库连接的超时设置
+}
+</code></pre>
+
+<p>可以看到，因为  <strong>数据库连接</strong> (<code>net.Conn</code>)  在通信的时候是 <strong>同步</strong> 的。而为了让其能够 <strong>同时 读/写</strong> ，所以实现了 <code>buffer</code> 这个数据结构，通过该 <code>buffer</code> 进行数据缓冲还能实现 <strong>零拷贝</strong> ( <a href="https://zh.wikipedia.org/wiki/%E9%9B%B6%E5%A4%8D%E5%88%B6">zero-copy-ish</a> ) 。</p>
+
+<p>其函数分别有：</p>
+
+<h4 id="newbuffer-nc-net-conn-buffer"><code>newBuffer(nc net.Conn) buffer</code></h4>
+
+<p>创建并返回一个 <code>buffer</code></p>
+
+<h4 id="buffer-readnext-need-int-byte-error"><code>(*buffer) readNext(need int) ([]byte, error)</code></h4>
+
+<p>读取并返回未读数据的 <strong>need</strong> 位，如果 <strong>need</strong> 大于 <code>buffer</code> 的 <code>length</code> ，就会调用 <code>fill(need int) error</code> 对 <code>buffer</code>进行 <strong>扩容</strong> 。</p>
+
+<h4 id="buffer-fill-need-int-error">(*buffer) fill(need int) error`</h4>
+
+<p>对 <code>buffer</code> 进行 <code>(need/defaultBufSize)</code> 的倍数扩容，并在 <code>timeout</code> 时间结束前从 <code>buffer.nc</code> 中读取 <strong>need</strong> 长度的数据。</p>
+
+<h4 id="buffer-takebuffer-length-int-byte"><code>(*buffer) takeBuffer(length int) []byte</code></h4>
+
+<p>读取 <code>buffer</code> 中 <code>length</code> 长度的数据（只包含已读），如果 <code>buffer.length &gt; 0</code> ，即还有未读数据，则立即返回 <code>nil</code> 。</p>
+
+<p>如果需要读取的长度大于 <code>buffer</code> 的容量，则会进行扩容。</p>
+
+<h4 id="buffer-takesmallbuffer-length-int-byte"><code>(*buffer) takeSmallBuffer(length int) []byte</code></h4>
+
+<p>读取保证不超过 <code>defaultBufSize</code> 长度的数据的快捷函数（只包含已读），如果 <code>buffer.length &gt; 0</code> ，即还有未读数据，则立即返回 <code>nil</code> 。</p>
+
+<h4 id="buffer-takecompletebuffer-byte"><code>(*buffer) takeCompleteBuffer() []byte</code></h4>
+
+<p>读取全部的 <code>buffer</code> 数据（只包含已读），如果 <code>buffer.length &gt; 0</code> ，即还有未读数据，则立即返回 <code>nil</code> 。</p>
+
+<h2 id="collations-go">Collations.go</h2>
+
+<p><code>collations</code> 包含了 <code>MySQL</code> 所有支持的 <strong>字符集</strong> 格式，并支持通过 <code>COLLATION_NAME</code> 返回其字符集 <code>ID</code>。</p>
+
+<p>如果需要查询 <code>MySQL</code> 支持的 <strong>字符集</strong> 格式，可以使用 <code>SELECT COLLATION_NAME, ID FROM information_schema.COLLATIONS</code> 语句获取。</p>
+
+<h2 id="dsn-go">Dsn.go</h2>
+
+<p><code>DSN</code> 即 <strong>数据源名称 （Data Source Name）</strong>  ，是 <strong>驱动程序连接数据库的变量信息</strong> ，简而言之就是根据你连接的不同数据库使用对应的连接信息。</p>
+
+<p>通常，数据库的连接配置就是在这里定义的：</p>
+
+<pre><code class="language-go">// Config 基本的数据库连接信息
+type Config struct {
+	User         string            // Username
+	Passwd       string            // Password (requires User)
+	Net          string            // Network type
+	Addr         string            // Network address (requires Net)
+	DBName       string            // Database name
+	Params       map[string]string // Connection parameters
+	Collation    string            // Connection collation
+	Loc          *time.Location    // Location for time.Time values
+	TLSConfig    string            // TLS configuration name
+	tls          *tls.Config       // TLS configuration
+	Timeout      time.Duration     // Dial timeout
+	ReadTimeout  time.Duration     // I/O read timeout
+	WriteTimeout time.Duration     // I/O write timeout
+
+	AllowAllFiles           bool // 允许文件使用 LOAD DATA LOCAL INFILE 导入数据库
+	AllowCleartextPasswords bool // 支持明文密码客户端
+	AllowOldPasswords       bool // 允许使用不可靠的旧密码
+	ClientFoundRows         bool // 返回匹配的行数而不是受影响的行数
+	ColumnsWithAlias        bool // 将表名前置在列名
+	InterpolateParams       bool // 将占位符插入查询的SQL字符串
+	MultiStatements         bool // 允许一条语句多次查询
+	ParseTime               bool // 格式化时间值为 time.Time 变量
+	Strict                  bool // 将 warnings 返回 errors
+}
+</code></pre>
+
+<p>这都是一些常见的配置项，就此略过。</p>
+
+<p>该文件有两个公共函数支持 <code>Config</code> 与 <code>DSN</code> 之间转换。</p>
+
+<ul>
+<li><code>(*Config)FormatDSN() string</code></li>
+<li><code>ParseDSN(dsn string) (*Config, error)</code></li>
+</ul>
+
+<h2 id="errors-go">Errors.go</h2>
+
+<p><code>errors</code> 定义了 <code>Logger</code> 、<code>MySQLError</code> 、 <code>MySQLWarning</code> 等数据结构。</p>
+
+<h4 id="logger">Logger</h4>
+
+<p>复用了 <code>Go</code> 原生的 <code>log</code> 包，并将其中的输出重定向至控制台的 <strong>标准错误</strong> 。</p>
+
+<pre><code class="language-go">type Logger interface {
+  Print(v ...interface{})
+}
+
+var errLog = Logger(log.New(os.Stderr, &quot;[mysql]&quot;, log.Ldate|log.Ltime|log.Lshortfile))
+
+func SetLogger(logger Logger) error { // 当然，你也可以使用自定义的错误 Logger
+  if logger == nil {
+    return errors.New(&quot;logger is nil&quot;)
+  }
+  errLog =logger
+  return nil
+}
+</code></pre>
+
+<h4 id="mysqlerror">MySQLError</h4>
+
+<p>而 <code>MySQLError</code> 则简单定义了 <code>MySQL</code> 输出的错误的结构。</p>
+
+<pre><code class="language-go">type MySQLError struct {
+	Number  uint16
+	Message string
+}
+</code></pre>
+
+<h4 id="mysqlwarning">MySQLWarning</h4>
+
+<p><code>MySQLWarning</code> 则有些不一样，它需要从 <code>MySQL</code> 中进行一次 <strong>查询</strong> ，以获取所有的警告信息，所以该包也定义了 <code>MySQLWarning</code> 的 <code>slice</code> 结构。</p>
+
+<pre><code class="language-go">type MySQLWarning struct {
+    Level string
+  	Code string
+  	Message string
+}
+
+type MySQLWarnings []MySQLWarning
+
+func (mc *mysqlConn) getWarnings() (err error) {
+  rows, err := mc.Query(&quot;SHOW WARNINGS&quot;, nil)
+  // handle err
+  
+  // initzation MySQLWarnings
+  
+  for {
+    err = rows.Next(values)
+    switch err {
+      case nil:
+      	warning := MySQLWarning{}
+      	
+      if raw, ok := values[0].([]byte); ok {
+          warning.Level = string(raw)
+      }else {
+          warning.Level = fmt.Sprintf(&quot;%s&quot;, values[0])
+      }
+      
+      if raw, ok := values[1].([]byte); ok {
+        warning.Code = string(raw)
+      } else {
+        warning.Code = fmt.Sprintf(&quot;%s&quot;, values[1])
+      }
+      
+      if raw, ok := values[2].([]byte); ok {
+        warning.Message = string(raw)
+      } else {
+        warning.Message = fmt.Sprintf(&quot;%s&quot;, values[0])
+      }
+
+      warnings = append(warnings, warning)
+    }
+    
+    case io.EOF:
+    	return warnings
+    
+    default:
+    	rows.Close() // 值得注意的是，如果该函数没有 case 运行 default ，该 rows 就不会被默认关闭，就会占用连接池中的一个连接，是否应该使用 `defer rows.Close() ` 避免该情况？
+    	return
+  }
+}
+</code></pre>
+
+<h2 id="infile-go">Infile.go</h2>
+
+<p>前面也有提到 <code>MySQL</code> 在导入大型文件的时候，需要使用 <code>LOAD DATA LOCAL INFILE</code> 的形式进行导入，而该 <code>infile.go</code> 就是实现该协议的代码。</p>
+
+<p>本包在实现的 <code>LOAD DATA</code> 的时候提供了两种方式进行导入：</p>
+
+<ul>
+<li>最常见的，使用服务器的文件路径，如 <code>/data/students.csv</code> ，下文命名其为 <strong>文件路径注册器</strong></li>
+<li>最通用的，使用实现了 <code>io.Reader</code> 接口的数据结构，通过返回该数据结构的数据进行导入，如 <code>bytes</code> <code>os.file</code> 等，下文命名其为 <strong>Reader 接口注册器</strong></li>
+</ul>
+
+<p>在实现该功能的时候，<strong>注册器</strong> 的实现是用名字作为 Key 的 <code>Map</code> ，为了避免 <code>Map</code> 的 <strong>读写竞态</strong> ，需要对其配置一个读写锁。</p>
+
+<pre><code class="language-go">var (
+	fileRegister	  	map[string]bool  	// 文件路径注册器
+  	fileRegisterLock  	sync.RWMutex	   	// 文件路径注册器读写锁
+	readerRegister	  	map[string]func() io.Reader // Reader 接口注册器
+  	readerRegisterLock 	sync.RWMutex				// Reader 接口注册器读写锁	
+)
+</code></pre>
+
+<p>除了对两个注册器的 <strong>注册</strong> 以及 <strong>注销</strong> 函数，还有一个需要分析的一个函数：</p>
+
+<p><code>(mc *mysqlConn) handleInFileRequest(name string) (err error)</code></p>
+
+<p>通过传入 <strong>文件路径</strong> 或者 <strong>Reader 名称</strong> 就可以将数据发往 <code>MySQL</code> 了。</p>
+
+<pre><code class="language-go">func (mc *mysqlConn) handleInFileRequest(name string) (err error) {
+    packSize := 16 * 1024 // 16KB is small enough for disk readahead and large enough for TCP
+    if mc.maxWriteSize &lt; packSize { // 设置发往 MySQL 的数据块大小
+        packSize = mc.maxWriteSize
+  	}
+  
+  	// 获取 文件 或 Reader 的数据，并将其赋值到 rdr 中
+  	// var rdr io.Reader
+  
+  	// send context packets
+  	if err != nil {
+      	data := make([]byte, 4+packetSize) // 需要留 4 个 byte 给协议使用
+      	var n int
+	    for err == nil {
+          	n, err = rdr.Read(data[4:]) // 将数据存入 data 的 [4:] 中
+          	if n &gt; 0 {
+				if ioErr := mc.writePacket(data[:4+n]); ioErr != nil { // 将 data 数据发往 MySQL
+					return ioErr
+				}
+			}
+      	}
+      	if err == io.EOF { // rdr 中的数据读完了
+			err = nil
+		}
+  	}
+  
+  	// send empty packet (termination)
+	if data == nil {
+		data = make([]byte, 4)
+	}
+	if ioErr := mc.writePacket(data[:4]); ioErr != nil { // 告诉 MySQL 文件发送完毕
+		return ioErr
+	}
+
+	// read OK packet
+	if err == nil { // 一切正常结束
+		return mc.readResultOK()
+	}
+
+	mc.readPacket() // 如果中途出错，将错误信息读取到 mysqlConn 中，并返回该错误
+	return err
+}
+</code></pre>
+
+<p>到此，<code>infile.go</code> 的实现已经整理完毕了，可以看到， 作者 在实现这个功能的时候还是做了一些优化的，比如 <code>map Lazy init</code> ，<code>send packet size limited</code> 等。而我们通过分析规范的源码包，能够提升自己的编码水平。</p>
+
+<h2 id="packets-go">Packets.go</h2>
+
+<p>接下来就要深入到 <code>MySQL</code> 的通信协议中了，官方的 <a href="https://dev.mysql.com/doc/internals/en/client-server-protocol.html">通信协议文档</a> 非常齐全，我在这里只将一些基础的，我后面分析源码会用到的协议分析下，如果有兴趣，可以到官方文档处进行查阅。</p>
+
+<h3 id="protocol-basics">Protocol Basics</h3>
+
+<h4 id="基础数据类型">基础数据类型</h4>
+
+<p><code>MySQL</code> 通信的基本数据类型有两种， <code>Integer</code> 、 <code>String</code></p>
+
+<ul>
+<li>Integer : 分别有 <strong>1</strong>， <strong>2</strong>， <strong>3</strong>， <strong>4</strong>， <strong>8</strong> 个字节长度的类型，使用小端传输。</li>
+<li>String : 分别有 <strong>固定长度字符串（协议规定）</strong>，<strong>NULL结尾字符串（长度不固定）</strong>，<strong>长度编码字符串（长度不固定）</strong>。</li>
+</ul>
+
+<h4 id="报文协议">报文协议</h4>
+
+<p>报文分为 <strong>消息头</strong> 以及 <strong>消息体</strong>，而 <strong>消息头</strong> 由 3 字节的 <strong>消息长度</strong> 以及 1 字节的 <strong>序号</strong>  <code>sequence</code> （新客户端由 <code>0</code> 开始）组成，<strong>消息体</strong> 则由 <strong>消息长度</strong> 的字节组成。</p>
+
+<ul>
+<li>3 字节的 <strong>消息长度</strong> 最大值为 <code>0xFFFFFF</code> ，即为 <code>16 MB - 1 byte</code> ，这就意味着，如果整个消息（包括消息头）的长度大于 <code>16MB - 1byte - 4byte</code> 大小时，消息就会被分包。</li>
+<li>1 字节的 <strong>序号</strong> 在每次新的客户端发起请求时，以 <code>0</code> 开始，依次递增 1 ，如果消息需要分包， <strong>序号</strong> 会随着分包的数量递增。而在一次应答中， 客户端会校验服务器 <strong>返回序号</strong> 是否与 <strong>发送序号</strong> 一致，如果不一致，则返回错误异常。</li>
+</ul>
+
+<h4 id="协议类型">协议类型</h4>
+
+<ul>
+<li><code>handshake</code> : 发起连接</li>
+<li><code>auth</code> : 登录权限校验</li>
+<li><code>ok | error</code> : 返回结果状态 <code>*</code>
+
+<ul>
+<li><code>ok</code> : 首字节为 0 （<code>0x00</code>）</li>
+<li><code>error</code> : 首字节为 255 （<code>0xff</code>）</li>
+</ul></li>
+<li><code>resultset</code> : 结果集
+
+<ul>
+<li>header</li>
+<li>field</li>
+<li>eof</li>
+<li>row</li>
+</ul></li>
+<li><code>command package</code> : 命令</li>
+</ul>
+
+<p>在整个 <code>MySQL</code> 发起交互的过程如下图所示：</p>
+
+<p><img src="http://7xsxev.com1.z0.glb.clouddn.com/mysql%20%E4%BA%A4%E4%BA%92%E6%B5%81%E7%A8%8B%E5%9B%BE.png" alt="mysql connect" /></p>
+
+<p>在了解这些 <code>MySQL</code> 基础协议知识后，我们再来看 <code>packages.go</code> 的源码就轻松多了。</p>
+
+<h4 id="源码">源码</h4>
+
+<p>先来看看 <code>readPacket</code> ，结合上面的知识点应该非常好理解。</p>
+
+<pre><code class="language-go">func (mc *mysqlConn) readPacket() ([]byte, error) {
+    var payload []byte
+  	for { // for 循环是为了读取有可能分片的数据
+     	// Read package header
+      	data, err := mc.buf.readNext(4) // 从 buffer 缓冲器中读取 4 字节的 header
+      	if err != nil { // 如果读取发生异常，则关闭连接，并返回一个错误连接的异常
+          	errLog.Print(err)
+          	mc.Close()
+          	return nil, driver.ErrBadConn 
+      	}
+      
+      	// Packet Length [24 bit]
+      	pktLen := int(uint32(data[0]) | uint32(data[1])&lt;&lt;8 | uint32(data[2])&lt;&lt;16) // 读取 3 字节的消息长度
+      
+      	if pktLen &lt; 1 {
+          	// 如上所示，关闭连接，并返回一个错误连接的异常
+      	}
+      
+      	// Check Packet Sync [8 bit]
+      	if data[3] != mc.sequence { // 判断服务端返回的序号是否与客户端一致
+          	if data[3] &gt; mc.sequence {
+             	return nil, ErrPktSyncMul // 如果服务端返回序号大于客户端的序号，则有可能是在一次请求中做了多次操作
+          	}
+          	return nil, ErrPktSync // 返回序号不一致错误
+      	}
+      	mc.sequence++ // 本次序号匹配相符，为了匹配下一次请求，先将序号自增1
+      
+      	data, err := mc.buf.readNext(pktLen) // 读取 消息长度 的数据
+      	if err != nil {
+          	// 如上所示，关闭连接，并返回一个错误连接的异常
+      	}
+      
+      	isLastPacket := (pktLen &lt; maxPacketSize) // 如果是最后一个数据包，必然小于 maxPacketSize (16MB - 1byte)
+      	
+      	// Zero allocations for non-splitting packets
+		if isLastPacket &amp;&amp; payload == nil { // 无分包情况，立即返回
+			return data, nil
+		}
+
+		payload = append(payload, data...)
+
+		if isLastPacket { // 如果是最后一个包，读取完毕后返回
+			return payload, nil
+		}
+      
+      	// 还有未读数据，开始下一次循环
+  	}
+}
+</code></pre>
+
+<p>下面来看下结合 <strong>握手报文协议</strong> 来看下客户端向服务端发起请求的 <code>readInitPacket</code> ：</p>
+
+<p><img src="http://7xsxev.com1.z0.glb.clouddn.com/mysql_protocol_handshake.png" alt="mysql handshack protocol" /></p>
+
+<pre><code class="language-go">func (mc *mysqlConn) readInitPacket() ([]byte, error) {
+  	data, err := mc.readPacket() // 调用上面的函数读取服务端返回的数据
+  	if err != nil {
+      	return nil, err
+  	}
+  
+  	if data[0] == iERR { // iERR = 0xff  消息体的第一个字节返回 0xff ，则意味着 error package
+      	return nil, mc.handleErrorPacket(data)
+  	}
+  
+  	// protocol version [1 byte]
+  	if data[0] &lt; minProtocolVersion { // 判断是否是兼容的协议版本
+      	return nil, fmt.Errorf(
+			&quot;unsupported protocol version %d. Version %d or higher is required&quot;,
+			data[0],
+			minProtocolVersion,
+		)
+  	}
+  
+  	// server version [null terminated string]
+	// connection id [4 bytes]
+  	pos := 1 + bytes.IndexByte(data[1:], 0x00) + 1 + 4 // 读取 NULL （0x00）为结尾的字符串，跳过服务器线程 ID
+  
+  	// first part of the password cipher [8 bytes]
+  	cipher := data[pos : pos+8] // 获取挑战随机数
+  
+  	// (filler) always 0x00 [1 byte]
+	pos += 8 + 1
+  
+  	// capability flags (lower 2 bytes) [2 bytes]
+	mc.flags = clientFlag(binary.LittleEndian.Uint16(data[pos : pos+2])) // 获取服务器权能标识
+	if mc.flags&amp;clientProtocol41 == 0 { // 说明 MySQL 服务器不支持高于 41 版本的协议
+		return nil, ErrOldProtocol
+	}
+	if mc.flags&amp;clientSSL == 0 &amp;&amp; mc.cfg.tls != nil { // 说明 MySQL 服务器需要 SSL 加密，但是客户端没有配置 SSL
+		return nil, ErrNoTLS
+	}
+	pos += 2 // 指针向后两位
+  
+  	if len(data) &gt; pos {
+      	// 指针跳过标志位
+		pos += 1 + 2 + 2 + 1 + 10
+
+		// second part of the password cipher [mininum 13 bytes],
+		// where len=MAX(13, length of auth-plugin-data - 8)
+		//
+		// The web documentation is ambiguous about the length. However,
+		// according to mysql-5.7/sql/auth/sql_authentication.cc line 538,
+		// the 13th byte is &quot;\0 byte, terminating the second part of
+		// a scramble&quot;. So the second part of the password cipher is
+		// a NULL terminated string that's at least 13 bytes with the
+		// last byte being NULL.
+		//
+		// The official Python library uses the fixed length 12
+		// which seems to work but technically could have a hidden bug.
+		cipher = append(cipher, data[pos:pos+12]...)
+
+		// TODO: Verify string termination
+		// EOF if version (&gt;= 5.5.7 and &lt; 5.5.10) or (&gt;= 5.6.0 and &lt; 5.6.2)
+		// \NUL otherwise
+		//
+		//if data[len(data)-1] == 0 {
+		//	return
+		//}
+		//return ErrMalformPkt
+
+		// make a memory safe copy of the cipher slice
+		var b [20]byte
+		copy(b[:], cipher)
+		return b[:], nil
+	}
+
+	// make a memory safe copy of the cipher slice
+	var b [8]byte // 返回 8 字节的挑战随机数
+	copy(b[:], cipher)
+	return b[:], nil
+}
+</code></pre>
+
+<p>除了上面解析的两个函数， <code>packages.go</code> 还有 <code>initialisation process</code> / <code>result packages</code> / <code>prepared statements</code> 等协议的 <strong>写入/读取</strong> ，有兴趣的读者可以结合上面的知识点自行阅读。</p>
+
+<h2 id="driver-go">Driver.go</h2>
+
+<p>接下来就要分析一些比较重要的代码了，比如接下来要讲的 <code>driver.go</code> ，它主要负责与 <code>MySQL</code> 数据库进行各种协议的连接，并返回该连接。可以说它才是最基础、最核心的功能。</p>
+
+<p>不过首先我们需要看下 <code>database/sql</code> 包中的 <code>Driver</code> 接口需要如何实现：</p>
+
+<pre><code class="language-go">// database/sql/driver/driver.go
+
+// 数据库驱动
+type Driver interface {
+  Open(name string) (Conn, error)
+}
+
+// ...
+
+// 非并发安全数据库连接
+type Conn interface {
+  // 返回一个绑定到 sql 的准备语句
+  Prepare(query string) (Stmt, error)
+  
+  // 关闭该连接，并标记为不再使用，停止所有准备语句和事务
+  // 因为 database/sql 包维护了一个空闲的连接池，并且在空闲连接过多的时候会自动调用 Close ，所以驱动程序包不需要显式调用该函数
+  Close() error
+  
+  // 开始并返回一个新的事务，而新的事务与旧的连接没有任何关联
+  Begin() (Tx, error)
+}
+</code></pre>
+
+<p>根据 <code>database/sql</code> 提供的 <code>Driver</code> 接口， <code>go-sql-driver/mysql</code> 实现了自己的 <strong>数据库驱动</strong> 结构：</p>
+
+<pre><code class="language-go">type MySQLDriver struct{}
+
+func (d MySQLDriver) Open(dsn string) (driver.Conn, error) {
+  mc := &amp;mysqlConn {
+      // set max value
+  }
+  mc.cfg = ParseDSN(dsn) // 通过解析 DSN 设置 MySQL 连接的配置
+
+  // set parseTime and strict
+  // ...
+  
+  // connect to server
+  if dial, ok := dials[mc.cfg.Net]; ok { // 根据 地址 以及 协议类型，尝试连接上服务器
+    mc.netConn, err = dial(mc.cfg.Addr)
+  } else { // 连接服务器失败，尝试重连
+    nd := net.Dialer{Timeout: mc.cfg.Timeout}
+    mc.netConn, err := nd.Dial(mc.cfg.Net, mc.cfg.Addr)
+  }
+  if err !=  nil { // 重试失败，返回异常
+      return nil, err
+  }
+  
+  // Enable TCP Keepalives on TCP connections
+  if tc, ok := mc.netConn.(*net.Conn); ok { // tcp 连接类型转换
+    if err := tc.SetKeepAlive(true); err != nil {
+      // Don't send COM_QUIT before handshake.
+      mc.netConn.Close() // 如果设置长连接失败，返回异常之前一定要记得将连接断开
+      mc.netConn = nil
+      return nil, err
+    }
+  }
+  
+  mc.buff = newBuff(mc.netConn) // 生成一个带缓冲的 buffer，如上面 buffer.go 中所说
+  
+  // set I/O timeout
+  // ...
+  
+  // Reading Handshake Initialization Packet
+  cipher, err := mc.readInitPacket() // 发起数据库首次握手
+  if err != nil {
+    mc.cleanup() // 将当前 mysqlConn 对象销毁，后面我们会说这个函数
+    return nil, err
+  }
+  
+  // Send Client Authentication Packet
+  if err = mc.writeAuthPacket(cipher); err != nil { // 向数据库发送登录信息校验
+    mc.cleanup()
+    return nil, err
+  }
+}
+</code></pre>
+
+<h2 id="connection-go">connection.go</h2>
+
+<p>终于要讲到这个包的核心数据结构 <code>mysqlConn</code> 了，可以说，驱动的所有功能几乎都围绕着这个数据结构，我们先来看看它的结构：</p>
+
+<pre><code class="language-go">type mysqlConn struct {
+    buf              buffer 	// buffer 缓冲器
+	netConn          net.Conn	// 网络连接
+	affectedRows     uint64		// sql 执行成功影响行数
+	insertId         uint64		// sql 添加成功最新的主键 ID
+	cfg              *Config	// dsn 中的 基础配置
+  	maxPacketAllowed int		// 允许的最大报文的字节长度，最大不能超过 (16MB - 1byte)
+	maxWriteSize     int		// 允许最大的写入字节长度，最大不能超过 (16MB - 1byte)
+	writeTimeout     time.Duration 	// 执行 sql 的 超时时间
+	flags            clientFlag		// 客户端状态标识
+	status           statusFlag		// 服务端状态标识
+	sequence         uint8			// 序号
+	parseTime        bool			// 是否格式化时间
+	strict           bool			// 是否使用严格模式
+}
+
+// driver.go
+// 而创建一个 mysqlConn 连接需要通过 driver.go 中的 Open 函数，也说明 mysqlConn 实现了 driver.Conn 接口
+func (d MySQLDriver) Open(dsn string) (driver.Conn, error) {
+  mc := &amp;mysqlConn{
+      // ...
+  }
+  
+  // ...
+  
+  return mc, nil
+}
+</code></pre>
+
+<p>当一个新的客户端连接上服务器的时候 （三次握手结束，客户端进入 <code>established</code> 状态），需要先对 <code>MySQL</code> 服务器进行 <strong>会话的用户/系统环境变量</strong> 的设置。</p>
+
+<pre><code class="language-go">// Handles parameters set in DSN after the connection is established
+func (mc *mysqlConn) handleParams() (err error) {
+  	for param, val := range mc.cfg.Params { // Params: map[string]string
+      	switch param {
+        // Charset
+        case &quot;charset&quot;: // 如果是字符集，则调用 SET NAMES 命令
+          	charsets := strings.Split(val, &quot;,&quot;)
+			for i := range charsets {
+				// ignore errors here - a charset may not exist
+				err = mc.exec(&quot;SET NAMES &quot; + charsets[i])
+				if err == nil {
+					break
+				}
+			}
+			if err != nil {
+				return
+			}
+
+		// System Vars
+		default: // 执行系统环境变量设置
+			err = mc.exec(&quot;SET &quot; + param + &quot;=&quot; + val + &quot;&quot;)
+			if err != nil {
+				return
+			}
+      	}
+  	}
+}
+</code></pre>
+
+<p><code>conntion.go</code>  还负责 <strong>事务</strong> 、<strong>预处理语句</strong> 、<strong>执行/查询</strong> 的管理，但是基本都是往 <code>mysqlConn</code> 中发送  <code>command package</code> ，如：</p>
+
+<pre><code class="language-go">// Begin 开启事务
+func (mc *mysqlConn) Begin() (driver.Tx, error) {
+	if mc.netConn == nil {
+		errLog.Print(ErrInvalidConn)
+		return nil, driver.ErrBadConn
+	}
+	err := mc.exec(&quot;START TRANSACTION&quot;)
+	if err == nil {
+		return &amp;mysqlTx{mc}, err // 返回成功开启的事务，重用之前的连接
+	}
+
+	return nil, err
+}
+
+// Internal function to execute commands
+func (mc *mysqlConn) exec(query string) error {
+    // Send command
+  	err := mc.writeCommandPacketStr(comQurey, query)
+  	if err != nil {
+		return err
+	}
+  
+  	// Read Result
+  	resLen, err := mc.readResultSetHeaderPacket() // 根据 data[0] 的值判断是否出错，如果没有错误，则返回消息体的长度
+  	if err == nil &amp;&amp; resLen &gt; 0 { // 存在有效消息体
+		if err = mc.readUntilEOF(); err != nil { // 读取 columns
+			return err
+		}
+
+		err = mc.readUntilEOF() // 读取 rows
+	}
+
+	return err
+}
+</code></pre>
+
+<p>我想 <code>conntion.go</code> 中最重要的一个函数应该是 <code>cleanup</code> ，它负责将 <strong>连接关闭</strong> 、 <strong>重置环境变量</strong> 等功能，但是该函数不能随意调用，它只有在 <strong>登录权限校验异常</strong> 时候才应该被调用，否则服务器在不知道客户端 <strong>被强行关闭</strong> 的情况下，依然会向该客户端发送消息，导致严重异常：</p>
+
+<pre><code class="language-go">// Closes the network connection and unsets internal variables. Do not call this
+// function after successfully authentication, call Close instead. This function
+// is called before auth or on auth failure because MySQL will have already
+// closed the network connection.
+func (mc *mysqlConn) cleanup() {
+    // Makes cleanup idempotent 保证函数的幂等性
+  	if mc.netConn != nil {
+      	if err := mc.netConn.Close(); err != nil { // Close 会尝试发送 comQuit command 到服务器
+          	errLog.Print(err)
+      	}
+      	mc.netConn = nil // 不管 Close 是否成功，必须将 netConn 清空
+  	}
+  	mc.cfg = nil
+	mc.buf.nc = nil // 缓冲器中的 netConn 也要关闭
+}
+</code></pre>
+
+<h2 id="result-go">Result.go</h2>
+
+<p>每当 <code>MySQL</code> 返回一个 <code>OK</code> 的 <strong>状态报文</strong> ，该报文协议会携带上本次执行的结果 <code>affectedRows</code> 以及 <code>insertId</code> ，而 <code>result.go</code> 就包含着一个数据结构，用于存储本次的执行结果。</p>
+
+<pre><code class="language-go">type mysqlResult struct {
+    affectedRows int64
+  	insertId 	 int64
+}
+
+// 两个 getter
+func (res *mysqlResult) LastInsertId() (int64, error) {
+	return res.insertId, nil
+}
+
+func (res *mysqlResult) RowsAffected() (int64, error) {
+	return res.affectedRows, nil
+}
+</code></pre>
+
+<p>接下来我们看下在 <code>conntion.go</code> 中是怎么生成 <code>mysqlResult</code> 对象的：</p>
+
+<pre><code class="language-go">// connect.go
+func (mc *mysqlConn) Exec(query string, args []driver.Value) (driver.Result, error) {
+  
+  	// ...
+  
+  	err := exec(query)
+  	if err == nil {
+		return &amp;mysqlResult{ // 返回执行的结果
+			affectedRows: int64(mc.affectedRows),
+			insertId:     int64(mc.insertId),
+		}, err
+	}
+	return nil, err
+}
+
+// exec 函数的解析可以返回上面 package.go 中浏览
+
+// package.go
+func (mc *mysqlConn) readResultSetHeaderPacket() (int, error) {
+	data, err := mc.readPacket()
+	if err == nil {
+		switch data[0] {
+
+		case iOK:
+			return 0, mc.handleOkPacket(data) // 处理 OK 状态报文
+
+		// ...
+}
+
+func (mc *mysqlConn) handleOkPacket(data []byte) error {
+	var n, m int
+
+	// 0x00 [1 byte]
+
+	// Affected rows [Length Coded Binary]
+	mc.affectedRows, _, n = readLengthEncodedInteger(data[1:])
+
+	// Insert id [Length Coded Binary]
+	mc.insertId, _, m = readLengthEncodedInteger(data[1+n:])
+
+	// ...
+}
+</code></pre>
+
+<h2 id="row-go">Row.go</h2>
+
+<p>当 <code>MySQL</code> 执行 <strong>插入、更新、删除</strong> 等操作后，都会返回 <code>Result</code> ，但是 <strong>查询</strong> 返回的是 <code>Rows</code> ，我们先来看看 <code>go-mysql-driver</code> 驱动所实现的 <strong>接口</strong>  <code>Rows</code> 的接口描述：</p>
+
+<pre><code class="language-go">// database/sql/driver/driver.go
+// Rows 是执行查询返回的结果的 游标
+type Rows interface {
+    // Columns 返回列的名称，从 slice 的长度可以判断列的长度
+  	// 如果一个列的名称未知，则为该列返回一个空字符串
+  	Columns() []string
+  
+  	// Close 关闭游标
+  	Close() error
+  
+  	// Next 将下一行数据填充到 desc 切片中
+	// 如果读取的是最后一行数据，应该返回一个 io.EOF 错误
+  	Next(desc []Value) error
+}
+
+type Value interface{} // Value is a value that drivers must be able to handle.
+</code></pre>
+
+<p>为什么我要说这是 <code>go-mysql-driver</code> 驱动所实现的 <strong>接口</strong> <code>Rows</code> 呢？眼尖的同学应该已经看到了， <code>Next</code> 函数好像和我们平常见到的不一样啊！！</p>
+
+<p>是的，因为我们平常使用的：</p>
+
+<ul>
+<li><code>rows.Next()</code></li>
+<li><code>rows.Scan(dest ...interface{}) error</code></li>
+</ul>
+
+<p>等函数的对象 <code>rows</code> 并不是上面的 <strong>接口描述</strong> <code>Rows</code> ，而是另一个封装的 <strong>同名数据结构</strong> <code>Rows</code> ，它就在 <code>database/sql</code> 包中 ：</p>
+
+<pre><code class="language-go">// database/sql.go
+type Rows struct {
+    dc          *driverConn 
+	releaseConn func(error)
+	rowsi       driver.Rows // 接口描述的 Rows 藏在这！！！
+	
+	// 忽略其他字段，因为我们不分析这个包...
+  
+  	// lastcols is only used in Scan, Next, and NextResultSet which are expected
+	// not not be called concurrently.
+	lastcols []driver.Value
+}
+</code></pre>
+
+<p>我们跳过 <code>database/sql</code>  包中的 <code>Rows</code> 实现，其无非是提供了更多功能的一个结果集而已，让我们回到真正与数据库进行交互的 <code>Rows</code> 中进行源码分析。</p>
+
+<p>在 <code>go-sql-driver</code> 实现的 <code>mysqlRows</code> 数据结构只实现了 <code>Columns()</code> 和 <code>Close()</code> 两个行数，剩下的 <code>Next(desc []driver.Value)</code> 实现则交给了 <code>MySQL</code> 的两种结果集协议：</p>
+
+<pre><code class="language-go">// rows.go
+
+type mysqlField struct {
+	tableName string
+	name      string
+	flags     fieldFlag
+	fieldType byte
+	decimals  byte
+}
+
+type mysqlRows struct {
+	mc      *mysqlConn
+	columns []mysqlField
+}
+
+type binaryRows struct { // 二进制结果集协议
+	mysqlRows // 对于 Go 的 组合特性 应该不会陌生吧？
+}
+
+type textRows struct { // 文本结果集协议
+	mysqlRows
+}
+
+func (rows *mysqlRows) Columns() []string {
+  	columns := make([]string, len(rows.columns))
+  	
+  	// 将列名赋值到 columns ，如果有设置别名则赋值别名...
+  
+  	return columns
+}
+
+func (rows *mysqlRows) Close() error {
+    // 将连接里面的未读数据读完，然后将连接置空
+}
+
+// 接下来的 Next 函数实现就交由 binaryRows 和 textRows 了
+func (rows *binaryRows) Next(desc []driver.Value) error {
+    if mc := rows.mc; mc != nil {
+		if mc.netConn == nil {
+			return ErrInvalidConn
+		}
+
+		return rows.readRow(dest) // 读二进制协议结果集
+	}
+	return io.EOF
+}
+
+func (rows *testRows) Next(desc []driver.Value) error {
+    if mc := rows.mc; mc != nil {
+		if mc.netConn == nil {
+			return ErrInvalidConn
+		}
+
+		return rows.readRow(dest) // 读取文本协议
+	}
+	return io.EOF
+}
+</code></pre>
+
+<p>可以说，实现了 <code>driver.Rows</code> 接口的只有 <code>binaryRows</code> 和 <code>testRows</code> ，而他们里面的 <code>readRow(desc)</code> 实现由于都是和协议强相关的代码，就不再解析了。</p>
+
+<p>我们跟着源码可以看到，使用 <code>textRows</code> 的场景在 <code>getSystemVar</code> 以及 <code>Query</code> 中，而使用 <code>binaryRows</code> 的场景在 <code>statement</code> 中，就是我们下一步需要解析的部分。</p>
+
+<h2 id="statement-go">Statement.go</h2>
+
+<p><code>Prepared Statement</code> ，即预处理语句，他有什么优势呢，为什么 <code>MySQL</code> 要加入它？</p>
+
+<ul>
+<li>执行性能更高：<code>MySQL</code> 会对 <code>Prepared Statement</code> 语句预先进行编译成模板，并将 <strong>占位符</strong> 替换 <strong>参数</strong> 的位置，这样如果频繁执行一条参数只有少量替换的语句时候，性能会得到大量提高。可能有同学会有疑问，为什么 <code>MySQL</code> 语句还需要编译？那么可以来参考下这篇 <a href="http://www.cnblogs.com/justfortaste/p/3920140.html">MySQL Prepare 原理</a> 。</li>
+<li>传输协议更优：<code>Prepare Statement</code> 在传输时候使用的是 <code>Binary Protocol</code> ，比使用 <code>Text Protocol</code> 的查询具有 <strong>传输数据量更小</strong> 、 <strong>无需转换数据格式</strong> 等优势，缓解了 <strong>CPU</strong> 和 <strong>网络</strong> 的开销。</li>
+<li>安全性更好：由 <a href="http://www.cnblogs.com/justfortaste/p/3920140.html">MySQL Prepare 原理</a> 我们可以知道，<code>Perpare</code> 编译之后会生成 __语法树 __，在执行的时候才会将参数传进来，这样就避免了平常直接执行 <code>SQL 语句</code> 会发生的 <code>SQL 注入</code> 问题。</li>
+</ul>
+
+<p>好了，先来看下 <code>mysqlStmt</code> 的数据结构：</p>
+
+<pre><code class="language-go">type mysqlStmt struct {
+    mc 			*mysqlConn
+  	id 			uint32
+  	paramCount 	int
+  	columns		[]mysqlField // cached from the first query (既然SQL已经预编译好了，返回的结果集列名已经是确定的，所以在收到 PREPARE_OK 之后解析数据后会缓存下来)
+}
+</code></pre>
+
+<p>我们发现，它比 <code>mysqlRows</code> 多了两个成员变量：</p>
+
+<ul>
+<li><code>id</code> ：<code>MySQL</code> 预处理语句之后，会给该语句分配一个 <code>id</code> 并返回客户端，用于：
+
+<ul>
+<li>客户端提交该 <code>id</code> 给服务器调用对应的预处理语句。</li>
+</ul></li>
+<li><code>paramCount</code> ：参数数量，等于 <strong>占位符</strong> 的个数，用于：
+
+<ul>
+<li>判断传入的参数个数是否与预编译语句中的占位符个数一致。</li>
+<li>判断返回的 <code>PREPARE_OK</code> 响应报文是否带有 <strong>参数列名</strong> 数据。</li>
+</ul></li>
+</ul>
+
+<p>下面来看看如何创建并使用一个 <code>Prepare Statement</code> ：</p>
+
+<pre><code class="language-go">func (mc *mysqlConn) Prepare(query string) (driver.Stmt, error) { // 传入需要预编译的 SQL 语句
+    // 检查连接是否可用...
+  
+  	err = mc.writeCommandPacketStr(comStmtPrepare, query) // 将 SQL 发往数据库进行预编译
+  	if err != nil {
+		return nil, err
+	}
+
+	stmt := &amp;mysqlStmt{ // 预编译成功，先创建 stmt 对象
+		mc: mc,
+	}
+  
+  	// Read Result
+  	columnCount, err := stmt.readPrepareResultPacket() // 从 stmt 的连接读取返回 响应报文
+  	if err == nil {
+      	if stmt.paramCount &gt; 0 { // 如果预编译的 SQL 的有参数
+          	if err = mc.readUntilEOF(); err != nil { // 读取参数列名数据
+				return nil, err
+			}
+      	}
+      	
+      	if columnCount &gt; 0 { // 返回执行结果的列表个数
+			err = mc.readUntilEOF() // 读取执行结果的列名数据
+		}
+  	}
+  
+  	return stmt, err
+}
+</code></pre>
+
+<p>因为是已经预编译好的语句，所以在执行的时候只需要将参数传进去就可以了。</p>
+
+<pre><code class="language-go">func (stmt *mysqlStmt) Exec(args []driver.Value) (driver.Result, error) {
+    // 检查连接是否可用...
+  
+  	err := stmt.writeExecutePacket(args)
+	if err != nil {
+		return nil, err
+	}
+  
+  	// 读取结果集的行、列数据
+}
+
+func(stmt *mysqlStmt) writeExecutePacket(args []driver.Value) error {
+  	if len(args) != stmt.paramCount { // 判断传进来的参数和预编译好的SQL参数 个数是否一致
+		return fmt.Errorf(
+			&quot;argument count mismatch (got: %d; has: %d)&quot;,
+			len(args),
+			stmt.paramCount,
+		)
+	}
+  
+  	// 读取缓冲器中的数据，如果为空，则返回异常...
+  
+  	// command [1 byte]
+	data[4] = comStmtExecute
+
+	// statement_id [4 bytes] 将预编译语句的 id 转换为 4字节的二进制数据
+	data[5] = byte(stmt.id)
+	data[6] = byte(stmt.id &gt;&gt; 8)
+	data[7] = byte(stmt.id &gt;&gt; 16)
+	data[8] = byte(stmt.id &gt;&gt; 24)
+
+	// flags (0: CURSOR_TYPE_NO_CURSOR) [1 byte]
+	data[9] = 0x00
+
+	// iteration_count (uint32(1)) [4 bytes]
+	data[10] = 0x01
+	data[11] = 0x00
+	data[12] = 0x00
+	data[13] = 0x00
+  
+  	// 将参数按照不同的类型转换为 binary protobuf 并 append 到 data 中...
+  
+  	return mc.writePacket(data)
+}
+</code></pre>
+
+<p>相信看到这里，已经能对看懂源码的 70% 了，剩余的代码都是和协议相关，就留待有兴趣的读者继续研究，这里就不再展开讲了。</p>
+
+<h2 id="transaction-go">Transaction.go</h2>
+
+<p>事务是 <code>MySQL</code> 中很重要的一部分，但是驱动的实现却很简单，因为一切的事务控制都已经交由 <code>MySQL</code> 去执行了，驱动所需要做的，只要发送一个 <code>commit</code> 或者 <code>rollback</code> 的 <code>command packet</code> 即可。</p>
+
+<pre><code class="language-go">type mysqlTx struct {
+	mc *mysqlConn
+}
+
+func (tx *mysqlTx) Commit() (err error) {
+	if tx.mc == nil || tx.mc.netConn == nil {
+		return ErrInvalidConn
+	}
+	err = tx.mc.exec(&quot;COMMIT&quot;)
+	tx.mc = nil
+	return
+}
+
+func (tx *mysqlTx) Rollback() (err error) {
+	if tx.mc == nil || tx.mc.netConn == nil {
+		return ErrInvalidConn
+	}
+	err = tx.mc.exec(&quot;ROLLBACK&quot;)
+	tx.mc = nil
+	return
+}
+</code></pre>
+
+<h2 id="总结">总结</h2>
+
+<p>最后，其实 <code>buffer</code> 的实现对我来说印象是最深刻的，因为它是最简单而又是最有效的实现了一个消息缓冲器，它实现的巧妙让我决定把它放到第一节，而其他的几乎都和 <code>MySQL</code> 的协议相关，看这些源码让我对 <code>MySQL</code> 有了更多的认识。</p>
+
+<p>好了，本篇字数比较多，也会有很多不足，希望大家能够给本篇博客多提点意见，让我可以改进的更好。如果还有机会，我会带来其他篇章的源码解析，敬请期待 :)</p>
+
+<h2 id="参考链接">参考链接</h2>
+
+<ul>
+<li><a href="http://www.cnblogs.com/davygeek/p/5647581.html">http://www.cnblogs.com/davygeek/p/5647581.html</a></li>
+<li><a href="http://www.cnblogs.com/justfortaste/p/3920140.html">http://www.cnblogs.com/justfortaste/p/3920140.html</a></li>
+<li><a href="http://hutaow.com/blog/2013/11/06/mysql-protocol-analysis/#439-prepare_ok-prepared-statement">http://hutaow.com/blog/2013/11/06/mysql-protocol-analysis/#439-prepare_ok-prepared-statement</a></li>
+</ul>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="http://localhost/golang-bad-file-descriptor/">
         Golang Error: bad file descriptor
       </a>
     </h1>
@@ -188,7 +1191,7 @@ func logFile(url string) {
   
   <div class="post">
     <h1 class="post-title">
-      <a href="http://hackez.github.io/update_macos_problem/">
+      <a href="http://localhost/update_macos_problem/">
         Update Mac OS Problem
       </a>
     </h1>
@@ -243,7 +1246,7 @@ missing xcrun at: /Library/Developer/CommandLineTools/usr/bin/xcrun
   
   <div class="post">
     <h1 class="post-title">
-      <a href="http://hackez.github.io/circuitbreaker/">
+      <a href="http://localhost/circuitbreaker/">
         CircuitBreaker 设计模式
       </a>
     </h1>
@@ -355,7 +1358,7 @@ func NewCircuitBreaker(st Settings) *CircuitBreaker {
   
   <div class="post">
     <h1 class="post-title">
-      <a href="http://hackez.github.io/tcpdump-in-action/">
+      <a href="http://localhost/tcpdump-in-action/">
         tcpdump in Action
       </a>
     </h1>
@@ -424,7 +1427,7 @@ func main() {
   
   <div class="post">
     <h1 class="post-title">
-      <a href="http://hackez.github.io/protocol-buffers/">
+      <a href="http://localhost/protocol-buffers/">
         Action in Protocol Buffers
       </a>
     </h1>
@@ -665,7 +1668,7 @@ var fileDescriptor0 = []byte{
   
   <div class="post">
     <h1 class="post-title">
-      <a href="http://hackez.github.io/how2use-captcha-in-beego/">
+      <a href="http://localhost/how2use-captcha-in-beego/">
         How to Use Captcha in Beego Correct
       </a>
     </h1>
@@ -734,7 +1737,7 @@ func init() {
   
   <div class="post">
     <h1 class="post-title">
-      <a href="http://hackez.github.io/fun-in-docker-2/">
+      <a href="http://localhost/fun-in-docker-2/">
         Fun in Docker Day-2
       </a>
     </h1>
@@ -917,7 +1920,7 @@ CMD [&quot;/main&quot;]
   
   <div class="post">
     <h1 class="post-title">
-      <a href="http://hackez.github.io/fun-in-docker-1/">
+      <a href="http://localhost/fun-in-docker-1/">
         Fun in Docker Day-1
       </a>
     </h1>
@@ -1015,7 +2018,7 @@ $ docker push hackerz/getmeizi
   
   <div class="post">
     <h1 class="post-title">
-      <a href="http://hackez.github.io/global_gitignore/">
+      <a href="http://localhost/global_gitignore/">
         Global Ignore File in Git
       </a>
     </h1>
@@ -1072,7 +2075,7 @@ Thumbs.db
   
   <div class="post">
     <h1 class="post-title">
-      <a href="http://hackez.github.io/how-2-install-scikit-learn/">
+      <a href="http://localhost/how-2-install-scikit-learn/">
         How To Install Scikit-learn Under OSX 10.11
       </a>
     </h1>
@@ -1227,7 +2230,7 @@ $ sudo python setup.py install
   
   <div class="post">
     <h1 class="post-title">
-      <a href="http://hackez.github.io/golang-package-dependency-management-tool/">
+      <a href="http://localhost/golang-package-dependency-management-tool/">
         Golang Package Dependency Management Tool
       </a>
     </h1>
@@ -1457,7 +2460,7 @@ $ ./bin/hellogb
   
   <div class="post">
     <h1 class="post-title">
-      <a href="http://hackez.github.io/C-Prefess-Program/">
+      <a href="http://localhost/C-Prefess-Program/">
         C Prefess Program Note
       </a>
     </h1>
@@ -1666,7 +2669,7 @@ if(STRCMP(s, == , &quot;volatile&quot;))
   
   <div class="post">
     <h1 class="post-title">
-      <a href="http://hackez.github.io/redigo-open2manyfiles/">
+      <a href="http://localhost/redigo-open2manyfiles/">
         redigo : open too many files
       </a>
     </h1>
@@ -1744,7 +2747,7 @@ created by net/http.(*Server).Serve
   
   <div class="post">
     <h1 class="post-title">
-      <a href="http://hackez.github.io/why-handlefunc-called-twice/">
+      <a href="http://localhost/why-handlefunc-called-twice/">
         Why HandleFunc Called Twice
       </a>
     </h1>
@@ -1810,7 +2813,7 @@ func main() {
   
   <div class="post">
     <h1 class="post-title">
-      <a href="http://hackez.github.io/golang-dev-log/">
+      <a href="http://localhost/golang-dev-log/">
         Golang Dev Log
       </a>
     </h1>
@@ -1875,7 +2878,7 @@ func main() {
   
   <div class="post">
     <h1 class="post-title">
-      <a href="http://hackez.github.io/redigo-action-1/">
+      <a href="http://localhost/redigo-action-1/">
         Redigo Action - 1
       </a>
     </h1>
@@ -1965,7 +2968,7 @@ func main() {
   
   <div class="post">
     <h1 class="post-title">
-      <a href="http://hackez.github.io/cold-start/">
+      <a href="http://localhost/cold-start/">
         Cold Start
       </a>
     </h1>
@@ -2069,7 +3072,7 @@ func main() {
   
   <div class="post">
     <h1 class="post-title">
-      <a href="http://hackez.github.io/hadoop-1/">
+      <a href="http://localhost/hadoop-1/">
         Learning in Hadoop - Day 1
       </a>
     </h1>
@@ -2113,7 +3116,7 @@ func main() {
   
   <div class="post">
     <h1 class="post-title">
-      <a href="http://hackez.github.io/lenproblem/">
+      <a href="http://localhost/lenproblem/">
         Named Question in Golang
       </a>
     </h1>
@@ -2153,7 +3156,7 @@ func main() {
   
   <div class="post">
     <h1 class="post-title">
-      <a href="http://hackez.github.io/channel/">
+      <a href="http://localhost/channel/">
         The Channel in Golang
       </a>
     </h1>
@@ -2249,7 +3252,7 @@ close(intChan)
   
   <div class="post">
     <h1 class="post-title">
-      <a href="http://hackez.github.io/socket/">
+      <a href="http://localhost/socket/">
         socket
       </a>
     </h1>
@@ -2364,80 +3367,7 @@ close(intChan)
   
   <div class="post">
     <h1 class="post-title">
-      <a href="http://hackez.github.io/about-me/">
-        About Me
-      </a>
-    </h1>
-
-    <span class="post-date">Sat, Apr 30, 2016</span>
-
-    
-
-<h1 id="about-me">About Me</h1>
-
-<p>我是朱冠州，以HackerZ的名字混迹于网络中。于1994年8月出生于广东肇庆，迷迷茫茫直至高中开始喜欢上计算机，于是便选择了计算机科学与技术这门学科考上了北京理工大学珠海学院。平常我是一个喜欢拍照/看推理小说/撸代码的一个小小码农。</p>
-
-<p>我的大学生活是从<strong>C语言</strong>开始的，一路上在 <strong>PHP/JAVA/Android/Node/Web</strong> 中迷失了自我，直至我遇上了<strong>Golang</strong>，我喜欢Go的那种优雅/简练的语法，更喜欢在Golang世界中的那种自由，所以我心甘情愿当一个Gopher。</p>
-
-<p>我希望能成为一个能够改善我们身边生活/见证未来科技行业革新的一个<strong>创新者</strong>以及<strong>见证者</strong>。</p>
-
-<h1 id="contact-me">Contact Me</h1>
-
-<ul>
-<li>Email: 767110505@qq.com</li>
-<li>Weibo: <a href="http://weibo.com/u/2246744750">HackerZGZ</a></li>
-<li>Github: <a href="https://github.com/HackeZ">HackeZ</a></li>
-<li>Blog: <a href="http://hackez.github.io">HackerZ</a></li>
-</ul>
-
-<h1 id="technology-stack">Technology stack</h1>
-
-<p>前端</p>
-
-<ul>
-<li>HTML/CSS/JavaScript</li>
-<li>JQuery</li>
-<li>ReactJS</li>
-</ul>
-
-<p>后端</p>
-
-<ul>
-<li>PHP (ThinkPHP)</li>
-<li>NodeJS (Express)</li>
-<li>Golang (Beego/Hugo)</li>
-</ul>
-
-<p>数据库</p>
-
-<ul>
-<li>MySQL</li>
-<li>MongoDB</li>
-<li>Redis</li>
-</ul>
-
-<p>移动端</p>
-
-<ul>
-<li>Andorid</li>
-</ul>
-
-<p>工具</p>
-
-<ul>
-<li>Linux</li>
-<li>Git</li>
-</ul>
-
-<h1 id="future">Future</h1>
-
-<p>对于未来，我希望能够在广东找到一份我喜爱的工作，能保持我对新技术和事物的爱好，并投身于Coding的最前线。</p>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="http://hackez.github.io/qn-sdkv7-pb/">
+      <a href="http://localhost/qn-sdkv7-pb/">
         Qiniu Go SDK v7 Problem
       </a>
     </h1>
@@ -2496,7 +3426,7 @@ close(intChan)
   
   <div class="post">
     <h1 class="post-title">
-      <a href="http://hackez.github.io/build/">
+      <a href="http://localhost/build/">
         本篇将教会你如何使用Hugo快捷地在Github中创建自己的Blog
       </a>
     </h1>
@@ -2692,7 +3622,7 @@ title = &quot;Welcome&quot;
   
   <div class="post">
     <h1 class="post-title">
-      <a href="http://hackez.github.io/welcome/">
+      <a href="http://localhost/welcome/">
         Welcome
       </a>
     </h1>

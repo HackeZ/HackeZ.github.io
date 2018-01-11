@@ -2,19 +2,1018 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Golang on HackerZ - Blog</title>
-    <link>http://hackez.github.io/categories/golang/</link>
+    <link>http://localhost/categories/golang/index.xml</link>
     <description>Recent content in Golang on HackerZ - Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 15 Oct 2016 23:33:50 +0800</lastBuildDate>
-    <atom:link href="http://hackez.github.io/categories/golang/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://localhost/categories/golang/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>go-sql-deiver 源码解析</title>
+      <link>http://localhost/go-sql-driver-source-code/</link>
+      <pubDate>Sun, 15 Oct 2017 20:31:55 +0800</pubDate>
+      
+      <guid>http://localhost/go-sql-driver-source-code/</guid>
+      <description>
+
+&lt;h2 id=&#34;intro&#34;&gt;Intro&lt;/h2&gt;
+
+&lt;p&gt;最近正在给 &lt;code&gt;mysql&lt;/code&gt; 封装一个库，顺带研究一下 &lt;code&gt;go-mysql-driver&lt;/code&gt; 这个库的源码实现。&lt;/p&gt;
+
+&lt;h2 id=&#34;buffer-go&#34;&gt;Buffer.go&lt;/h2&gt;
+
+&lt;p&gt;&lt;code&gt;buffer&lt;/code&gt; 是一个用于给 &lt;strong&gt;数据库连接&lt;/strong&gt; (&lt;code&gt;net.Conn&lt;/code&gt;) 进行缓冲的一个数据结构，其结构为：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;type buffer struct {
+    buf 	[]byte     // 缓冲池中的数据
+  	nc  	net.Conn   // 负责缓冲的数据库连接对象
+  	idx 	int		   // 已读数据索引
+    length 	int        // 缓冲池中未读数据的长度
+   	timeout time.Duration // 数据库连接的超时设置
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;可以看到，因为  &lt;strong&gt;数据库连接&lt;/strong&gt; (&lt;code&gt;net.Conn&lt;/code&gt;)  在通信的时候是 &lt;strong&gt;同步&lt;/strong&gt; 的。而为了让其能够 &lt;strong&gt;同时 读/写&lt;/strong&gt; ，所以实现了 &lt;code&gt;buffer&lt;/code&gt; 这个数据结构，通过该 &lt;code&gt;buffer&lt;/code&gt; 进行数据缓冲还能实现 &lt;strong&gt;零拷贝&lt;/strong&gt; ( &lt;a href=&#34;https://zh.wikipedia.org/wiki/%E9%9B%B6%E5%A4%8D%E5%88%B6&#34;&gt;zero-copy-ish&lt;/a&gt; ) 。&lt;/p&gt;
+
+&lt;p&gt;其函数分别有：&lt;/p&gt;
+
+&lt;h4 id=&#34;newbuffer-nc-net-conn-buffer&#34;&gt;&lt;code&gt;newBuffer(nc net.Conn) buffer&lt;/code&gt;&lt;/h4&gt;
+
+&lt;p&gt;创建并返回一个 &lt;code&gt;buffer&lt;/code&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;buffer-readnext-need-int-byte-error&#34;&gt;&lt;code&gt;(*buffer) readNext(need int) ([]byte, error)&lt;/code&gt;&lt;/h4&gt;
+
+&lt;p&gt;读取并返回未读数据的 &lt;strong&gt;need&lt;/strong&gt; 位，如果 &lt;strong&gt;need&lt;/strong&gt; 大于 &lt;code&gt;buffer&lt;/code&gt; 的 &lt;code&gt;length&lt;/code&gt; ，就会调用 &lt;code&gt;fill(need int) error&lt;/code&gt; 对 &lt;code&gt;buffer&lt;/code&gt;进行 &lt;strong&gt;扩容&lt;/strong&gt; 。&lt;/p&gt;
+
+&lt;h4 id=&#34;buffer-fill-need-int-error&#34;&gt;(*buffer) fill(need int) error`&lt;/h4&gt;
+
+&lt;p&gt;对 &lt;code&gt;buffer&lt;/code&gt; 进行 &lt;code&gt;(need/defaultBufSize)&lt;/code&gt; 的倍数扩容，并在 &lt;code&gt;timeout&lt;/code&gt; 时间结束前从 &lt;code&gt;buffer.nc&lt;/code&gt; 中读取 &lt;strong&gt;need&lt;/strong&gt; 长度的数据。&lt;/p&gt;
+
+&lt;h4 id=&#34;buffer-takebuffer-length-int-byte&#34;&gt;&lt;code&gt;(*buffer) takeBuffer(length int) []byte&lt;/code&gt;&lt;/h4&gt;
+
+&lt;p&gt;读取 &lt;code&gt;buffer&lt;/code&gt; 中 &lt;code&gt;length&lt;/code&gt; 长度的数据（只包含已读），如果 &lt;code&gt;buffer.length &amp;gt; 0&lt;/code&gt; ，即还有未读数据，则立即返回 &lt;code&gt;nil&lt;/code&gt; 。&lt;/p&gt;
+
+&lt;p&gt;如果需要读取的长度大于 &lt;code&gt;buffer&lt;/code&gt; 的容量，则会进行扩容。&lt;/p&gt;
+
+&lt;h4 id=&#34;buffer-takesmallbuffer-length-int-byte&#34;&gt;&lt;code&gt;(*buffer) takeSmallBuffer(length int) []byte&lt;/code&gt;&lt;/h4&gt;
+
+&lt;p&gt;读取保证不超过 &lt;code&gt;defaultBufSize&lt;/code&gt; 长度的数据的快捷函数（只包含已读），如果 &lt;code&gt;buffer.length &amp;gt; 0&lt;/code&gt; ，即还有未读数据，则立即返回 &lt;code&gt;nil&lt;/code&gt; 。&lt;/p&gt;
+
+&lt;h4 id=&#34;buffer-takecompletebuffer-byte&#34;&gt;&lt;code&gt;(*buffer) takeCompleteBuffer() []byte&lt;/code&gt;&lt;/h4&gt;
+
+&lt;p&gt;读取全部的 &lt;code&gt;buffer&lt;/code&gt; 数据（只包含已读），如果 &lt;code&gt;buffer.length &amp;gt; 0&lt;/code&gt; ，即还有未读数据，则立即返回 &lt;code&gt;nil&lt;/code&gt; 。&lt;/p&gt;
+
+&lt;h2 id=&#34;collations-go&#34;&gt;Collations.go&lt;/h2&gt;
+
+&lt;p&gt;&lt;code&gt;collations&lt;/code&gt; 包含了 &lt;code&gt;MySQL&lt;/code&gt; 所有支持的 &lt;strong&gt;字符集&lt;/strong&gt; 格式，并支持通过 &lt;code&gt;COLLATION_NAME&lt;/code&gt; 返回其字符集 &lt;code&gt;ID&lt;/code&gt;。&lt;/p&gt;
+
+&lt;p&gt;如果需要查询 &lt;code&gt;MySQL&lt;/code&gt; 支持的 &lt;strong&gt;字符集&lt;/strong&gt; 格式，可以使用 &lt;code&gt;SELECT COLLATION_NAME, ID FROM information_schema.COLLATIONS&lt;/code&gt; 语句获取。&lt;/p&gt;
+
+&lt;h2 id=&#34;dsn-go&#34;&gt;Dsn.go&lt;/h2&gt;
+
+&lt;p&gt;&lt;code&gt;DSN&lt;/code&gt; 即 &lt;strong&gt;数据源名称 （Data Source Name）&lt;/strong&gt;  ，是 &lt;strong&gt;驱动程序连接数据库的变量信息&lt;/strong&gt; ，简而言之就是根据你连接的不同数据库使用对应的连接信息。&lt;/p&gt;
+
+&lt;p&gt;通常，数据库的连接配置就是在这里定义的：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;// Config 基本的数据库连接信息
+type Config struct {
+	User         string            // Username
+	Passwd       string            // Password (requires User)
+	Net          string            // Network type
+	Addr         string            // Network address (requires Net)
+	DBName       string            // Database name
+	Params       map[string]string // Connection parameters
+	Collation    string            // Connection collation
+	Loc          *time.Location    // Location for time.Time values
+	TLSConfig    string            // TLS configuration name
+	tls          *tls.Config       // TLS configuration
+	Timeout      time.Duration     // Dial timeout
+	ReadTimeout  time.Duration     // I/O read timeout
+	WriteTimeout time.Duration     // I/O write timeout
+
+	AllowAllFiles           bool // 允许文件使用 LOAD DATA LOCAL INFILE 导入数据库
+	AllowCleartextPasswords bool // 支持明文密码客户端
+	AllowOldPasswords       bool // 允许使用不可靠的旧密码
+	ClientFoundRows         bool // 返回匹配的行数而不是受影响的行数
+	ColumnsWithAlias        bool // 将表名前置在列名
+	InterpolateParams       bool // 将占位符插入查询的SQL字符串
+	MultiStatements         bool // 允许一条语句多次查询
+	ParseTime               bool // 格式化时间值为 time.Time 变量
+	Strict                  bool // 将 warnings 返回 errors
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这都是一些常见的配置项，就此略过。&lt;/p&gt;
+
+&lt;p&gt;该文件有两个公共函数支持 &lt;code&gt;Config&lt;/code&gt; 与 &lt;code&gt;DSN&lt;/code&gt; 之间转换。&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;(*Config)FormatDSN() string&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;ParseDSN(dsn string) (*Config, error)&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;errors-go&#34;&gt;Errors.go&lt;/h2&gt;
+
+&lt;p&gt;&lt;code&gt;errors&lt;/code&gt; 定义了 &lt;code&gt;Logger&lt;/code&gt; 、&lt;code&gt;MySQLError&lt;/code&gt; 、 &lt;code&gt;MySQLWarning&lt;/code&gt; 等数据结构。&lt;/p&gt;
+
+&lt;h4 id=&#34;logger&#34;&gt;Logger&lt;/h4&gt;
+
+&lt;p&gt;复用了 &lt;code&gt;Go&lt;/code&gt; 原生的 &lt;code&gt;log&lt;/code&gt; 包，并将其中的输出重定向至控制台的 &lt;strong&gt;标准错误&lt;/strong&gt; 。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;type Logger interface {
+  Print(v ...interface{})
+}
+
+var errLog = Logger(log.New(os.Stderr, &amp;quot;[mysql]&amp;quot;, log.Ldate|log.Ltime|log.Lshortfile))
+
+func SetLogger(logger Logger) error { // 当然，你也可以使用自定义的错误 Logger
+  if logger == nil {
+    return errors.New(&amp;quot;logger is nil&amp;quot;)
+  }
+  errLog =logger
+  return nil
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;mysqlerror&#34;&gt;MySQLError&lt;/h4&gt;
+
+&lt;p&gt;而 &lt;code&gt;MySQLError&lt;/code&gt; 则简单定义了 &lt;code&gt;MySQL&lt;/code&gt; 输出的错误的结构。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;type MySQLError struct {
+	Number  uint16
+	Message string
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;mysqlwarning&#34;&gt;MySQLWarning&lt;/h4&gt;
+
+&lt;p&gt;&lt;code&gt;MySQLWarning&lt;/code&gt; 则有些不一样，它需要从 &lt;code&gt;MySQL&lt;/code&gt; 中进行一次 &lt;strong&gt;查询&lt;/strong&gt; ，以获取所有的警告信息，所以该包也定义了 &lt;code&gt;MySQLWarning&lt;/code&gt; 的 &lt;code&gt;slice&lt;/code&gt; 结构。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;type MySQLWarning struct {
+    Level string
+  	Code string
+  	Message string
+}
+
+type MySQLWarnings []MySQLWarning
+
+func (mc *mysqlConn) getWarnings() (err error) {
+  rows, err := mc.Query(&amp;quot;SHOW WARNINGS&amp;quot;, nil)
+  // handle err
+  
+  // initzation MySQLWarnings
+  
+  for {
+    err = rows.Next(values)
+    switch err {
+      case nil:
+      	warning := MySQLWarning{}
+      	
+      if raw, ok := values[0].([]byte); ok {
+          warning.Level = string(raw)
+      }else {
+          warning.Level = fmt.Sprintf(&amp;quot;%s&amp;quot;, values[0])
+      }
+      
+      if raw, ok := values[1].([]byte); ok {
+        warning.Code = string(raw)
+      } else {
+        warning.Code = fmt.Sprintf(&amp;quot;%s&amp;quot;, values[1])
+      }
+      
+      if raw, ok := values[2].([]byte); ok {
+        warning.Message = string(raw)
+      } else {
+        warning.Message = fmt.Sprintf(&amp;quot;%s&amp;quot;, values[0])
+      }
+
+      warnings = append(warnings, warning)
+    }
+    
+    case io.EOF:
+    	return warnings
+    
+    default:
+    	rows.Close() // 值得注意的是，如果该函数没有 case 运行 default ，该 rows 就不会被默认关闭，就会占用连接池中的一个连接，是否应该使用 `defer rows.Close() ` 避免该情况？
+    	return
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;infile-go&#34;&gt;Infile.go&lt;/h2&gt;
+
+&lt;p&gt;前面也有提到 &lt;code&gt;MySQL&lt;/code&gt; 在导入大型文件的时候，需要使用 &lt;code&gt;LOAD DATA LOCAL INFILE&lt;/code&gt; 的形式进行导入，而该 &lt;code&gt;infile.go&lt;/code&gt; 就是实现该协议的代码。&lt;/p&gt;
+
+&lt;p&gt;本包在实现的 &lt;code&gt;LOAD DATA&lt;/code&gt; 的时候提供了两种方式进行导入：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;最常见的，使用服务器的文件路径，如 &lt;code&gt;/data/students.csv&lt;/code&gt; ，下文命名其为 &lt;strong&gt;文件路径注册器&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;最通用的，使用实现了 &lt;code&gt;io.Reader&lt;/code&gt; 接口的数据结构，通过返回该数据结构的数据进行导入，如 &lt;code&gt;bytes&lt;/code&gt; &lt;code&gt;os.file&lt;/code&gt; 等，下文命名其为 &lt;strong&gt;Reader 接口注册器&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;在实现该功能的时候，&lt;strong&gt;注册器&lt;/strong&gt; 的实现是用名字作为 Key 的 &lt;code&gt;Map&lt;/code&gt; ，为了避免 &lt;code&gt;Map&lt;/code&gt; 的 &lt;strong&gt;读写竞态&lt;/strong&gt; ，需要对其配置一个读写锁。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;var (
+	fileRegister	  	map[string]bool  	// 文件路径注册器
+  	fileRegisterLock  	sync.RWMutex	   	// 文件路径注册器读写锁
+	readerRegister	  	map[string]func() io.Reader // Reader 接口注册器
+  	readerRegisterLock 	sync.RWMutex				// Reader 接口注册器读写锁	
+)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;除了对两个注册器的 &lt;strong&gt;注册&lt;/strong&gt; 以及 &lt;strong&gt;注销&lt;/strong&gt; 函数，还有一个需要分析的一个函数：&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;(mc *mysqlConn) handleInFileRequest(name string) (err error)&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;通过传入 &lt;strong&gt;文件路径&lt;/strong&gt; 或者 &lt;strong&gt;Reader 名称&lt;/strong&gt; 就可以将数据发往 &lt;code&gt;MySQL&lt;/code&gt; 了。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;func (mc *mysqlConn) handleInFileRequest(name string) (err error) {
+    packSize := 16 * 1024 // 16KB is small enough for disk readahead and large enough for TCP
+    if mc.maxWriteSize &amp;lt; packSize { // 设置发往 MySQL 的数据块大小
+        packSize = mc.maxWriteSize
+  	}
+  
+  	// 获取 文件 或 Reader 的数据，并将其赋值到 rdr 中
+  	// var rdr io.Reader
+  
+  	// send context packets
+  	if err != nil {
+      	data := make([]byte, 4+packetSize) // 需要留 4 个 byte 给协议使用
+      	var n int
+	    for err == nil {
+          	n, err = rdr.Read(data[4:]) // 将数据存入 data 的 [4:] 中
+          	if n &amp;gt; 0 {
+				if ioErr := mc.writePacket(data[:4+n]); ioErr != nil { // 将 data 数据发往 MySQL
+					return ioErr
+				}
+			}
+      	}
+      	if err == io.EOF { // rdr 中的数据读完了
+			err = nil
+		}
+  	}
+  
+  	// send empty packet (termination)
+	if data == nil {
+		data = make([]byte, 4)
+	}
+	if ioErr := mc.writePacket(data[:4]); ioErr != nil { // 告诉 MySQL 文件发送完毕
+		return ioErr
+	}
+
+	// read OK packet
+	if err == nil { // 一切正常结束
+		return mc.readResultOK()
+	}
+
+	mc.readPacket() // 如果中途出错，将错误信息读取到 mysqlConn 中，并返回该错误
+	return err
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;到此，&lt;code&gt;infile.go&lt;/code&gt; 的实现已经整理完毕了，可以看到， 作者 在实现这个功能的时候还是做了一些优化的，比如 &lt;code&gt;map Lazy init&lt;/code&gt; ，&lt;code&gt;send packet size limited&lt;/code&gt; 等。而我们通过分析规范的源码包，能够提升自己的编码水平。&lt;/p&gt;
+
+&lt;h2 id=&#34;packets-go&#34;&gt;Packets.go&lt;/h2&gt;
+
+&lt;p&gt;接下来就要深入到 &lt;code&gt;MySQL&lt;/code&gt; 的通信协议中了，官方的 &lt;a href=&#34;https://dev.mysql.com/doc/internals/en/client-server-protocol.html&#34;&gt;通信协议文档&lt;/a&gt; 非常齐全，我在这里只将一些基础的，我后面分析源码会用到的协议分析下，如果有兴趣，可以到官方文档处进行查阅。&lt;/p&gt;
+
+&lt;h3 id=&#34;protocol-basics&#34;&gt;Protocol Basics&lt;/h3&gt;
+
+&lt;h4 id=&#34;基础数据类型&#34;&gt;基础数据类型&lt;/h4&gt;
+
+&lt;p&gt;&lt;code&gt;MySQL&lt;/code&gt; 通信的基本数据类型有两种， &lt;code&gt;Integer&lt;/code&gt; 、 &lt;code&gt;String&lt;/code&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Integer : 分别有 &lt;strong&gt;1&lt;/strong&gt;， &lt;strong&gt;2&lt;/strong&gt;， &lt;strong&gt;3&lt;/strong&gt;， &lt;strong&gt;4&lt;/strong&gt;， &lt;strong&gt;8&lt;/strong&gt; 个字节长度的类型，使用小端传输。&lt;/li&gt;
+&lt;li&gt;String : 分别有 &lt;strong&gt;固定长度字符串（协议规定）&lt;/strong&gt;，&lt;strong&gt;NULL结尾字符串（长度不固定）&lt;/strong&gt;，&lt;strong&gt;长度编码字符串（长度不固定）&lt;/strong&gt;。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&#34;报文协议&#34;&gt;报文协议&lt;/h4&gt;
+
+&lt;p&gt;报文分为 &lt;strong&gt;消息头&lt;/strong&gt; 以及 &lt;strong&gt;消息体&lt;/strong&gt;，而 &lt;strong&gt;消息头&lt;/strong&gt; 由 3 字节的 &lt;strong&gt;消息长度&lt;/strong&gt; 以及 1 字节的 &lt;strong&gt;序号&lt;/strong&gt;  &lt;code&gt;sequence&lt;/code&gt; （新客户端由 &lt;code&gt;0&lt;/code&gt; 开始）组成，&lt;strong&gt;消息体&lt;/strong&gt; 则由 &lt;strong&gt;消息长度&lt;/strong&gt; 的字节组成。&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;3 字节的 &lt;strong&gt;消息长度&lt;/strong&gt; 最大值为 &lt;code&gt;0xFFFFFF&lt;/code&gt; ，即为 &lt;code&gt;16 MB - 1 byte&lt;/code&gt; ，这就意味着，如果整个消息（包括消息头）的长度大于 &lt;code&gt;16MB - 1byte - 4byte&lt;/code&gt; 大小时，消息就会被分包。&lt;/li&gt;
+&lt;li&gt;1 字节的 &lt;strong&gt;序号&lt;/strong&gt; 在每次新的客户端发起请求时，以 &lt;code&gt;0&lt;/code&gt; 开始，依次递增 1 ，如果消息需要分包， &lt;strong&gt;序号&lt;/strong&gt; 会随着分包的数量递增。而在一次应答中， 客户端会校验服务器 &lt;strong&gt;返回序号&lt;/strong&gt; 是否与 &lt;strong&gt;发送序号&lt;/strong&gt; 一致，如果不一致，则返回错误异常。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&#34;协议类型&#34;&gt;协议类型&lt;/h4&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;handshake&lt;/code&gt; : 发起连接&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;auth&lt;/code&gt; : 登录权限校验&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;ok | error&lt;/code&gt; : 返回结果状态 &lt;code&gt;*&lt;/code&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;ok&lt;/code&gt; : 首字节为 0 （&lt;code&gt;0x00&lt;/code&gt;）&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;error&lt;/code&gt; : 首字节为 255 （&lt;code&gt;0xff&lt;/code&gt;）&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;resultset&lt;/code&gt; : 结果集
+
+&lt;ul&gt;
+&lt;li&gt;header&lt;/li&gt;
+&lt;li&gt;field&lt;/li&gt;
+&lt;li&gt;eof&lt;/li&gt;
+&lt;li&gt;row&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;command package&lt;/code&gt; : 命令&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;在整个 &lt;code&gt;MySQL&lt;/code&gt; 发起交互的过程如下图所示：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://7xsxev.com1.z0.glb.clouddn.com/mysql%20%E4%BA%A4%E4%BA%92%E6%B5%81%E7%A8%8B%E5%9B%BE.png&#34; alt=&#34;mysql connect&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;在了解这些 &lt;code&gt;MySQL&lt;/code&gt; 基础协议知识后，我们再来看 &lt;code&gt;packages.go&lt;/code&gt; 的源码就轻松多了。&lt;/p&gt;
+
+&lt;h4 id=&#34;源码&#34;&gt;源码&lt;/h4&gt;
+
+&lt;p&gt;先来看看 &lt;code&gt;readPacket&lt;/code&gt; ，结合上面的知识点应该非常好理解。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;func (mc *mysqlConn) readPacket() ([]byte, error) {
+    var payload []byte
+  	for { // for 循环是为了读取有可能分片的数据
+     	// Read package header
+      	data, err := mc.buf.readNext(4) // 从 buffer 缓冲器中读取 4 字节的 header
+      	if err != nil { // 如果读取发生异常，则关闭连接，并返回一个错误连接的异常
+          	errLog.Print(err)
+          	mc.Close()
+          	return nil, driver.ErrBadConn 
+      	}
+      
+      	// Packet Length [24 bit]
+      	pktLen := int(uint32(data[0]) | uint32(data[1])&amp;lt;&amp;lt;8 | uint32(data[2])&amp;lt;&amp;lt;16) // 读取 3 字节的消息长度
+      
+      	if pktLen &amp;lt; 1 {
+          	// 如上所示，关闭连接，并返回一个错误连接的异常
+      	}
+      
+      	// Check Packet Sync [8 bit]
+      	if data[3] != mc.sequence { // 判断服务端返回的序号是否与客户端一致
+          	if data[3] &amp;gt; mc.sequence {
+             	return nil, ErrPktSyncMul // 如果服务端返回序号大于客户端的序号，则有可能是在一次请求中做了多次操作
+          	}
+          	return nil, ErrPktSync // 返回序号不一致错误
+      	}
+      	mc.sequence++ // 本次序号匹配相符，为了匹配下一次请求，先将序号自增1
+      
+      	data, err := mc.buf.readNext(pktLen) // 读取 消息长度 的数据
+      	if err != nil {
+          	// 如上所示，关闭连接，并返回一个错误连接的异常
+      	}
+      
+      	isLastPacket := (pktLen &amp;lt; maxPacketSize) // 如果是最后一个数据包，必然小于 maxPacketSize (16MB - 1byte)
+      	
+      	// Zero allocations for non-splitting packets
+		if isLastPacket &amp;amp;&amp;amp; payload == nil { // 无分包情况，立即返回
+			return data, nil
+		}
+
+		payload = append(payload, data...)
+
+		if isLastPacket { // 如果是最后一个包，读取完毕后返回
+			return payload, nil
+		}
+      
+      	// 还有未读数据，开始下一次循环
+  	}
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;下面来看下结合 &lt;strong&gt;握手报文协议&lt;/strong&gt; 来看下客户端向服务端发起请求的 &lt;code&gt;readInitPacket&lt;/code&gt; ：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://7xsxev.com1.z0.glb.clouddn.com/mysql_protocol_handshake.png&#34; alt=&#34;mysql handshack protocol&#34; /&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;func (mc *mysqlConn) readInitPacket() ([]byte, error) {
+  	data, err := mc.readPacket() // 调用上面的函数读取服务端返回的数据
+  	if err != nil {
+      	return nil, err
+  	}
+  
+  	if data[0] == iERR { // iERR = 0xff  消息体的第一个字节返回 0xff ，则意味着 error package
+      	return nil, mc.handleErrorPacket(data)
+  	}
+  
+  	// protocol version [1 byte]
+  	if data[0] &amp;lt; minProtocolVersion { // 判断是否是兼容的协议版本
+      	return nil, fmt.Errorf(
+			&amp;quot;unsupported protocol version %d. Version %d or higher is required&amp;quot;,
+			data[0],
+			minProtocolVersion,
+		)
+  	}
+  
+  	// server version [null terminated string]
+	// connection id [4 bytes]
+  	pos := 1 + bytes.IndexByte(data[1:], 0x00) + 1 + 4 // 读取 NULL （0x00）为结尾的字符串，跳过服务器线程 ID
+  
+  	// first part of the password cipher [8 bytes]
+  	cipher := data[pos : pos+8] // 获取挑战随机数
+  
+  	// (filler) always 0x00 [1 byte]
+	pos += 8 + 1
+  
+  	// capability flags (lower 2 bytes) [2 bytes]
+	mc.flags = clientFlag(binary.LittleEndian.Uint16(data[pos : pos+2])) // 获取服务器权能标识
+	if mc.flags&amp;amp;clientProtocol41 == 0 { // 说明 MySQL 服务器不支持高于 41 版本的协议
+		return nil, ErrOldProtocol
+	}
+	if mc.flags&amp;amp;clientSSL == 0 &amp;amp;&amp;amp; mc.cfg.tls != nil { // 说明 MySQL 服务器需要 SSL 加密，但是客户端没有配置 SSL
+		return nil, ErrNoTLS
+	}
+	pos += 2 // 指针向后两位
+  
+  	if len(data) &amp;gt; pos {
+      	// 指针跳过标志位
+		pos += 1 + 2 + 2 + 1 + 10
+
+		// second part of the password cipher [mininum 13 bytes],
+		// where len=MAX(13, length of auth-plugin-data - 8)
+		//
+		// The web documentation is ambiguous about the length. However,
+		// according to mysql-5.7/sql/auth/sql_authentication.cc line 538,
+		// the 13th byte is &amp;quot;\0 byte, terminating the second part of
+		// a scramble&amp;quot;. So the second part of the password cipher is
+		// a NULL terminated string that&#39;s at least 13 bytes with the
+		// last byte being NULL.
+		//
+		// The official Python library uses the fixed length 12
+		// which seems to work but technically could have a hidden bug.
+		cipher = append(cipher, data[pos:pos+12]...)
+
+		// TODO: Verify string termination
+		// EOF if version (&amp;gt;= 5.5.7 and &amp;lt; 5.5.10) or (&amp;gt;= 5.6.0 and &amp;lt; 5.6.2)
+		// \NUL otherwise
+		//
+		//if data[len(data)-1] == 0 {
+		//	return
+		//}
+		//return ErrMalformPkt
+
+		// make a memory safe copy of the cipher slice
+		var b [20]byte
+		copy(b[:], cipher)
+		return b[:], nil
+	}
+
+	// make a memory safe copy of the cipher slice
+	var b [8]byte // 返回 8 字节的挑战随机数
+	copy(b[:], cipher)
+	return b[:], nil
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;除了上面解析的两个函数， &lt;code&gt;packages.go&lt;/code&gt; 还有 &lt;code&gt;initialisation process&lt;/code&gt; / &lt;code&gt;result packages&lt;/code&gt; / &lt;code&gt;prepared statements&lt;/code&gt; 等协议的 &lt;strong&gt;写入/读取&lt;/strong&gt; ，有兴趣的读者可以结合上面的知识点自行阅读。&lt;/p&gt;
+
+&lt;h2 id=&#34;driver-go&#34;&gt;Driver.go&lt;/h2&gt;
+
+&lt;p&gt;接下来就要分析一些比较重要的代码了，比如接下来要讲的 &lt;code&gt;driver.go&lt;/code&gt; ，它主要负责与 &lt;code&gt;MySQL&lt;/code&gt; 数据库进行各种协议的连接，并返回该连接。可以说它才是最基础、最核心的功能。&lt;/p&gt;
+
+&lt;p&gt;不过首先我们需要看下 &lt;code&gt;database/sql&lt;/code&gt; 包中的 &lt;code&gt;Driver&lt;/code&gt; 接口需要如何实现：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;// database/sql/driver/driver.go
+
+// 数据库驱动
+type Driver interface {
+  Open(name string) (Conn, error)
+}
+
+// ...
+
+// 非并发安全数据库连接
+type Conn interface {
+  // 返回一个绑定到 sql 的准备语句
+  Prepare(query string) (Stmt, error)
+  
+  // 关闭该连接，并标记为不再使用，停止所有准备语句和事务
+  // 因为 database/sql 包维护了一个空闲的连接池，并且在空闲连接过多的时候会自动调用 Close ，所以驱动程序包不需要显式调用该函数
+  Close() error
+  
+  // 开始并返回一个新的事务，而新的事务与旧的连接没有任何关联
+  Begin() (Tx, error)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;根据 &lt;code&gt;database/sql&lt;/code&gt; 提供的 &lt;code&gt;Driver&lt;/code&gt; 接口， &lt;code&gt;go-sql-driver/mysql&lt;/code&gt; 实现了自己的 &lt;strong&gt;数据库驱动&lt;/strong&gt; 结构：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;type MySQLDriver struct{}
+
+func (d MySQLDriver) Open(dsn string) (driver.Conn, error) {
+  mc := &amp;amp;mysqlConn {
+      // set max value
+  }
+  mc.cfg = ParseDSN(dsn) // 通过解析 DSN 设置 MySQL 连接的配置
+
+  // set parseTime and strict
+  // ...
+  
+  // connect to server
+  if dial, ok := dials[mc.cfg.Net]; ok { // 根据 地址 以及 协议类型，尝试连接上服务器
+    mc.netConn, err = dial(mc.cfg.Addr)
+  } else { // 连接服务器失败，尝试重连
+    nd := net.Dialer{Timeout: mc.cfg.Timeout}
+    mc.netConn, err := nd.Dial(mc.cfg.Net, mc.cfg.Addr)
+  }
+  if err !=  nil { // 重试失败，返回异常
+      return nil, err
+  }
+  
+  // Enable TCP Keepalives on TCP connections
+  if tc, ok := mc.netConn.(*net.Conn); ok { // tcp 连接类型转换
+    if err := tc.SetKeepAlive(true); err != nil {
+      // Don&#39;t send COM_QUIT before handshake.
+      mc.netConn.Close() // 如果设置长连接失败，返回异常之前一定要记得将连接断开
+      mc.netConn = nil
+      return nil, err
+    }
+  }
+  
+  mc.buff = newBuff(mc.netConn) // 生成一个带缓冲的 buffer，如上面 buffer.go 中所说
+  
+  // set I/O timeout
+  // ...
+  
+  // Reading Handshake Initialization Packet
+  cipher, err := mc.readInitPacket() // 发起数据库首次握手
+  if err != nil {
+    mc.cleanup() // 将当前 mysqlConn 对象销毁，后面我们会说这个函数
+    return nil, err
+  }
+  
+  // Send Client Authentication Packet
+  if err = mc.writeAuthPacket(cipher); err != nil { // 向数据库发送登录信息校验
+    mc.cleanup()
+    return nil, err
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;connection-go&#34;&gt;connection.go&lt;/h2&gt;
+
+&lt;p&gt;终于要讲到这个包的核心数据结构 &lt;code&gt;mysqlConn&lt;/code&gt; 了，可以说，驱动的所有功能几乎都围绕着这个数据结构，我们先来看看它的结构：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;type mysqlConn struct {
+    buf              buffer 	// buffer 缓冲器
+	netConn          net.Conn	// 网络连接
+	affectedRows     uint64		// sql 执行成功影响行数
+	insertId         uint64		// sql 添加成功最新的主键 ID
+	cfg              *Config	// dsn 中的 基础配置
+  	maxPacketAllowed int		// 允许的最大报文的字节长度，最大不能超过 (16MB - 1byte)
+	maxWriteSize     int		// 允许最大的写入字节长度，最大不能超过 (16MB - 1byte)
+	writeTimeout     time.Duration 	// 执行 sql 的 超时时间
+	flags            clientFlag		// 客户端状态标识
+	status           statusFlag		// 服务端状态标识
+	sequence         uint8			// 序号
+	parseTime        bool			// 是否格式化时间
+	strict           bool			// 是否使用严格模式
+}
+
+// driver.go
+// 而创建一个 mysqlConn 连接需要通过 driver.go 中的 Open 函数，也说明 mysqlConn 实现了 driver.Conn 接口
+func (d MySQLDriver) Open(dsn string) (driver.Conn, error) {
+  mc := &amp;amp;mysqlConn{
+      // ...
+  }
+  
+  // ...
+  
+  return mc, nil
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;当一个新的客户端连接上服务器的时候 （三次握手结束，客户端进入 &lt;code&gt;established&lt;/code&gt; 状态），需要先对 &lt;code&gt;MySQL&lt;/code&gt; 服务器进行 &lt;strong&gt;会话的用户/系统环境变量&lt;/strong&gt; 的设置。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;// Handles parameters set in DSN after the connection is established
+func (mc *mysqlConn) handleParams() (err error) {
+  	for param, val := range mc.cfg.Params { // Params: map[string]string
+      	switch param {
+        // Charset
+        case &amp;quot;charset&amp;quot;: // 如果是字符集，则调用 SET NAMES 命令
+          	charsets := strings.Split(val, &amp;quot;,&amp;quot;)
+			for i := range charsets {
+				// ignore errors here - a charset may not exist
+				err = mc.exec(&amp;quot;SET NAMES &amp;quot; + charsets[i])
+				if err == nil {
+					break
+				}
+			}
+			if err != nil {
+				return
+			}
+
+		// System Vars
+		default: // 执行系统环境变量设置
+			err = mc.exec(&amp;quot;SET &amp;quot; + param + &amp;quot;=&amp;quot; + val + &amp;quot;&amp;quot;)
+			if err != nil {
+				return
+			}
+      	}
+  	}
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;conntion.go&lt;/code&gt;  还负责 &lt;strong&gt;事务&lt;/strong&gt; 、&lt;strong&gt;预处理语句&lt;/strong&gt; 、&lt;strong&gt;执行/查询&lt;/strong&gt; 的管理，但是基本都是往 &lt;code&gt;mysqlConn&lt;/code&gt; 中发送  &lt;code&gt;command package&lt;/code&gt; ，如：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;// Begin 开启事务
+func (mc *mysqlConn) Begin() (driver.Tx, error) {
+	if mc.netConn == nil {
+		errLog.Print(ErrInvalidConn)
+		return nil, driver.ErrBadConn
+	}
+	err := mc.exec(&amp;quot;START TRANSACTION&amp;quot;)
+	if err == nil {
+		return &amp;amp;mysqlTx{mc}, err // 返回成功开启的事务，重用之前的连接
+	}
+
+	return nil, err
+}
+
+// Internal function to execute commands
+func (mc *mysqlConn) exec(query string) error {
+    // Send command
+  	err := mc.writeCommandPacketStr(comQurey, query)
+  	if err != nil {
+		return err
+	}
+  
+  	// Read Result
+  	resLen, err := mc.readResultSetHeaderPacket() // 根据 data[0] 的值判断是否出错，如果没有错误，则返回消息体的长度
+  	if err == nil &amp;amp;&amp;amp; resLen &amp;gt; 0 { // 存在有效消息体
+		if err = mc.readUntilEOF(); err != nil { // 读取 columns
+			return err
+		}
+
+		err = mc.readUntilEOF() // 读取 rows
+	}
+
+	return err
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;我想 &lt;code&gt;conntion.go&lt;/code&gt; 中最重要的一个函数应该是 &lt;code&gt;cleanup&lt;/code&gt; ，它负责将 &lt;strong&gt;连接关闭&lt;/strong&gt; 、 &lt;strong&gt;重置环境变量&lt;/strong&gt; 等功能，但是该函数不能随意调用，它只有在 &lt;strong&gt;登录权限校验异常&lt;/strong&gt; 时候才应该被调用，否则服务器在不知道客户端 &lt;strong&gt;被强行关闭&lt;/strong&gt; 的情况下，依然会向该客户端发送消息，导致严重异常：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;// Closes the network connection and unsets internal variables. Do not call this
+// function after successfully authentication, call Close instead. This function
+// is called before auth or on auth failure because MySQL will have already
+// closed the network connection.
+func (mc *mysqlConn) cleanup() {
+    // Makes cleanup idempotent 保证函数的幂等性
+  	if mc.netConn != nil {
+      	if err := mc.netConn.Close(); err != nil { // Close 会尝试发送 comQuit command 到服务器
+          	errLog.Print(err)
+      	}
+      	mc.netConn = nil // 不管 Close 是否成功，必须将 netConn 清空
+  	}
+  	mc.cfg = nil
+	mc.buf.nc = nil // 缓冲器中的 netConn 也要关闭
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;result-go&#34;&gt;Result.go&lt;/h2&gt;
+
+&lt;p&gt;每当 &lt;code&gt;MySQL&lt;/code&gt; 返回一个 &lt;code&gt;OK&lt;/code&gt; 的 &lt;strong&gt;状态报文&lt;/strong&gt; ，该报文协议会携带上本次执行的结果 &lt;code&gt;affectedRows&lt;/code&gt; 以及 &lt;code&gt;insertId&lt;/code&gt; ，而 &lt;code&gt;result.go&lt;/code&gt; 就包含着一个数据结构，用于存储本次的执行结果。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;type mysqlResult struct {
+    affectedRows int64
+  	insertId 	 int64
+}
+
+// 两个 getter
+func (res *mysqlResult) LastInsertId() (int64, error) {
+	return res.insertId, nil
+}
+
+func (res *mysqlResult) RowsAffected() (int64, error) {
+	return res.affectedRows, nil
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;接下来我们看下在 &lt;code&gt;conntion.go&lt;/code&gt; 中是怎么生成 &lt;code&gt;mysqlResult&lt;/code&gt; 对象的：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;// connect.go
+func (mc *mysqlConn) Exec(query string, args []driver.Value) (driver.Result, error) {
+  
+  	// ...
+  
+  	err := exec(query)
+  	if err == nil {
+		return &amp;amp;mysqlResult{ // 返回执行的结果
+			affectedRows: int64(mc.affectedRows),
+			insertId:     int64(mc.insertId),
+		}, err
+	}
+	return nil, err
+}
+
+// exec 函数的解析可以返回上面 package.go 中浏览
+
+// package.go
+func (mc *mysqlConn) readResultSetHeaderPacket() (int, error) {
+	data, err := mc.readPacket()
+	if err == nil {
+		switch data[0] {
+
+		case iOK:
+			return 0, mc.handleOkPacket(data) // 处理 OK 状态报文
+
+		// ...
+}
+
+func (mc *mysqlConn) handleOkPacket(data []byte) error {
+	var n, m int
+
+	// 0x00 [1 byte]
+
+	// Affected rows [Length Coded Binary]
+	mc.affectedRows, _, n = readLengthEncodedInteger(data[1:])
+
+	// Insert id [Length Coded Binary]
+	mc.insertId, _, m = readLengthEncodedInteger(data[1+n:])
+
+	// ...
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;row-go&#34;&gt;Row.go&lt;/h2&gt;
+
+&lt;p&gt;当 &lt;code&gt;MySQL&lt;/code&gt; 执行 &lt;strong&gt;插入、更新、删除&lt;/strong&gt; 等操作后，都会返回 &lt;code&gt;Result&lt;/code&gt; ，但是 &lt;strong&gt;查询&lt;/strong&gt; 返回的是 &lt;code&gt;Rows&lt;/code&gt; ，我们先来看看 &lt;code&gt;go-mysql-driver&lt;/code&gt; 驱动所实现的 &lt;strong&gt;接口&lt;/strong&gt;  &lt;code&gt;Rows&lt;/code&gt; 的接口描述：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;// database/sql/driver/driver.go
+// Rows 是执行查询返回的结果的 游标
+type Rows interface {
+    // Columns 返回列的名称，从 slice 的长度可以判断列的长度
+  	// 如果一个列的名称未知，则为该列返回一个空字符串
+  	Columns() []string
+  
+  	// Close 关闭游标
+  	Close() error
+  
+  	// Next 将下一行数据填充到 desc 切片中
+	// 如果读取的是最后一行数据，应该返回一个 io.EOF 错误
+  	Next(desc []Value) error
+}
+
+type Value interface{} // Value is a value that drivers must be able to handle.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;为什么我要说这是 &lt;code&gt;go-mysql-driver&lt;/code&gt; 驱动所实现的 &lt;strong&gt;接口&lt;/strong&gt; &lt;code&gt;Rows&lt;/code&gt; 呢？眼尖的同学应该已经看到了， &lt;code&gt;Next&lt;/code&gt; 函数好像和我们平常见到的不一样啊！！&lt;/p&gt;
+
+&lt;p&gt;是的，因为我们平常使用的：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;rows.Next()&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;rows.Scan(dest ...interface{}) error&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;等函数的对象 &lt;code&gt;rows&lt;/code&gt; 并不是上面的 &lt;strong&gt;接口描述&lt;/strong&gt; &lt;code&gt;Rows&lt;/code&gt; ，而是另一个封装的 &lt;strong&gt;同名数据结构&lt;/strong&gt; &lt;code&gt;Rows&lt;/code&gt; ，它就在 &lt;code&gt;database/sql&lt;/code&gt; 包中 ：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;// database/sql.go
+type Rows struct {
+    dc          *driverConn 
+	releaseConn func(error)
+	rowsi       driver.Rows // 接口描述的 Rows 藏在这！！！
+	
+	// 忽略其他字段，因为我们不分析这个包...
+  
+  	// lastcols is only used in Scan, Next, and NextResultSet which are expected
+	// not not be called concurrently.
+	lastcols []driver.Value
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;我们跳过 &lt;code&gt;database/sql&lt;/code&gt;  包中的 &lt;code&gt;Rows&lt;/code&gt; 实现，其无非是提供了更多功能的一个结果集而已，让我们回到真正与数据库进行交互的 &lt;code&gt;Rows&lt;/code&gt; 中进行源码分析。&lt;/p&gt;
+
+&lt;p&gt;在 &lt;code&gt;go-sql-driver&lt;/code&gt; 实现的 &lt;code&gt;mysqlRows&lt;/code&gt; 数据结构只实现了 &lt;code&gt;Columns()&lt;/code&gt; 和 &lt;code&gt;Close()&lt;/code&gt; 两个行数，剩下的 &lt;code&gt;Next(desc []driver.Value)&lt;/code&gt; 实现则交给了 &lt;code&gt;MySQL&lt;/code&gt; 的两种结果集协议：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;// rows.go
+
+type mysqlField struct {
+	tableName string
+	name      string
+	flags     fieldFlag
+	fieldType byte
+	decimals  byte
+}
+
+type mysqlRows struct {
+	mc      *mysqlConn
+	columns []mysqlField
+}
+
+type binaryRows struct { // 二进制结果集协议
+	mysqlRows // 对于 Go 的 组合特性 应该不会陌生吧？
+}
+
+type textRows struct { // 文本结果集协议
+	mysqlRows
+}
+
+func (rows *mysqlRows) Columns() []string {
+  	columns := make([]string, len(rows.columns))
+  	
+  	// 将列名赋值到 columns ，如果有设置别名则赋值别名...
+  
+  	return columns
+}
+
+func (rows *mysqlRows) Close() error {
+    // 将连接里面的未读数据读完，然后将连接置空
+}
+
+// 接下来的 Next 函数实现就交由 binaryRows 和 textRows 了
+func (rows *binaryRows) Next(desc []driver.Value) error {
+    if mc := rows.mc; mc != nil {
+		if mc.netConn == nil {
+			return ErrInvalidConn
+		}
+
+		return rows.readRow(dest) // 读二进制协议结果集
+	}
+	return io.EOF
+}
+
+func (rows *testRows) Next(desc []driver.Value) error {
+    if mc := rows.mc; mc != nil {
+		if mc.netConn == nil {
+			return ErrInvalidConn
+		}
+
+		return rows.readRow(dest) // 读取文本协议
+	}
+	return io.EOF
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;可以说，实现了 &lt;code&gt;driver.Rows&lt;/code&gt; 接口的只有 &lt;code&gt;binaryRows&lt;/code&gt; 和 &lt;code&gt;testRows&lt;/code&gt; ，而他们里面的 &lt;code&gt;readRow(desc)&lt;/code&gt; 实现由于都是和协议强相关的代码，就不再解析了。&lt;/p&gt;
+
+&lt;p&gt;我们跟着源码可以看到，使用 &lt;code&gt;textRows&lt;/code&gt; 的场景在 &lt;code&gt;getSystemVar&lt;/code&gt; 以及 &lt;code&gt;Query&lt;/code&gt; 中，而使用 &lt;code&gt;binaryRows&lt;/code&gt; 的场景在 &lt;code&gt;statement&lt;/code&gt; 中，就是我们下一步需要解析的部分。&lt;/p&gt;
+
+&lt;h2 id=&#34;statement-go&#34;&gt;Statement.go&lt;/h2&gt;
+
+&lt;p&gt;&lt;code&gt;Prepared Statement&lt;/code&gt; ，即预处理语句，他有什么优势呢，为什么 &lt;code&gt;MySQL&lt;/code&gt; 要加入它？&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;执行性能更高：&lt;code&gt;MySQL&lt;/code&gt; 会对 &lt;code&gt;Prepared Statement&lt;/code&gt; 语句预先进行编译成模板，并将 &lt;strong&gt;占位符&lt;/strong&gt; 替换 &lt;strong&gt;参数&lt;/strong&gt; 的位置，这样如果频繁执行一条参数只有少量替换的语句时候，性能会得到大量提高。可能有同学会有疑问，为什么 &lt;code&gt;MySQL&lt;/code&gt; 语句还需要编译？那么可以来参考下这篇 &lt;a href=&#34;http://www.cnblogs.com/justfortaste/p/3920140.html&#34;&gt;MySQL Prepare 原理&lt;/a&gt; 。&lt;/li&gt;
+&lt;li&gt;传输协议更优：&lt;code&gt;Prepare Statement&lt;/code&gt; 在传输时候使用的是 &lt;code&gt;Binary Protocol&lt;/code&gt; ，比使用 &lt;code&gt;Text Protocol&lt;/code&gt; 的查询具有 &lt;strong&gt;传输数据量更小&lt;/strong&gt; 、 &lt;strong&gt;无需转换数据格式&lt;/strong&gt; 等优势，缓解了 &lt;strong&gt;CPU&lt;/strong&gt; 和 &lt;strong&gt;网络&lt;/strong&gt; 的开销。&lt;/li&gt;
+&lt;li&gt;安全性更好：由 &lt;a href=&#34;http://www.cnblogs.com/justfortaste/p/3920140.html&#34;&gt;MySQL Prepare 原理&lt;/a&gt; 我们可以知道，&lt;code&gt;Perpare&lt;/code&gt; 编译之后会生成 __语法树 __，在执行的时候才会将参数传进来，这样就避免了平常直接执行 &lt;code&gt;SQL 语句&lt;/code&gt; 会发生的 &lt;code&gt;SQL 注入&lt;/code&gt; 问题。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;好了，先来看下 &lt;code&gt;mysqlStmt&lt;/code&gt; 的数据结构：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;type mysqlStmt struct {
+    mc 			*mysqlConn
+  	id 			uint32
+  	paramCount 	int
+  	columns		[]mysqlField // cached from the first query (既然SQL已经预编译好了，返回的结果集列名已经是确定的，所以在收到 PREPARE_OK 之后解析数据后会缓存下来)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;我们发现，它比 &lt;code&gt;mysqlRows&lt;/code&gt; 多了两个成员变量：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;id&lt;/code&gt; ：&lt;code&gt;MySQL&lt;/code&gt; 预处理语句之后，会给该语句分配一个 &lt;code&gt;id&lt;/code&gt; 并返回客户端，用于：
+
+&lt;ul&gt;
+&lt;li&gt;客户端提交该 &lt;code&gt;id&lt;/code&gt; 给服务器调用对应的预处理语句。&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;paramCount&lt;/code&gt; ：参数数量，等于 &lt;strong&gt;占位符&lt;/strong&gt; 的个数，用于：
+
+&lt;ul&gt;
+&lt;li&gt;判断传入的参数个数是否与预编译语句中的占位符个数一致。&lt;/li&gt;
+&lt;li&gt;判断返回的 &lt;code&gt;PREPARE_OK&lt;/code&gt; 响应报文是否带有 &lt;strong&gt;参数列名&lt;/strong&gt; 数据。&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;下面来看看如何创建并使用一个 &lt;code&gt;Prepare Statement&lt;/code&gt; ：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;func (mc *mysqlConn) Prepare(query string) (driver.Stmt, error) { // 传入需要预编译的 SQL 语句
+    // 检查连接是否可用...
+  
+  	err = mc.writeCommandPacketStr(comStmtPrepare, query) // 将 SQL 发往数据库进行预编译
+  	if err != nil {
+		return nil, err
+	}
+
+	stmt := &amp;amp;mysqlStmt{ // 预编译成功，先创建 stmt 对象
+		mc: mc,
+	}
+  
+  	// Read Result
+  	columnCount, err := stmt.readPrepareResultPacket() // 从 stmt 的连接读取返回 响应报文
+  	if err == nil {
+      	if stmt.paramCount &amp;gt; 0 { // 如果预编译的 SQL 的有参数
+          	if err = mc.readUntilEOF(); err != nil { // 读取参数列名数据
+				return nil, err
+			}
+      	}
+      	
+      	if columnCount &amp;gt; 0 { // 返回执行结果的列表个数
+			err = mc.readUntilEOF() // 读取执行结果的列名数据
+		}
+  	}
+  
+  	return stmt, err
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;因为是已经预编译好的语句，所以在执行的时候只需要将参数传进去就可以了。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;func (stmt *mysqlStmt) Exec(args []driver.Value) (driver.Result, error) {
+    // 检查连接是否可用...
+  
+  	err := stmt.writeExecutePacket(args)
+	if err != nil {
+		return nil, err
+	}
+  
+  	// 读取结果集的行、列数据
+}
+
+func(stmt *mysqlStmt) writeExecutePacket(args []driver.Value) error {
+  	if len(args) != stmt.paramCount { // 判断传进来的参数和预编译好的SQL参数 个数是否一致
+		return fmt.Errorf(
+			&amp;quot;argument count mismatch (got: %d; has: %d)&amp;quot;,
+			len(args),
+			stmt.paramCount,
+		)
+	}
+  
+  	// 读取缓冲器中的数据，如果为空，则返回异常...
+  
+  	// command [1 byte]
+	data[4] = comStmtExecute
+
+	// statement_id [4 bytes] 将预编译语句的 id 转换为 4字节的二进制数据
+	data[5] = byte(stmt.id)
+	data[6] = byte(stmt.id &amp;gt;&amp;gt; 8)
+	data[7] = byte(stmt.id &amp;gt;&amp;gt; 16)
+	data[8] = byte(stmt.id &amp;gt;&amp;gt; 24)
+
+	// flags (0: CURSOR_TYPE_NO_CURSOR) [1 byte]
+	data[9] = 0x00
+
+	// iteration_count (uint32(1)) [4 bytes]
+	data[10] = 0x01
+	data[11] = 0x00
+	data[12] = 0x00
+	data[13] = 0x00
+  
+  	// 将参数按照不同的类型转换为 binary protobuf 并 append 到 data 中...
+  
+  	return mc.writePacket(data)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;相信看到这里，已经能对看懂源码的 70% 了，剩余的代码都是和协议相关，就留待有兴趣的读者继续研究，这里就不再展开讲了。&lt;/p&gt;
+
+&lt;h2 id=&#34;transaction-go&#34;&gt;Transaction.go&lt;/h2&gt;
+
+&lt;p&gt;事务是 &lt;code&gt;MySQL&lt;/code&gt; 中很重要的一部分，但是驱动的实现却很简单，因为一切的事务控制都已经交由 &lt;code&gt;MySQL&lt;/code&gt; 去执行了，驱动所需要做的，只要发送一个 &lt;code&gt;commit&lt;/code&gt; 或者 &lt;code&gt;rollback&lt;/code&gt; 的 &lt;code&gt;command packet&lt;/code&gt; 即可。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;type mysqlTx struct {
+	mc *mysqlConn
+}
+
+func (tx *mysqlTx) Commit() (err error) {
+	if tx.mc == nil || tx.mc.netConn == nil {
+		return ErrInvalidConn
+	}
+	err = tx.mc.exec(&amp;quot;COMMIT&amp;quot;)
+	tx.mc = nil
+	return
+}
+
+func (tx *mysqlTx) Rollback() (err error) {
+	if tx.mc == nil || tx.mc.netConn == nil {
+		return ErrInvalidConn
+	}
+	err = tx.mc.exec(&amp;quot;ROLLBACK&amp;quot;)
+	tx.mc = nil
+	return
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
+
+&lt;p&gt;最后，其实 &lt;code&gt;buffer&lt;/code&gt; 的实现对我来说印象是最深刻的，因为它是最简单而又是最有效的实现了一个消息缓冲器，它实现的巧妙让我决定把它放到第一节，而其他的几乎都和 &lt;code&gt;MySQL&lt;/code&gt; 的协议相关，看这些源码让我对 &lt;code&gt;MySQL&lt;/code&gt; 有了更多的认识。&lt;/p&gt;
+
+&lt;p&gt;好了，本篇字数比较多，也会有很多不足，希望大家能够给本篇博客多提点意见，让我可以改进的更好。如果还有机会，我会带来其他篇章的源码解析，敬请期待 :)&lt;/p&gt;
+
+&lt;h2 id=&#34;参考链接&#34;&gt;参考链接&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.cnblogs.com/davygeek/p/5647581.html&#34;&gt;http://www.cnblogs.com/davygeek/p/5647581.html&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.cnblogs.com/justfortaste/p/3920140.html&#34;&gt;http://www.cnblogs.com/justfortaste/p/3920140.html&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://hutaow.com/blog/2013/11/06/mysql-protocol-analysis/#439-prepare_ok-prepared-statement&#34;&gt;http://hutaow.com/blog/2013/11/06/mysql-protocol-analysis/#439-prepare_ok-prepared-statement&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
     
     <item>
       <title>Golang Error: bad file descriptor</title>
-      <link>http://hackez.github.io/golang-bad-file-descriptor/</link>
+      <link>http://localhost/golang-bad-file-descriptor/</link>
       <pubDate>Sat, 15 Oct 2016 23:33:50 +0800</pubDate>
       
-      <guid>http://hackez.github.io/golang-bad-file-descriptor/</guid>
+      <guid>http://localhost/golang-bad-file-descriptor/</guid>
       <description>
 
 &lt;h2 id=&#34;intro&#34;&gt;Intro&lt;/h2&gt;
@@ -108,10 +1107,10 @@ func logFile(url string) {
     
     <item>
       <title>CircuitBreaker 设计模式</title>
-      <link>http://hackez.github.io/circuitbreaker/</link>
+      <link>http://localhost/circuitbreaker/</link>
       <pubDate>Sun, 25 Sep 2016 23:27:46 +0800</pubDate>
       
-      <guid>http://hackez.github.io/circuitbreaker/</guid>
+      <guid>http://localhost/circuitbreaker/</guid>
       <description>
 
 &lt;h2 id=&#34;intro&#34;&gt;Intro&lt;/h2&gt;
@@ -217,10 +1216,10 @@ func NewCircuitBreaker(st Settings) *CircuitBreaker {
     
     <item>
       <title>tcpdump in Action</title>
-      <link>http://hackez.github.io/tcpdump-in-action/</link>
+      <link>http://localhost/tcpdump-in-action/</link>
       <pubDate>Fri, 16 Sep 2016 10:07:54 +0800</pubDate>
       
-      <guid>http://hackez.github.io/tcpdump-in-action/</guid>
+      <guid>http://localhost/tcpdump-in-action/</guid>
       <description>
 
 &lt;h2 id=&#34;intro&#34;&gt;Intro&lt;/h2&gt;
@@ -283,10 +1282,10 @@ func main() {
     
     <item>
       <title>Action in Protocol Buffers</title>
-      <link>http://hackez.github.io/protocol-buffers/</link>
+      <link>http://localhost/protocol-buffers/</link>
       <pubDate>Fri, 09 Sep 2016 09:44:00 +0800</pubDate>
       
-      <guid>http://hackez.github.io/protocol-buffers/</guid>
+      <guid>http://localhost/protocol-buffers/</guid>
       <description>
 
 &lt;h2 id=&#34;intro&#34;&gt;Intro&lt;/h2&gt;
@@ -521,10 +1520,10 @@ var fileDescriptor0 = []byte{
     
     <item>
       <title>How to Use Captcha in Beego Correct</title>
-      <link>http://hackez.github.io/how2use-captcha-in-beego/</link>
+      <link>http://localhost/how2use-captcha-in-beego/</link>
       <pubDate>Thu, 01 Sep 2016 18:45:49 +0800</pubDate>
       
-      <guid>http://hackez.github.io/how2use-captcha-in-beego/</guid>
+      <guid>http://localhost/how2use-captcha-in-beego/</guid>
       <description>
 
 &lt;h2 id=&#34;intro&#34;&gt;Intro&lt;/h2&gt;
@@ -587,10 +1586,10 @@ func init() {
     
     <item>
       <title>Fun in Docker Day-2</title>
-      <link>http://hackez.github.io/fun-in-docker-2/</link>
+      <link>http://localhost/fun-in-docker-2/</link>
       <pubDate>Wed, 31 Aug 2016 19:17:28 +0800</pubDate>
       
-      <guid>http://hackez.github.io/fun-in-docker-2/</guid>
+      <guid>http://localhost/fun-in-docker-2/</guid>
       <description>
 
 &lt;h2 id=&#34;intro&#34;&gt;Intro&lt;/h2&gt;
@@ -767,10 +1766,10 @@ CMD [&amp;quot;/main&amp;quot;]
     
     <item>
       <title>Fun in Docker Day-1</title>
-      <link>http://hackez.github.io/fun-in-docker-1/</link>
+      <link>http://localhost/fun-in-docker-1/</link>
       <pubDate>Sat, 20 Aug 2016 16:17:42 +0800</pubDate>
       
-      <guid>http://hackez.github.io/fun-in-docker-1/</guid>
+      <guid>http://localhost/fun-in-docker-1/</guid>
       <description>
 
 &lt;h2 id=&#34;intro&#34;&gt;Intro&lt;/h2&gt;
@@ -862,10 +1861,10 @@ $ docker push hackerz/getmeizi
     
     <item>
       <title>Golang Package Dependency Management Tool</title>
-      <link>http://hackez.github.io/golang-package-dependency-management-tool/</link>
+      <link>http://localhost/golang-package-dependency-management-tool/</link>
       <pubDate>Sun, 07 Aug 2016 11:11:25 +0800</pubDate>
       
-      <guid>http://hackez.github.io/golang-package-dependency-management-tool/</guid>
+      <guid>http://localhost/golang-package-dependency-management-tool/</guid>
       <description>
 
 &lt;h1 id=&#34;golang-package-dependency-management-tool&#34;&gt;Golang Package Dependency Management Tool&lt;/h1&gt;
@@ -1089,10 +2088,10 @@ $ ./bin/hellogb
     
     <item>
       <title>redigo : open too many files</title>
-      <link>http://hackez.github.io/redigo-open2manyfiles/</link>
+      <link>http://localhost/redigo-open2manyfiles/</link>
       <pubDate>Wed, 27 Jul 2016 13:29:11 +0800</pubDate>
       
-      <guid>http://hackez.github.io/redigo-open2manyfiles/</guid>
+      <guid>http://localhost/redigo-open2manyfiles/</guid>
       <description>
 
 &lt;h1 id=&#34;redigo-panic-error-open-too-many-files&#34;&gt;Redigo - panic error : open too many files.&lt;/h1&gt;
@@ -1164,10 +2163,10 @@ created by net/http.(*Server).Serve
     
     <item>
       <title>Why HandleFunc Called Twice</title>
-      <link>http://hackez.github.io/why-handlefunc-called-twice/</link>
+      <link>http://localhost/why-handlefunc-called-twice/</link>
       <pubDate>Sun, 24 Jul 2016 20:03:59 +0800</pubDate>
       
-      <guid>http://hackez.github.io/why-handlefunc-called-twice/</guid>
+      <guid>http://localhost/why-handlefunc-called-twice/</guid>
       <description>
 
 &lt;h2 id=&#34;why-handlefunc-called-twice&#34;&gt;Why &lt;strong&gt;HandleFunc()&lt;/strong&gt; called twice?&lt;/h2&gt;
@@ -1227,10 +2226,10 @@ func main() {
     
     <item>
       <title>Golang Dev Log</title>
-      <link>http://hackez.github.io/golang-dev-log/</link>
+      <link>http://localhost/golang-dev-log/</link>
       <pubDate>Sat, 23 Jul 2016 16:34:45 +0800</pubDate>
       
-      <guid>http://hackez.github.io/golang-dev-log/</guid>
+      <guid>http://localhost/golang-dev-log/</guid>
       <description>
 
 &lt;h2 id=&#34;golang-dev-log&#34;&gt;Golang Dev Log&lt;/h2&gt;
@@ -1289,10 +2288,10 @@ func main() {
     
     <item>
       <title>Redigo Action - 1</title>
-      <link>http://hackez.github.io/redigo-action-1/</link>
+      <link>http://localhost/redigo-action-1/</link>
       <pubDate>Fri, 22 Jul 2016 10:41:10 +0800</pubDate>
       
-      <guid>http://hackez.github.io/redigo-action-1/</guid>
+      <guid>http://localhost/redigo-action-1/</guid>
       <description>
 
 &lt;h1 id=&#34;redigo-action&#34;&gt;Redigo Action&lt;/h1&gt;
@@ -1376,10 +2375,10 @@ func main() {
     
     <item>
       <title>Learning in Hadoop - Day 1</title>
-      <link>http://hackez.github.io/hadoop-1/</link>
+      <link>http://localhost/hadoop-1/</link>
       <pubDate>Mon, 13 Jun 2016 20:45:25 +0800</pubDate>
       
-      <guid>http://hackez.github.io/hadoop-1/</guid>
+      <guid>http://localhost/hadoop-1/</guid>
       <description>&lt;p&gt;第一次玩Hadoop&lt;/p&gt;
 
 &lt;p&gt;最近在折腾机器学习，因为查阅到Yahoo的&lt;/p&gt;
@@ -1417,10 +2416,10 @@ func main() {
     
     <item>
       <title>Named Question in Golang</title>
-      <link>http://hackez.github.io/lenproblem/</link>
+      <link>http://localhost/lenproblem/</link>
       <pubDate>Thu, 02 Jun 2016 11:08:54 +0800</pubDate>
       
-      <guid>http://hackez.github.io/lenproblem/</guid>
+      <guid>http://localhost/lenproblem/</guid>
       <description>&lt;p&gt;Golang中遇到的命名问题&lt;/p&gt;
 
 &lt;p&gt;昨天在写随机生成字符串代码时候遇到了一个Golang的命名问题，代码如下：&lt;/p&gt;
@@ -1449,99 +2448,6 @@ func main() {
 &lt;p&gt;中的 &lt;strong&gt;len&lt;/strong&gt; 变量与函数 &lt;strong&gt;len()&lt;/strong&gt; 重复而出现的命名错误，所以只需要将 &lt;strong&gt;len&lt;/strong&gt; 变量重新命名即可解决该问题。&lt;/p&gt;
 
 &lt;p&gt;总结：在Golang中使用的变量一定不要和某个函数名字相同，否则不会通过，我现在暂时不清楚是Golang编译器出现的问题，还是Golang本来就不允许这样写，我会继续查阅相关文档查清楚！&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>The Channel in Golang</title>
-      <link>http://hackez.github.io/channel/</link>
-      <pubDate>Wed, 11 May 2016 19:41:18 +0800</pubDate>
-      
-      <guid>http://hackez.github.io/channel/</guid>
-      <description>
-
-&lt;p&gt;Golang中的Channel分析&lt;/p&gt;
-
-&lt;p&gt;作为Golang语言的核心，并发编程是学习Golang的必经之路。对于不同进程之间的通信手段总会涉及到跨进程通信，那么这个通信手段必须是一个可共享内存的方法，而Golang提倡的理念为：&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;“应该以通信作为手段来共享内存”&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;而这一句话的直接体现在于Golang所提供的一个预定义数据类型 —— &lt;strong&gt;Channel&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;Channel提供了一种机制。它既可以 &lt;strong&gt;同步&lt;/strong&gt; 两个被并发执行的函数，又可以让这两个函数通过传递特定类型的值来进行 &lt;strong&gt;通信&lt;/strong&gt;。使用Channel可以让我们编写更清晰且正确的代码。&lt;/p&gt;
-
-&lt;p&gt;关于使用Channel需要记住的知识点：&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;在同一时刻，仅有一个Goroutine能向同一个Channel发送元素值，同时也只有一个Goroutine能从它哪里接收元素值。&lt;/li&gt;
-&lt;li&gt;Channel是一个FIFO的消息队列。&lt;/li&gt;
-&lt;li&gt;Channel中的元素值已经确保具有原子性。&lt;/li&gt;
-&lt;li&gt;Channel可以分为缓冲与非缓冲，它们之间的差别非常大。&lt;/li&gt;
-&lt;li&gt;Channel可分为双向与单向，一般通道都会声明为双向，只有在限制函数体中使用通道的方式（只允许发送或接收）才会使用单向Channel。&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&#34;talk-is-cheap-show-me-the-code&#34;&gt;Talk is Cheap,Show me the Code!&lt;/h2&gt;
-
-&lt;ul&gt;
-&lt;li&gt;初始化通道&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;因为Channel属于引用类型之一，所以必须使用make关键字初始化它。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;// 缓冲通道（容纳int类型元素，有长度，可暂存元素）
-intChan := make(chan int, 5)
-
-// 非缓冲通道（容纳byte类型元素，无长度，不可暂存元素）
-byteChan := make(chan byte)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;ul&gt;
-&lt;li&gt;发送元素值&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;// 向intChan通道发送一个元素值为5的元素
-intChan &amp;lt;- 5
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;注意：向一个值为nil的Channel进行发送操作会造成当前Goroutine &lt;strong&gt;永久阻塞！&lt;/strong&gt;。&lt;br /&gt;
-而向一个已经塞满元素的Channel进行发送操作则会将当前的Goroutine &lt;strong&gt;阻塞&lt;/strong&gt;，直至Channel中的元素被接收，所以一般会在 &lt;strong&gt;select&lt;/strong&gt; 代码块中进行发送操作。&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;接收元素值&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;// 在intChan通道中接收一个元素值
-elem := &amp;lt;-intChan
-
-// 接收元素值，并判断该通道是否已经关闭
-elem, ok := &amp;lt;-intChan
-if !ok {
-    fmt.Println(&amp;quot;Channel is Closed!&amp;quot;)
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;同样需要注意的是，如果向一个值为nil的Channel进行接收操作，同样会造成 &lt;strong&gt;永久阻塞！&lt;/strong&gt;&lt;br /&gt;
-而向一个没有元素值的Channel进行接收操作，也会将当前的Goroutine &lt;strong&gt;阻塞&lt;/strong&gt;，直至Channel中有了新的元素。&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;关闭Channel&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;关闭Channel并不是如其字面意思，完全将Channel关闭。而其正确的作用是告诉系统，不应该再允许任何针对被关闭的通道的发送操作，该通道已经被关闭，但是已经缓存在Channel中的元素不会受到影响，这也是Channel非常优秀的特性之一。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;// 调用内建函数close()关闭Channel
-close(intChan)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;注意，无论任何时候，我们都 &lt;strong&gt;不应该&lt;/strong&gt; 在接收端关闭Channel，因为我们永远都不知道发送端是否已经将元素发送完毕。&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;最后，可以到&lt;a href=&#34;https://www.github.com/HackeZ&#34;&gt;这里&lt;/a&gt;学习更多的Channel相关代码！&lt;/p&gt;
-&lt;/blockquote&gt;
 </description>
     </item>
     

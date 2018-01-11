@@ -2,19 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Qiniu on HackerZ - Blog</title>
-    <link>http://hackez.github.io/tags/qiniu/</link>
+    <link>http://localhost/tags/qiniu/index.xml</link>
     <description>Recent content in Qiniu on HackerZ - Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 15 Apr 2016 16:46:54 +0800</lastBuildDate>
-    <atom:link href="http://hackez.github.io/tags/qiniu/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://localhost/tags/qiniu/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>Qiniu Go SDK v7 Problem</title>
-      <link>http://hackez.github.io/qn-sdkv7-pb/</link>
+      <link>http://localhost/qn-sdkv7-pb/</link>
       <pubDate>Fri, 15 Apr 2016 16:46:54 +0800</pubDate>
       
-      <guid>http://hackez.github.io/qn-sdkv7-pb/</guid>
+      <guid>http://localhost/qn-sdkv7-pb/</guid>
       <description>&lt;p&gt;下载七牛Go SDK v7遇到的问题&lt;/p&gt;
 
 &lt;p&gt;今天想要使用七牛的Go SDK时候遇到了肯定会出现的一个情况，那就是&lt;/p&gt;

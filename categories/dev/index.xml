@@ -2,19 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Dev on HackerZ - Blog</title>
-    <link>http://hackez.github.io/categories/dev/</link>
+    <link>http://localhost/categories/dev/index.xml</link>
     <description>Recent content in Dev on HackerZ - Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 23 Jul 2016 16:34:45 +0800</lastBuildDate>
-    <atom:link href="http://hackez.github.io/categories/dev/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://localhost/categories/dev/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>Golang Dev Log</title>
-      <link>http://hackez.github.io/golang-dev-log/</link>
+      <link>http://localhost/golang-dev-log/</link>
       <pubDate>Sat, 23 Jul 2016 16:34:45 +0800</pubDate>
       
-      <guid>http://hackez.github.io/golang-dev-log/</guid>
+      <guid>http://localhost/golang-dev-log/</guid>
       <description>
 
 &lt;h2 id=&#34;golang-dev-log&#34;&gt;Golang Dev Log&lt;/h2&gt;

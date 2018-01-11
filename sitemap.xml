@@ -2,133 +2,324 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>http://hackez.github.io/</loc>
+    <loc>http://localhost/go-sql-driver-source-code/</loc>
+    <lastmod>2017-10-15T20:31:55+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://localhost/golang-bad-file-descriptor/</loc>
     <lastmod>2016-10-15T23:33:50+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://hackez.github.io/golang-bad-file-descriptor/</loc>
-    <lastmod>2016-10-15T23:33:50+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://hackez.github.io/update_macos_problem/</loc>
+    <loc>http://localhost/update_macos_problem/</loc>
     <lastmod>2016-09-28T09:47:55+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://hackez.github.io/circuitbreaker/</loc>
+    <loc>http://localhost/circuitbreaker/</loc>
     <lastmod>2016-09-25T23:27:46+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://hackez.github.io/tcpdump-in-action/</loc>
+    <loc>http://localhost/tcpdump-in-action/</loc>
     <lastmod>2016-09-16T10:07:54+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://hackez.github.io/protocol-buffers/</loc>
+    <loc>http://localhost/protocol-buffers/</loc>
     <lastmod>2016-09-09T09:44:00+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://hackez.github.io/how2use-captcha-in-beego/</loc>
+    <loc>http://localhost/how2use-captcha-in-beego/</loc>
     <lastmod>2016-09-01T18:45:49+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://hackez.github.io/fun-in-docker-2/</loc>
+    <loc>http://localhost/fun-in-docker-2/</loc>
     <lastmod>2016-08-31T19:17:28+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://hackez.github.io/fun-in-docker-1/</loc>
+    <loc>http://localhost/fun-in-docker-1/</loc>
     <lastmod>2016-08-20T16:17:42+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://hackez.github.io/global_gitignore/</loc>
+    <loc>http://localhost/global_gitignore/</loc>
     <lastmod>2016-08-18T16:03:05+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://hackez.github.io/how-2-install-scikit-learn/</loc>
+    <loc>http://localhost/how-2-install-scikit-learn/</loc>
     <lastmod>2016-08-15T22:49:10+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://hackez.github.io/golang-package-dependency-management-tool/</loc>
+    <loc>http://localhost/golang-package-dependency-management-tool/</loc>
     <lastmod>2016-08-07T11:11:25+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://hackez.github.io/C-Prefess-Program/</loc>
+    <loc>http://localhost/C-Prefess-Program/</loc>
     <lastmod>2016-07-30T22:47:07+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://hackez.github.io/redigo-open2manyfiles/</loc>
+    <loc>http://localhost/redigo-open2manyfiles/</loc>
     <lastmod>2016-07-27T13:29:11+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://hackez.github.io/why-handlefunc-called-twice/</loc>
+    <loc>http://localhost/why-handlefunc-called-twice/</loc>
     <lastmod>2016-07-24T20:03:59+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://hackez.github.io/golang-dev-log/</loc>
+    <loc>http://localhost/golang-dev-log/</loc>
     <lastmod>2016-07-23T16:34:45+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://hackez.github.io/redigo-action-1/</loc>
+    <loc>http://localhost/redigo-action-1/</loc>
     <lastmod>2016-07-22T10:41:10+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://hackez.github.io/cold-start/</loc>
+    <loc>http://localhost/cold-start/</loc>
     <lastmod>2016-07-13T19:39:47+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://hackez.github.io/hadoop-1/</loc>
+    <loc>http://localhost/hadoop-1/</loc>
     <lastmod>2016-06-13T20:45:25+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://hackez.github.io/lenproblem/</loc>
+    <loc>http://localhost/lenproblem/</loc>
     <lastmod>2016-06-02T11:08:54+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://hackez.github.io/channel/</loc>
+    <loc>http://localhost/channel/</loc>
     <lastmod>2016-05-11T19:41:18+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://hackez.github.io/socket/</loc>
+    <loc>http://localhost/socket/</loc>
     <lastmod>2016-05-03T21:35:08+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://hackez.github.io/about-me/</loc>
-    <lastmod>2016-04-30T19:14:56+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://hackez.github.io/qn-sdkv7-pb/</loc>
+    <loc>http://localhost/qn-sdkv7-pb/</loc>
     <lastmod>2016-04-15T16:46:54+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://hackez.github.io/build/</loc>
+    <loc>http://localhost/build/</loc>
     <lastmod>2016-04-13T16:55:34+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://hackez.github.io/welcome/</loc>
+    <loc>http://localhost/welcome/</loc>
     <lastmod>2016-03-29T14:38:19+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://localhost/tags/beego/</loc>
+    <lastmod>2016-09-01T18:45:49+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost/categories/beego/</loc>
+    <lastmod>2016-09-01T18:45:49+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost/categories/book/</loc>
+    <lastmod>2016-07-30T22:47:07+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost/categories/c/</loc>
+    <lastmod>2016-07-30T22:47:07+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost/categories/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost/tags/cold-start/</loc>
+    <lastmod>2016-07-13T19:39:47+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost/tags/db/</loc>
+    <lastmod>2016-07-22T10:41:10+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost/categories/dev/</loc>
+    <lastmod>2016-07-23T16:34:45+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost/tags/development/</loc>
+    <lastmod>2017-10-15T20:31:55+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost/categories/development/</loc>
+    <lastmod>2017-10-15T20:31:55+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost/tags/docker/</loc>
+    <lastmod>2016-08-31T19:17:28+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost/categories/docker/</loc>
+    <lastmod>2016-08-31T19:17:28+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost/tags/eclipse/</loc>
+    <lastmod>2016-06-13T20:45:25+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost/categories/git/</loc>
+    <lastmod>2016-08-18T16:03:05+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost/tags/github-pages/</loc>
+    <lastmod>2016-04-13T16:55:34+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost/tags/golang/</loc>
+    <lastmod>2017-10-15T20:31:55+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost/categories/golang/</loc>
+    <lastmod>2017-10-15T20:31:55+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost/tags/goroutine/</loc>
+    <lastmod>2016-05-11T19:41:18+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost/</loc>
+    <lastmod>2017-10-15T20:31:55+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost/tags/hadoop/</loc>
+    <lastmod>2016-06-13T20:45:25+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost/tags/hugo/</loc>
+    <lastmod>2016-04-13T16:55:34+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost/categories/linux/</loc>
+    <lastmod>2016-08-18T16:03:05+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost/tags/mac/</loc>
+    <lastmod>2016-09-28T09:47:55+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost/categories/mac/</loc>
+    <lastmod>2016-09-28T09:47:55+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost/tags/os/</loc>
+    <lastmod>2016-09-28T09:47:55+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost/categories/os/</loc>
+    <lastmod>2016-09-28T09:47:55+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost/tags/python/</loc>
+    <lastmod>2016-08-15T22:49:10+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost/categories/python/</loc>
+    <lastmod>2016-08-15T22:49:10+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost/tags/qiniu/</loc>
+    <lastmod>2016-04-15T16:46:54+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost/tags/redis/</loc>
+    <lastmod>2016-07-27T13:29:11+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost/categories/redis/</loc>
+    <lastmod>2016-07-27T13:29:11+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost/tags/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost/categories/ux/</loc>
+    <lastmod>2016-07-13T19:39:47+08:00</lastmod>
+    <priority>0</priority>
   </url>
   
 </urlset>
