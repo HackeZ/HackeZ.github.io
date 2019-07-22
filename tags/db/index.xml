@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Db on HackerZ - Blog</title>
-    <link>http://hackez.github.io/tags/db/index.xml</link>
+    <link>http://hackerzgz.github.io/tags/db/index.xml</link>
     <description>Recent content in Db on HackerZ - Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <atom:link href="http://hackez.github.io/tags/db/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://hackerzgz.github.io/tags/db/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>Redigo Action - 1</title>
-      <link>http://hackez.github.io/redigo-action-1/</link>
+      <link>http://hackerzgz.github.io/redigo-action-1/</link>
       <pubDate>Fri, 22 Jul 2016 10:41:10 +0800</pubDate>
       
-      <guid>http://hackez.github.io/redigo-action-1/</guid>
+      <guid>http://hackerzgz.github.io/redigo-action-1/</guid>
       <description>
 
 &lt;h1 id=&#34;redigo-action&#34;&gt;Redigo Action&lt;/h1&gt;
@@ -25,7 +25,7 @@
 &lt;p&gt;&lt;strong&gt;1. &lt;a href=&#34;https:github.com/garyburd/redigo&#34;&gt;Redigo&lt;/a&gt;&lt;/strong&gt;
 &lt;strong&gt;2. &lt;a href=&#34;https:github.com/mediocregopher/radix.v2&#34;&gt;Radix&lt;/a&gt;&lt;/strong&gt;&lt;/p&gt;
 
-&lt;h4 id=&#34;本着源码易读优先-我选择了-redigo-进行开发尝试-项目地址-点我-https-www-github-com-hackez-getacfunpage&#34;&gt;本着源码易读优先，我选择了 Redigo 进行开发尝试，项目地址&lt;a href=&#34;https:www.github.com/HackeZ/getAcFunPage&#34;&gt;点我&lt;/a&gt;。&lt;/h4&gt;
+&lt;h4 id=&#34;本着源码易读优先-我选择了-redigo-进行开发尝试-项目地址-点我-https-www-github-com-hackerzgz-getacfunpage&#34;&gt;本着源码易读优先，我选择了 Redigo 进行开发尝试，项目地址&lt;a href=&#34;https:www.github.com/hackerzgz/getAcFunPage&#34;&gt;点我&lt;/a&gt;。&lt;/h4&gt;
 
 &lt;h3 id=&#34;action&#34;&gt;Action&lt;/h3&gt;
 

@@ -2,25 +2,25 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Redis on HackerZ - Blog</title>
-    <link>http://hackez.github.io/categories/redis/index.xml</link>
+    <link>http://hackerzgz.github.io/categories/redis/index.xml</link>
     <description>Recent content in Redis on HackerZ - Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <atom:link href="http://hackez.github.io/categories/redis/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://hackerzgz.github.io/categories/redis/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>redigo : open too many files</title>
-      <link>http://hackez.github.io/redigo-open2manyfiles/</link>
+      <link>http://hackerzgz.github.io/redigo-open2manyfiles/</link>
       <pubDate>Wed, 27 Jul 2016 13:29:11 +0800</pubDate>
       
-      <guid>http://hackez.github.io/redigo-open2manyfiles/</guid>
+      <guid>http://hackerzgz.github.io/redigo-open2manyfiles/</guid>
       <description>
 
 &lt;h1 id=&#34;redigo-panic-error-open-too-many-files&#34;&gt;Redigo - panic error : open too many files.&lt;/h1&gt;
 
 &lt;h3 id=&#34;abstract&#34;&gt;Abstract&lt;/h3&gt;
 
-&lt;p&gt;今天对 &lt;a href=&#34;https://www.github.com/HackeZ/getAcFunPage&#34;&gt;getAcFunPage&lt;/a&gt; 项目做 Benchmark 的时候发现了 Redis 会频繁报一个 &lt;code&gt;socket: too many open files&lt;/code&gt; 的错误，后来发现并不是代码的问题，而是 Linux 的设置问题。
+&lt;p&gt;今天对 &lt;a href=&#34;https://www.github.com/hackerzgz/getAcFunPage&#34;&gt;getAcFunPage&lt;/a&gt; 项目做 Benchmark 的时候发现了 Redis 会频繁报一个 &lt;code&gt;socket: too many open files&lt;/code&gt; 的错误，后来发现并不是代码的问题，而是 Linux 的设置问题。
 下面就来说说我是这么解决这个问题的。&lt;/p&gt;
 
 &lt;h3 id=&#34;problem&#34;&gt;Problem&lt;/h3&gt;
@@ -85,10 +85,10 @@ created by net/http.(*Server).Serve
     
     <item>
       <title>Redigo Action - 1</title>
-      <link>http://hackez.github.io/redigo-action-1/</link>
+      <link>http://hackerzgz.github.io/redigo-action-1/</link>
       <pubDate>Fri, 22 Jul 2016 10:41:10 +0800</pubDate>
       
-      <guid>http://hackez.github.io/redigo-action-1/</guid>
+      <guid>http://hackerzgz.github.io/redigo-action-1/</guid>
       <description>
 
 &lt;h1 id=&#34;redigo-action&#34;&gt;Redigo Action&lt;/h1&gt;
@@ -100,7 +100,7 @@ created by net/http.(*Server).Serve
 &lt;p&gt;&lt;strong&gt;1. &lt;a href=&#34;https:github.com/garyburd/redigo&#34;&gt;Redigo&lt;/a&gt;&lt;/strong&gt;
 &lt;strong&gt;2. &lt;a href=&#34;https:github.com/mediocregopher/radix.v2&#34;&gt;Radix&lt;/a&gt;&lt;/strong&gt;&lt;/p&gt;
 
-&lt;h4 id=&#34;本着源码易读优先-我选择了-redigo-进行开发尝试-项目地址-点我-https-www-github-com-hackez-getacfunpage&#34;&gt;本着源码易读优先，我选择了 Redigo 进行开发尝试，项目地址&lt;a href=&#34;https:www.github.com/HackeZ/getAcFunPage&#34;&gt;点我&lt;/a&gt;。&lt;/h4&gt;
+&lt;h4 id=&#34;本着源码易读优先-我选择了-redigo-进行开发尝试-项目地址-点我-https-www-github-com-hackerzgz-getacfunpage&#34;&gt;本着源码易读优先，我选择了 Redigo 进行开发尝试，项目地址&lt;a href=&#34;https:www.github.com/hackerzgz/getAcFunPage&#34;&gt;点我&lt;/a&gt;。&lt;/h4&gt;
 
 &lt;h3 id=&#34;action&#34;&gt;Action&lt;/h3&gt;
 

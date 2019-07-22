@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Docker on HackerZ - Blog</title>
-    <link>http://hackez.github.io/tags/docker/index.xml</link>
+    <link>http://hackerzgz.github.io/tags/docker/index.xml</link>
     <description>Recent content in Docker on HackerZ - Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <atom:link href="http://hackez.github.io/tags/docker/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://hackerzgz.github.io/tags/docker/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>Fun in Docker Day-2</title>
-      <link>http://hackez.github.io/fun-in-docker-2/</link>
+      <link>http://hackerzgz.github.io/fun-in-docker-2/</link>
       <pubDate>Wed, 31 Aug 2016 19:17:28 +0800</pubDate>
       
-      <guid>http://hackez.github.io/fun-in-docker-2/</guid>
+      <guid>http://hackerzgz.github.io/fun-in-docker-2/</guid>
       <description>
 
 &lt;h2 id=&#34;intro&#34;&gt;Intro&lt;/h2&gt;
@@ -190,10 +190,10 @@ CMD [&amp;quot;/main&amp;quot;]
     
     <item>
       <title>Fun in Docker Day-1</title>
-      <link>http://hackez.github.io/fun-in-docker-1/</link>
+      <link>http://hackerzgz.github.io/fun-in-docker-1/</link>
       <pubDate>Sat, 20 Aug 2016 16:17:42 +0800</pubDate>
       
-      <guid>http://hackez.github.io/fun-in-docker-1/</guid>
+      <guid>http://hackerzgz.github.io/fun-in-docker-1/</guid>
       <description>
 
 &lt;h2 id=&#34;intro&#34;&gt;Intro&lt;/h2&gt;
@@ -224,7 +224,7 @@ $ docker run -d -p 80:80 --name webserver nginx
 
 &lt;h2 id=&#34;package&#34;&gt;Package&lt;/h2&gt;
 
-&lt;p&gt;以我的开源项目 &lt;a href=&#34;https://www.github.com/HackeZ/getMeizi&#34;&gt;getMeizi&lt;/a&gt; 为例子尝试打包 &lt;code&gt;Golang应用&lt;/code&gt; 。&lt;/p&gt;
+&lt;p&gt;以我的开源项目 &lt;a href=&#34;https://www.github.com/hackerzgz/getMeizi&#34;&gt;getMeizi&lt;/a&gt; 为例子尝试打包 &lt;code&gt;Golang应用&lt;/code&gt; 。&lt;/p&gt;
 
 &lt;h4 id=&#34;first-try&#34;&gt;First Try&lt;/h4&gt;
 

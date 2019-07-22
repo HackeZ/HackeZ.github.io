@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Goroutine on HackerZ - Blog</title>
-    <link>http://hackez.github.io/tags/goroutine/index.xml</link>
+    <link>http://hackerzgz.github.io/tags/goroutine/index.xml</link>
     <description>Recent content in Goroutine on HackerZ - Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <atom:link href="http://hackez.github.io/tags/goroutine/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://hackerzgz.github.io/tags/goroutine/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>The Channel in Golang</title>
-      <link>http://hackez.github.io/channel/</link>
+      <link>http://hackerzgz.github.io/channel/</link>
       <pubDate>Wed, 11 May 2016 19:41:18 +0800</pubDate>
       
-      <guid>http://hackez.github.io/channel/</guid>
+      <guid>http://hackerzgz.github.io/channel/</guid>
       <description>
 
 &lt;p&gt;Golang中的Channel分析&lt;/p&gt;
@@ -96,7 +96,7 @@ close(intChan)
 &lt;hr /&gt;
 
 &lt;blockquote&gt;
-&lt;p&gt;最后，可以到&lt;a href=&#34;https://www.github.com/HackeZ&#34;&gt;这里&lt;/a&gt;学习更多的Channel相关代码！&lt;/p&gt;
+&lt;p&gt;最后，可以到&lt;a href=&#34;https://www.github.com/hackerzgz&#34;&gt;这里&lt;/a&gt;学习更多的Channel相关代码！&lt;/p&gt;
 &lt;/blockquote&gt;
 </description>
     </item>

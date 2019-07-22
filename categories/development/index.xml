@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Development on HackerZ - Blog</title>
-    <link>http://hackez.github.io/categories/development/index.xml</link>
+    <link>http://hackerzgz.github.io/categories/development/index.xml</link>
     <description>Recent content in Development on HackerZ - Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <atom:link href="http://hackez.github.io/categories/development/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://hackerzgz.github.io/categories/development/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>go-sql-deiver 源码解析</title>
-      <link>http://hackez.github.io/go-sql-driver-source-code/</link>
+      <link>http://hackerzgz.github.io/go-sql-driver-source-code/</link>
       <pubDate>Sun, 15 Oct 2017 20:31:55 +0800</pubDate>
       
-      <guid>http://hackez.github.io/go-sql-driver-source-code/</guid>
+      <guid>http://hackerzgz.github.io/go-sql-driver-source-code/</guid>
       <description>
 
 &lt;h2 id=&#34;intro&#34;&gt;Intro&lt;/h2&gt;
@@ -1010,15 +1010,15 @@ func (tx *mysqlTx) Rollback() (err error) {
     
     <item>
       <title>Golang Error: bad file descriptor</title>
-      <link>http://hackez.github.io/golang-bad-file-descriptor/</link>
+      <link>http://hackerzgz.github.io/golang-bad-file-descriptor/</link>
       <pubDate>Sat, 15 Oct 2016 23:33:50 +0800</pubDate>
       
-      <guid>http://hackez.github.io/golang-bad-file-descriptor/</guid>
+      <guid>http://hackerzgz.github.io/golang-bad-file-descriptor/</guid>
       <description>
 
 &lt;h2 id=&#34;intro&#34;&gt;Intro&lt;/h2&gt;
 
-&lt;p&gt;好久没写 Blog 了，正好今天写了一个爬取 &lt;strong&gt;Bing&lt;/strong&gt; 首页高清图片的服务 Application =&amp;gt; &lt;a href=&#34;https://github.com/HackeZ/bingImgCrawer&#34;&gt;bingImgCrawer&lt;/a&gt; 碰到了之前遇到的一个写文件的问题，现在就将其纪录下来吧。&lt;/p&gt;
+&lt;p&gt;好久没写 Blog 了，正好今天写了一个爬取 &lt;strong&gt;Bing&lt;/strong&gt; 首页高清图片的服务 Application =&amp;gt; &lt;a href=&#34;https://github.com/hackerzgz/bingImgCrawer&#34;&gt;bingImgCrawer&lt;/a&gt; 碰到了之前遇到的一个写文件的问题，现在就将其纪录下来吧。&lt;/p&gt;
 
 &lt;h2 id=&#34;problem&#34;&gt;Problem&lt;/h2&gt;
 
@@ -1107,10 +1107,10 @@ func logFile(url string) {
     
     <item>
       <title>Update Mac OS Problem</title>
-      <link>http://hackez.github.io/update_macos_problem/</link>
+      <link>http://hackerzgz.github.io/update_macos_problem/</link>
       <pubDate>Wed, 28 Sep 2016 09:47:55 +0800</pubDate>
       
-      <guid>http://hackez.github.io/update_macos_problem/</guid>
+      <guid>http://hackerzgz.github.io/update_macos_problem/</guid>
       <description>
 
 &lt;h2 id=&#34;intro&#34;&gt;Intro&lt;/h2&gt;
@@ -1159,10 +1159,10 @@ missing xcrun at: /Library/Developer/CommandLineTools/usr/bin/xcrun
     
     <item>
       <title>CircuitBreaker 设计模式</title>
-      <link>http://hackez.github.io/circuitbreaker/</link>
+      <link>http://hackerzgz.github.io/circuitbreaker/</link>
       <pubDate>Sun, 25 Sep 2016 23:27:46 +0800</pubDate>
       
-      <guid>http://hackez.github.io/circuitbreaker/</guid>
+      <guid>http://hackerzgz.github.io/circuitbreaker/</guid>
       <description>
 
 &lt;h2 id=&#34;intro&#34;&gt;Intro&lt;/h2&gt;
@@ -1268,15 +1268,15 @@ func NewCircuitBreaker(st Settings) *CircuitBreaker {
     
     <item>
       <title>tcpdump in Action</title>
-      <link>http://hackez.github.io/tcpdump-in-action/</link>
+      <link>http://hackerzgz.github.io/tcpdump-in-action/</link>
       <pubDate>Fri, 16 Sep 2016 10:07:54 +0800</pubDate>
       
-      <guid>http://hackez.github.io/tcpdump-in-action/</guid>
+      <guid>http://hackerzgz.github.io/tcpdump-in-action/</guid>
       <description>
 
 &lt;h2 id=&#34;intro&#34;&gt;Intro&lt;/h2&gt;
 
-&lt;p&gt;昨天上线了新完成的网站 &lt;a href=&#34;http://123.207.0.81:8563&#34;&gt;Personal-Dictionary&lt;/a&gt; &lt;a href=&#34;https://www.github.com/HackeZ/Personal-Dictionary&#34;&gt;源码在此&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;昨天上线了新完成的网站 &lt;a href=&#34;http://123.207.0.81:8563&#34;&gt;Personal-Dictionary&lt;/a&gt; &lt;a href=&#34;https://www.github.com/hackerzgz/Personal-Dictionary&#34;&gt;源码在此&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;但是上线期间却发生网站从 &lt;a href=&#34;http://127.0.0.1:8563&#34;&gt;http://127.0.0.1:8563&lt;/a&gt; 可以访问，但是外网访问却显示 &lt;code&gt;“无法访问此网络”&lt;/code&gt; 的情况，最后通过分析抓包工具 &lt;code&gt;tcpdump&lt;/code&gt; 的结果解决了该问题。&lt;/p&gt;
 
@@ -1334,10 +1334,10 @@ func main() {
     
     <item>
       <title>Action in Protocol Buffers</title>
-      <link>http://hackez.github.io/protocol-buffers/</link>
+      <link>http://hackerzgz.github.io/protocol-buffers/</link>
       <pubDate>Fri, 09 Sep 2016 09:44:00 +0800</pubDate>
       
-      <guid>http://hackez.github.io/protocol-buffers/</guid>
+      <guid>http://hackerzgz.github.io/protocol-buffers/</guid>
       <description>
 
 &lt;h2 id=&#34;intro&#34;&gt;Intro&lt;/h2&gt;
@@ -1572,15 +1572,15 @@ var fileDescriptor0 = []byte{
     
     <item>
       <title>How to Use Captcha in Beego Correct</title>
-      <link>http://hackez.github.io/how2use-captcha-in-beego/</link>
+      <link>http://hackerzgz.github.io/how2use-captcha-in-beego/</link>
       <pubDate>Thu, 01 Sep 2016 18:45:49 +0800</pubDate>
       
-      <guid>http://hackez.github.io/how2use-captcha-in-beego/</guid>
+      <guid>http://hackerzgz.github.io/how2use-captcha-in-beego/</guid>
       <description>
 
 &lt;h2 id=&#34;intro&#34;&gt;Intro&lt;/h2&gt;
 
-&lt;p&gt;最近在做 Beego 的 Web 网站开发，主题是 &lt;code&gt;个人词典&lt;/code&gt; ，项目地址 &lt;a href=&#34;https://github.com/HackeZ/Personal-Dictionary&#34;&gt;点我&lt;/a&gt; 。
+&lt;p&gt;最近在做 Beego 的 Web 网站开发，主题是 &lt;code&gt;个人词典&lt;/code&gt; ，项目地址 &lt;a href=&#34;https://github.com/hackerzgz/Personal-Dictionary&#34;&gt;点我&lt;/a&gt; 。
 在关于 Beego 的验证码使用方法上出现了问题，后面通过阅读 Beego 的源码解决了该问题，下面来详细讲诉一下。&lt;/p&gt;
 
 &lt;h2 id=&#34;problem&#34;&gt;Problem&lt;/h2&gt;
@@ -1638,10 +1638,10 @@ func init() {
     
     <item>
       <title>Fun in Docker Day-2</title>
-      <link>http://hackez.github.io/fun-in-docker-2/</link>
+      <link>http://hackerzgz.github.io/fun-in-docker-2/</link>
       <pubDate>Wed, 31 Aug 2016 19:17:28 +0800</pubDate>
       
-      <guid>http://hackez.github.io/fun-in-docker-2/</guid>
+      <guid>http://hackerzgz.github.io/fun-in-docker-2/</guid>
       <description>
 
 &lt;h2 id=&#34;intro&#34;&gt;Intro&lt;/h2&gt;
@@ -1818,10 +1818,10 @@ CMD [&amp;quot;/main&amp;quot;]
     
     <item>
       <title>Fun in Docker Day-1</title>
-      <link>http://hackez.github.io/fun-in-docker-1/</link>
+      <link>http://hackerzgz.github.io/fun-in-docker-1/</link>
       <pubDate>Sat, 20 Aug 2016 16:17:42 +0800</pubDate>
       
-      <guid>http://hackez.github.io/fun-in-docker-1/</guid>
+      <guid>http://hackerzgz.github.io/fun-in-docker-1/</guid>
       <description>
 
 &lt;h2 id=&#34;intro&#34;&gt;Intro&lt;/h2&gt;
@@ -1852,7 +1852,7 @@ $ docker run -d -p 80:80 --name webserver nginx
 
 &lt;h2 id=&#34;package&#34;&gt;Package&lt;/h2&gt;
 
-&lt;p&gt;以我的开源项目 &lt;a href=&#34;https://www.github.com/HackeZ/getMeizi&#34;&gt;getMeizi&lt;/a&gt; 为例子尝试打包 &lt;code&gt;Golang应用&lt;/code&gt; 。&lt;/p&gt;
+&lt;p&gt;以我的开源项目 &lt;a href=&#34;https://www.github.com/hackerzgz/getMeizi&#34;&gt;getMeizi&lt;/a&gt; 为例子尝试打包 &lt;code&gt;Golang应用&lt;/code&gt; 。&lt;/p&gt;
 
 &lt;h4 id=&#34;first-try&#34;&gt;First Try&lt;/h4&gt;
 
@@ -1913,10 +1913,10 @@ $ docker push hackerz/getmeizi
     
     <item>
       <title>Global Ignore File in Git</title>
-      <link>http://hackez.github.io/global_gitignore/</link>
+      <link>http://hackerzgz.github.io/global_gitignore/</link>
       <pubDate>Thu, 18 Aug 2016 16:03:05 +0800</pubDate>
       
-      <guid>http://hackez.github.io/global_gitignore/</guid>
+      <guid>http://hackerzgz.github.io/global_gitignore/</guid>
       <description>
 
 &lt;h2 id=&#34;intro&#34;&gt;Intro&lt;/h2&gt;
@@ -1967,10 +1967,10 @@ Thumbs.db
     
     <item>
       <title>How To Install Scikit-learn Under OSX 10.11</title>
-      <link>http://hackez.github.io/how-2-install-scikit-learn/</link>
+      <link>http://hackerzgz.github.io/how-2-install-scikit-learn/</link>
       <pubDate>Mon, 15 Aug 2016 22:49:10 +0800</pubDate>
       
-      <guid>http://hackez.github.io/how-2-install-scikit-learn/</guid>
+      <guid>http://hackerzgz.github.io/how-2-install-scikit-learn/</guid>
       <description>
 
 &lt;h1 id=&#34;如何在osx下安装正确安装-scikit-learn&#34;&gt;如何在osx下安装正确安装 scikit-learn&lt;/h1&gt;
@@ -2119,10 +2119,10 @@ $ sudo python setup.py install
     
     <item>
       <title>Golang Package Dependency Management Tool</title>
-      <link>http://hackez.github.io/golang-package-dependency-management-tool/</link>
+      <link>http://hackerzgz.github.io/golang-package-dependency-management-tool/</link>
       <pubDate>Sun, 07 Aug 2016 11:11:25 +0800</pubDate>
       
-      <guid>http://hackez.github.io/golang-package-dependency-management-tool/</guid>
+      <guid>http://hackerzgz.github.io/golang-package-dependency-management-tool/</guid>
       <description>
 
 &lt;h1 id=&#34;golang-package-dependency-management-tool&#34;&gt;Golang Package Dependency Management Tool&lt;/h1&gt;
@@ -2346,17 +2346,17 @@ $ ./bin/hellogb
     
     <item>
       <title>redigo : open too many files</title>
-      <link>http://hackez.github.io/redigo-open2manyfiles/</link>
+      <link>http://hackerzgz.github.io/redigo-open2manyfiles/</link>
       <pubDate>Wed, 27 Jul 2016 13:29:11 +0800</pubDate>
       
-      <guid>http://hackez.github.io/redigo-open2manyfiles/</guid>
+      <guid>http://hackerzgz.github.io/redigo-open2manyfiles/</guid>
       <description>
 
 &lt;h1 id=&#34;redigo-panic-error-open-too-many-files&#34;&gt;Redigo - panic error : open too many files.&lt;/h1&gt;
 
 &lt;h3 id=&#34;abstract&#34;&gt;Abstract&lt;/h3&gt;
 
-&lt;p&gt;今天对 &lt;a href=&#34;https://www.github.com/HackeZ/getAcFunPage&#34;&gt;getAcFunPage&lt;/a&gt; 项目做 Benchmark 的时候发现了 Redis 会频繁报一个 &lt;code&gt;socket: too many open files&lt;/code&gt; 的错误，后来发现并不是代码的问题，而是 Linux 的设置问题。
+&lt;p&gt;今天对 &lt;a href=&#34;https://www.github.com/hackerzgz/getAcFunPage&#34;&gt;getAcFunPage&lt;/a&gt; 项目做 Benchmark 的时候发现了 Redis 会频繁报一个 &lt;code&gt;socket: too many open files&lt;/code&gt; 的错误，后来发现并不是代码的问题，而是 Linux 的设置问题。
 下面就来说说我是这么解决这个问题的。&lt;/p&gt;
 
 &lt;h3 id=&#34;problem&#34;&gt;Problem&lt;/h3&gt;
@@ -2421,10 +2421,10 @@ created by net/http.(*Server).Serve
     
     <item>
       <title>Why HandleFunc Called Twice</title>
-      <link>http://hackez.github.io/why-handlefunc-called-twice/</link>
+      <link>http://hackerzgz.github.io/why-handlefunc-called-twice/</link>
       <pubDate>Sun, 24 Jul 2016 20:03:59 +0800</pubDate>
       
-      <guid>http://hackez.github.io/why-handlefunc-called-twice/</guid>
+      <guid>http://hackerzgz.github.io/why-handlefunc-called-twice/</guid>
       <description>
 
 &lt;h2 id=&#34;why-handlefunc-called-twice&#34;&gt;Why &lt;strong&gt;HandleFunc()&lt;/strong&gt; called twice?&lt;/h2&gt;
@@ -2451,14 +2451,14 @@ func main() {
 }
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;这是一个最简单的Golang服务器搭建，当http访问 &lt;code&gt;http://hackez.github.io:8080&lt;/code&gt; 的时候，该服务器会对客户端返回 &lt;code&gt;hello~ You are in!&lt;/code&gt; ，同时在服务器控制台中打印 &lt;code&gt;Oh, Here is a Guy coming in!&lt;/code&gt; 。&lt;/p&gt;
+&lt;p&gt;这是一个最简单的Golang服务器搭建，当http访问 &lt;code&gt;http://hackerzgz.github.io:8080&lt;/code&gt; 的时候，该服务器会对客户端返回 &lt;code&gt;hello~ You are in!&lt;/code&gt; ，同时在服务器控制台中打印 &lt;code&gt;Oh, Here is a Guy coming in!&lt;/code&gt; 。&lt;/p&gt;
 
 &lt;p&gt;有意思的部分来了：&lt;/p&gt;
 
 &lt;blockquote&gt;
 &lt;p&gt;通过 &lt;strong&gt;Brower&lt;/strong&gt; 访问的时候，服务器控制台会打印出 &lt;strong&gt;两行&lt;/strong&gt; &lt;code&gt;Oh, Here is a Guy coming in!&lt;/code&gt;。&lt;/p&gt;
 
-&lt;p&gt;通过 &lt;code&gt;curl http://hackez.github.io:8080&lt;/code&gt; 命令进行访问的时候，服务器控制台只会打印 &lt;strong&gt;一行&lt;/strong&gt; &lt;code&gt;Oh, Here is a Guy coming in!&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;通过 &lt;code&gt;curl http://hackerzgz.github.io:8080&lt;/code&gt; 命令进行访问的时候，服务器控制台只会打印 &lt;strong&gt;一行&lt;/strong&gt; &lt;code&gt;Oh, Here is a Guy coming in!&lt;/code&gt;。&lt;/p&gt;
 &lt;/blockquote&gt;
 
 &lt;h2 id=&#34;why&#34;&gt;Why&lt;/h2&gt;
@@ -2484,17 +2484,17 @@ func main() {
     
     <item>
       <title>Golang Dev Log</title>
-      <link>http://hackez.github.io/golang-dev-log/</link>
+      <link>http://hackerzgz.github.io/golang-dev-log/</link>
       <pubDate>Sat, 23 Jul 2016 16:34:45 +0800</pubDate>
       
-      <guid>http://hackez.github.io/golang-dev-log/</guid>
+      <guid>http://hackerzgz.github.io/golang-dev-log/</guid>
       <description>
 
 &lt;h2 id=&#34;golang-dev-log&#34;&gt;Golang Dev Log&lt;/h2&gt;
 
 &lt;hr /&gt;
 
-&lt;p&gt;今天快要把 &lt;a href=&#34;https://www.github.com/HackeZ/getAcFunPage&#34;&gt;getAcFunPage&lt;/a&gt; 这个项目完结了，结果在重构项目的时候出现了两个哭笑不得的 &lt;strong&gt;BUG&lt;/strong&gt; 。总结下来，都是因为自身对 Golang 认识不够深入而出现的问题，所以现在这篇 Blog 是专门记录我在Golang开发中遇到的需要注意的点，以此警醒自己！&lt;/p&gt;
+&lt;p&gt;今天快要把 &lt;a href=&#34;https://www.github.com/hackerzgz/getAcFunPage&#34;&gt;getAcFunPage&lt;/a&gt; 这个项目完结了，结果在重构项目的时候出现了两个哭笑不得的 &lt;strong&gt;BUG&lt;/strong&gt; 。总结下来，都是因为自身对 Golang 认识不够深入而出现的问题，所以现在这篇 Blog 是专门记录我在Golang开发中遇到的需要注意的点，以此警醒自己！&lt;/p&gt;
 
 &lt;ol&gt;
 &lt;li&gt;一个通用的结构体应该以一个包的方式存在并进行引用，否则会出现同一个结构体在不同的包中声明之后，在调用的时候，编译器会报 &lt;code&gt;cannot use xxx (type user) as type School.user&lt;/code&gt; 的错误。&lt;/li&gt;

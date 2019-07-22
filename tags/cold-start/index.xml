@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Cold Start on HackerZ - Blog</title>
-    <link>http://hackez.github.io/tags/cold-start/index.xml</link>
+    <link>http://hackerzgz.github.io/tags/cold-start/index.xml</link>
     <description>Recent content in Cold Start on HackerZ - Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <atom:link href="http://hackez.github.io/tags/cold-start/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://hackerzgz.github.io/tags/cold-start/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>Cold Start</title>
-      <link>http://hackez.github.io/cold-start/</link>
+      <link>http://hackerzgz.github.io/cold-start/</link>
       <pubDate>Wed, 13 Jul 2016 19:39:47 +0800</pubDate>
       
-      <guid>http://hackez.github.io/cold-start/</guid>
+      <guid>http://hackerzgz.github.io/cold-start/</guid>
       <description>
 
 &lt;h1 id=&#34;about-two-different-cold-start&#34;&gt;About Two Different Cold Start&lt;/h1&gt;

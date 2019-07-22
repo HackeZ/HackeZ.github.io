@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Eclipse on HackerZ - Blog</title>
-    <link>http://hackez.github.io/tags/eclipse/index.xml</link>
+    <link>http://hackerzgz.github.io/tags/eclipse/index.xml</link>
     <description>Recent content in Eclipse on HackerZ - Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <atom:link href="http://hackez.github.io/tags/eclipse/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://hackerzgz.github.io/tags/eclipse/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>Learning in Hadoop - Day 1</title>
-      <link>http://hackez.github.io/hadoop-1/</link>
+      <link>http://hackerzgz.github.io/hadoop-1/</link>
       <pubDate>Mon, 13 Jun 2016 20:45:25 +0800</pubDate>
       
-      <guid>http://hackez.github.io/hadoop-1/</guid>
+      <guid>http://hackerzgz.github.io/hadoop-1/</guid>
       <description>&lt;p&gt;第一次玩Hadoop&lt;/p&gt;
 
 &lt;p&gt;最近在折腾机器学习，因为查阅到Yahoo的&lt;/p&gt;

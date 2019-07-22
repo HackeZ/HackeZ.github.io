@@ -2,23 +2,23 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Beego on HackerZ - Blog</title>
-    <link>http://hackez.github.io/tags/beego/index.xml</link>
+    <link>http://hackerzgz.github.io/tags/beego/index.xml</link>
     <description>Recent content in Beego on HackerZ - Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <atom:link href="http://hackez.github.io/tags/beego/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://hackerzgz.github.io/tags/beego/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>How to Use Captcha in Beego Correct</title>
-      <link>http://hackez.github.io/how2use-captcha-in-beego/</link>
+      <link>http://hackerzgz.github.io/how2use-captcha-in-beego/</link>
       <pubDate>Thu, 01 Sep 2016 18:45:49 +0800</pubDate>
       
-      <guid>http://hackez.github.io/how2use-captcha-in-beego/</guid>
+      <guid>http://hackerzgz.github.io/how2use-captcha-in-beego/</guid>
       <description>
 
 &lt;h2 id=&#34;intro&#34;&gt;Intro&lt;/h2&gt;
 
-&lt;p&gt;最近在做 Beego 的 Web 网站开发，主题是 &lt;code&gt;个人词典&lt;/code&gt; ，项目地址 &lt;a href=&#34;https://github.com/HackeZ/Personal-Dictionary&#34;&gt;点我&lt;/a&gt; 。
+&lt;p&gt;最近在做 Beego 的 Web 网站开发，主题是 &lt;code&gt;个人词典&lt;/code&gt; ，项目地址 &lt;a href=&#34;https://github.com/hackerzgz/Personal-Dictionary&#34;&gt;点我&lt;/a&gt; 。
 在关于 Beego 的验证码使用方法上出现了问题，后面通过阅读 Beego 的源码解决了该问题，下面来详细讲诉一下。&lt;/p&gt;
 
 &lt;h2 id=&#34;problem&#34;&gt;Problem&lt;/h2&gt;
